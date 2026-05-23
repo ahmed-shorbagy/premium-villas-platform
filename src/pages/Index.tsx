@@ -141,12 +141,13 @@ const Index = () => {
 
         <section className="py-12 lg:py-16">
           <div className="container">
+            <div className="glass-panel rounded-3xl p-6 md:p-10 lg:p-12">
             <div className="mb-8 text-center">
               <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
-                استكشف <span className="text-gradient-gold">عقاراتنا</span>
+                استكشف <span className="text-gradient-brand">فلل Shima AK</span>
               </h2>
               <p className="mt-2 text-muted-foreground">
-                اكتشف فللاً وعقارات فاخرة في أفضل المواقع
+                {siteConfig.brand.taglineAr}
               </p>
             </div>
 
@@ -185,6 +186,7 @@ const Index = () => {
             ) : (
               <PropertyGrid properties={filteredProperties} loading={loading} />
             )}
+            </div>
           </div>
         </section>
       </main>

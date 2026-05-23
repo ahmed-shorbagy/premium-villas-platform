@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook, Instagram, Youtube } from "lucide-react";
 import { buildLocalizedPath } from "@/routes";
 import { siteConfig } from "@/config";
-import { getBrandName, getCopyrightLine } from "@/lib/brand";
-import { BrandMark } from "@/components/brand/BrandMark";
+import { getCopyrightLine } from "@/lib/brand";
+import { ShimaLogo } from "@/components/brand/ShimaLogo";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +26,6 @@ const socialLinks = [
 ];
 
 const Footer = () => {
-  const brandName = getBrandName();
   const activeSocial = socialLinks.filter(({ key }) => siteConfig.social[key]?.trim());
 
   return (
@@ -34,11 +33,9 @@ const Footer = () => {
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link to={buildLocalizedPath.home()} className="mb-4 flex items-center gap-2.5">
-              <BrandMark size="md" />
-              <span className="font-display text-xl font-semibold">
-                {brandName ?? siteConfig.seo.defaultTitleAr}
-              </span>
+            <Link to={buildLocalizedPath.home()} className="mb-4 flex items-center gap-3">
+              <ShimaLogo variant="icon" size="md" />
+              <ShimaLogo variant="wordmark" size="md" light />
             </Link>
             <p className="text-sm text-primary-foreground/70">{siteConfig.brand.taglineAr}</p>
           </div>

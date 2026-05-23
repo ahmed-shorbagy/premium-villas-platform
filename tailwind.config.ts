@@ -127,6 +127,10 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "shima-ambient-pulse": {
+          "0%, 100%": { opacity: "0.75", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.03)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -135,6 +139,7 @@ export default {
         "fade-in-up": "fade-in-up 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards",
         "scale-in": "scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
         shimmer: "shimmer 2.5s linear infinite",
+        "shima-ambient-pulse": "shima-ambient-pulse 3s ease-in-out infinite",
       },
     },
   },

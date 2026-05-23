@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { buildLocalizedPath } from '@/routes';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
-import { BrandMark } from '@/components/brand/BrandMark';
+import { ShimaLogo } from '@/components/brand/ShimaLogo';
 import { getAdminTitle } from '@/lib/brand';
 
 const navRoutes = {
@@ -38,7 +38,7 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
     <div className="flex h-full flex-col bg-card">
       {/* Header */}
       <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-        <BrandMark size="sm" />
+        <ShimaLogo variant="icon" size="sm" />
         <span className="font-display text-lg font-semibold">{getAdminTitle()}</span>
       </div>
 

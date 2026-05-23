@@ -9,6 +9,7 @@ import heroImage from '@/assets/hero-cairo.jpg';
 import { useBanners } from '@/hooks/useBanners';
 import BannerCarousel from '@/components/BannerCarousel';
 import { siteConfig } from '@/config';
+import { ShimaLogo } from '@/components/brand/ShimaLogo';
 
 interface HeroProps {
   onSearch: (filters: { location: string; maxPrice: string; bedrooms: string; listingType: string }) => void;
@@ -52,19 +53,26 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
       </div>
 
       {/* Content Section */}
-      <div className="container flex flex-col items-center justify-center px-4 py-12 text-center bg-background">
-        <span className="mb-4 inline-block animate-fade-in rounded-full bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-          {siteConfig.brand.taglineAr}
-        </span>
-        <h1 className="mb-4 max-w-4xl animate-fade-in font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl" style={{ animationDelay: '0.1s' }}>
-          {siteConfig.seo.defaultTitleAr}
-        </h1>
-        <p className="mb-10 max-w-2xl animate-fade-in text-lg text-muted-foreground" style={{ animationDelay: '0.2s' }}>
-          {siteConfig.seo.homeDescriptionAr}
-        </p>
+      <div className="container flex flex-col items-center justify-center px-4 py-12 text-center">
+        <div
+          className="glass-panel w-full max-w-4xl animate-fade-in rounded-3xl px-5 py-10 md:px-12 md:py-14"
+          style={{ animationDelay: "0.05s" }}
+        >
+          <span className="mb-5 inline-block rounded-full border border-gold/20 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase">
+            {siteConfig.brand.name}
+          </span>
+          <div className="mb-4 flex justify-center animate-fade-in" style={{ animationDelay: "0.1s" }}>
+            <ShimaLogo variant="wordmark" size="lg" />
+          </div>
+          <p className="mb-2 font-display text-xl text-foreground/90 md:text-2xl" style={{ animationDelay: "0.15s" }}>
+            {siteConfig.brand.taglineAr}
+          </p>
+          <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-base text-muted-foreground md:text-lg" style={{ animationDelay: "0.2s" }}>
+            {siteConfig.seo.homeDescriptionAr}
+          </p>
 
         {/* Search Bar */}
-        <div className="w-full max-w-4xl animate-fade-in" style={{ animationDelay: '0.3s' }}>
+        <div className="w-full animate-fade-in" style={{ animationDelay: '0.3s' }}>
           {/* Listing Type Tabs */}
           <div className="mb-4 flex gap-2 justify-center">
             <button
@@ -150,6 +158,7 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
               اضف عقارك معنا
             </Button>
           </Link>
+        </div>
         </div>
       </div>
     </section>

@@ -1,40 +1,43 @@
 /**
- * Central brand & platform configuration.
- * Set `brand.nameAr` / `brand.nameEn` and assets when the client provides the final brand.
+ * Shima AK — premium villa rental brand configuration
  */
 export const siteConfig = {
   brand: {
-    /** Final brand name (Arabic) — leave empty until provided */
-    nameAr: "",
-    nameEn: "",
-    taglineAr: "إقامة فاخرة وحجز فلل مباشر",
+    name: "Shima AK",
+    nameAr: "شيما AK",
+    nameEn: "Shima AK",
+    monogram: "SA",
+    taglineAr: "إقامة فاخرة في أرقى الفلل",
+    taglineEn: "Luxury villas, curated for you",
     defaultLocale: "ar" as const,
     direction: "rtl" as const,
   },
   seo: {
-    defaultTitleAr: "حجز فلل فاخرة",
+    defaultTitleAr: "Shima AK — فلل فاخرة",
     defaultDescriptionAr:
-      "اكتشف فللاً فاخرة للإيجار. تصفية متقدمة، أسعار واضحة، وحجز مباشر عبر واتساب.",
+      "Shima AK — اكتشف فللاً فاخرة للإيجار. حجز سهل، مواصفات واضحة، وتواصل مباشر لتأكيد إقامتك.",
     homeDescriptionAr:
-      "تصفح فللاً فاخرة للإيجار. حجز سهل، مواصفات واضحة، وتواصل سريع لتأكيد إقامتك.",
-    keywordsAr: "فلل, إيجار, حجز, إقامة فاخرة",
+      "منصة Shima AK لحجز الفلل الفاخرة — تجربة إقامة استثنائية، تصفية ذكية، وأسعار شفافة.",
+    keywordsAr: "Shima AK, فلل, إيجار فاخر, حجز فلل, إقامة فاخرة",
   },
   assets: {
-    /** Path to logo image when available, e.g. `/brand/logo.svg` */
-    logoSrc: null as string | null,
-    favicon: "/favicon.svg",
-    ogImage: "/og-default.svg",
+    logoSrc: "/brand/shima-ak-logo.svg",
+    logoIconSrc: "/brand/shima-ak-icon.svg",
+    favicon: "/brand/shima-ak-icon.svg",
+    ogImage: "/brand/shima-ak-og.svg",
+    ambientBg: "/brand/shima-ambient-loop.svg",
+  },
+  animation: {
+    ambientCycleSeconds: 3,
   },
   contact: {
     adminWhatsApp: "+972594106293",
     adminWhatsAppDisplay: "+972 59-410-6293",
-    /** Public contact — fill when brand launches */
     phone: "",
     email: "",
     locationAr: "",
   },
   social: {
-    /** Add URLs when social accounts are ready */
     x: "",
     facebook: "",
     instagram: "",
@@ -44,6 +47,7 @@ export const siteConfig = {
   fonts: {
     primary: "Cairo",
     secondary: "Almarai",
+    display: "Cormorant Garamond",
     fallbacks: ["Tajawal", "system-ui", "sans-serif"],
   },
 } as const;

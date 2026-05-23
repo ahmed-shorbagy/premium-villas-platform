@@ -20,6 +20,7 @@ import PropertyTypePage from "./pages/PropertyTypePage";
 import NotFound from "./pages/NotFound";
 import { getLocalizedRoutes } from "./routes";
 import { ActivityTracker } from "./components/ActivityTracker";
+import { SiteShell } from "./components/layout/SiteShell";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <SiteShell>
           <ActivityTracker />
           <Routes>
             <Route path={localizedRoutes.home} element={<Index />} />
@@ -105,6 +107,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path={localizedRoutes.notFound} element={<NotFound />} />
           </Routes>
+          </SiteShell>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
