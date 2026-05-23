@@ -11,7 +11,10 @@ export default async function handler(req, res) {
     process.env.VITE_SUPABASE_ANON_KEY
   );
 
-  const SITE_URL = 'https://fredian-eg.com';
+  const SITE_URL = (process.env.VITE_SITE_URL || '').replace(/\/$/, '');
+  if (!SITE_URL) {
+    return res.status(500).json({ error: 'Missing VITE_SITE_URL environment variable' });
+  }
 
   try {
     const { data: properties, error } = await supabase

@@ -33,7 +33,7 @@ const typeSeoTitles: Record<string, string> = {
 
 // SEO descriptions for each type
 const typeSeoDescriptions: Record<string, string> = {
-    apartment: 'تصفح أفضل الشقق المتاحة للبيع والإيجار في الوطن العربي. شقق سكنية بأسعار مناسبة ومواقع متميزة.',
+    apartment: 'تصفح أفضل الشقق المتاحة للبيع والإيجار. شقق سكنية بأسعار مناسبة ومواقع متميزة.',
     villa: 'اكتشف فلل فاخرة للبيع والإيجار في أرقى المناطق. فلل عائلية مع حدائق ومسابح خاصة.',
     office: 'ابحث عن مكاتب للبيع والإيجار في مواقع استراتيجية. مساحات مكتبية عصرية للشركات.',
     commercial: 'عقارات تجارية ومحلات للبيع والإيجار في أماكن حيوية. فرص استثمارية مميزة.',
@@ -136,7 +136,7 @@ const PropertyTypePage = () => {
                     <div className="container">
                         <div className="mb-8 text-center">
                             <h1 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
-                                {seoTitle} <span className="text-gradient-gold">في الوطن العربي</span>
+                                {seoTitle}
                             </h1>
                             <p className="mt-2 text-muted-foreground">
                                 {seoDescription}

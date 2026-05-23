@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { HypeControllerProvider } from "@/context/HypeController";
 import Index from "./pages/Index";
 import PropertyDetails from "./pages/PropertyDetails";
 import SubmitListing from "./pages/SubmitListing";
@@ -59,6 +60,7 @@ const legacyAdminListingRequestsPath = englishRoutes.adminListingRequests
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <HypeControllerProvider>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
@@ -106,6 +108,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
+    </HypeControllerProvider>
   </QueryClientProvider>
 );
 

@@ -1,14 +1,14 @@
-import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
+import { useHype } from "@/context/HypeController";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+  const { isWinter } = useHype();
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={isWinter ? "dark" : "light"}
       className="toaster group"
       toastOptions={{
         classNames: {

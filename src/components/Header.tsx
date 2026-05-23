@@ -1,19 +1,30 @@
-import { Link } from 'react-router-dom';
-import { Phone } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { buildLocalizedPath } from '@/routes';
+import { Link } from "react-router-dom";
+import { Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { buildLocalizedPath } from "@/routes";
+import { siteConfig } from "@/config";
+import { getBrandName } from "@/lib/brand";
+import { BrandMark } from "@/components/brand/BrandMark";
+import { HypeThemeToggle } from "@/components/theme/HypeThemeToggle";
 
 const Header = () => {
+  const brandName = getBrandName();
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+    <header className="sticky top-0 z-50 w-full border-b border-glass-border bg-glass/90 backdrop-blur-glass supports-[backdrop-filter]:bg-glass/80 transition-colors duration-300">
       <div className="container flex h-16 items-center justify-between">
-        <Link to={buildLocalizedPath.home()} className="flex items-center gap-2 group">
-          <img
-            src="/logo.jpg"
-            alt="Fredian"
-            className="h-10 w-10 rounded-lg object-cover"
-          />
-          <span className="font-display text-xl font-semibold text-foreground">Fredian</span>
+        <Link to={buildLocalizedPath.home()} className="flex items-center gap-2.5 group">
+          <BrandMark size="md" />
+          <div className="flex flex-col items-start leading-tight">
+            {brandName ? (
+              <span className="font-display text-xl font-semibold text-foreground">{brandName}</span>
+            ) : (
+              <span className="font-display text-lg font-semibold text-foreground">
+                {siteConfig.seo.defaultTitleAr}
+              </span>
+            )}
+            <span className="text-[11px] text-muted-foreground">{siteConfig.brand.taglineAr}</span>
+          </div>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -49,12 +60,15 @@ const Header = () => {
           </Link>
         </nav>
 
-        <Link to={buildLocalizedPath.submitListing()}>
-          <Button variant="gold" size="default" className="gap-2">
-            <Phone className="h-4 w-4" />
-            <span className="inline">أضف عقارك</span>
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <HypeThemeToggle compact className="hidden sm:inline-flex" />
+          <Link to={buildLocalizedPath.submitListing()}>
+            <Button variant="gold" size="default" className="gap-2 premium-hover">
+              <Phone className="h-4 w-4" />
+              <span className="inline">أضف عقارك</span>
+            </Button>
+          </Link>
+        </div>
       </div>
     </header>
   );

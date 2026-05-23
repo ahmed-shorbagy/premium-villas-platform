@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
 import { useProperties } from '@/hooks/useProperties';
 import PropertyHorizontalList from '@/components/PropertyHorizontalList';
+import { siteConfig } from '@/config';
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -123,7 +124,7 @@ const Index = () => {
     <div className="flex min-h-screen flex-col">
       <SEO
         title="الرئيسية"
-        description="اكتشف أفضل العقارات في الوطن العربي. شقق، فلل، ومساحات تجارية للبيع والإيجار."
+        description={siteConfig.seo.homeDescriptionAr}
       />
       <Header />
 
@@ -145,7 +146,7 @@ const Index = () => {
                 استكشف <span className="text-gradient-gold">عقاراتنا</span>
               </h2>
               <p className="mt-2 text-muted-foreground">
-                اكتشف المنازل الفاخرة والمساحات التجارية في أرقى مناطق الوطن العربي
+                اكتشف فللاً وعقارات فاخرة في أفضل المواقع
               </p>
             </div>
 

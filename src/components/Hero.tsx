@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import heroImage from '@/assets/hero-cairo.jpg';
 import { useBanners } from '@/hooks/useBanners';
 import BannerCarousel from '@/components/BannerCarousel';
+import { siteConfig } from '@/config';
 
 interface HeroProps {
   onSearch: (filters: { location: string; maxPrice: string; bedrooms: string; listingType: string }) => void;
@@ -53,14 +54,13 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
       {/* Content Section */}
       <div className="container flex flex-col items-center justify-center px-4 py-12 text-center bg-background">
         <span className="mb-4 inline-block animate-fade-in rounded-full bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-          منصة العقارات الأولى في الوطن العربي
+          {siteConfig.brand.taglineAr}
         </span>
         <h1 className="mb-4 max-w-4xl animate-fade-in font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl" style={{ animationDelay: '0.1s' }}>
-          اعثر على منزل أحلامك في{' '}
-          <span className="text-gradient-gold">الوطن العربي</span>
+          {siteConfig.seo.defaultTitleAr}
         </h1>
         <p className="mb-10 max-w-2xl animate-fade-in text-lg text-muted-foreground" style={{ animationDelay: '0.2s' }}>
-          اكتشف الشقق الفاخرة والفلل الأنيقة والمساحات التجارية المتميزة في أرقى مناطق الوطن العربي.
+          {siteConfig.seo.homeDescriptionAr}
         </p>
 
         {/* Search Bar */}

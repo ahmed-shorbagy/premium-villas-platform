@@ -42,7 +42,7 @@ const env = loadEnv();
 console.log('Final Env Keys:', Object.keys(env));
 const SUPABASE_URL = env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = env.VITE_SUPABASE_PUBLISHABLE_KEY;
-const DOMAIN = 'https://fredian-eg.com';
+const DOMAIN = (env.VITE_SITE_URL || 'http://localhost:5173').replace(/\/$/, '');
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
     console.error('Missing Supabase credentials in .env');

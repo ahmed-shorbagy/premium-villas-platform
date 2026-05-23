@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { buildLocalizedPath } from '@/routes';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
+import { BrandMark } from '@/components/brand/BrandMark';
+import { getAdminTitle } from '@/lib/brand';
 
 const navRoutes = {
   dashboard: buildLocalizedPath.adminDashboard(),
@@ -36,12 +38,8 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
     <div className="flex h-full flex-col bg-card">
       {/* Header */}
       <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-        <img
-          src="/logo.jpg"
-          alt="Fredian"
-          className="h-8 w-8 rounded-lg object-cover"
-        />
-        <span className="font-display text-lg font-semibold">Fredian Admin</span>
+        <BrandMark size="sm" />
+        <span className="font-display text-lg font-semibold">{getAdminTitle()}</span>
       </div>
 
       {/* Navigation */}
