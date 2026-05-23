@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 220 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+
+    --primary: 220 50% 18%;
+    --primary-foreground: 40 20% 98%;
+
+    --secondary: 40 30% 95%;
+    --secondary-foreground: 220 30% 15%;
+
+    --muted: 40 20% 94%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 38 90% 50%;
+    --accent-foreground: 220 50% 12%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 38 90% 50%;
+
+    --radius: 0.75rem;
+
+    /* Custom properties */
+    --gold: 38 90% 50%;
+    --gold-light: 40 85% 65%;
+    --gold-dark: 35 90% 40%;
+    --navy: 220 50% 18%;
+    --navy-light: 220 40% 30%;
+    --cream: 40 20% 98%;
+    --warm-gray: 30 10% 60%;
+
+    /* Shadows */
+    --shadow-card: 0 4px 20px -4px hsl(220 30% 15% / 0.08);
+    --shadow-card-hover: 0 12px 32px -8px hsl(220 30% 15% / 0.15);
+    --shadow-gold: 0 8px 24px -4px hsl(38 90% 50% / 0.3);
+
+    /* Gradients */
+    --gradient-gold: linear-gradient(135deg, hsl(38 90% 50%), hsl(35 90% 40%));
+    --gradient-hero: linear-gradient(180deg, hsl(220 50% 18% / 0.7) 0%, hsl(220 50% 18% / 0.4) 100%);
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 40 20% 98%;
+
+    --card: 220 30% 12%;
+    --card-foreground: 40 20% 98%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 40 20% 98%;
+
+    --primary: 38 90% 50%;
+    --primary-foreground: 220 50% 12%;
+
+    --secondary: 220 30% 18%;
+    --secondary-foreground: 40 20% 98%;
+
+    --muted: 220 30% 18%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 38 90% 50%;
+    --accent-foreground: 220 50% 12%;
+
+    --border: 220 30% 20%;
+    --input: 220 30% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-dark)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-dark)));
+  }
+
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
