@@ -39,7 +39,7 @@ const Header = () => {
 
         {/* ── Actions ── */}
         <div className="flex items-center gap-3">
-          <HypeThemeToggle compact className="hidden sm:inline-flex" />
+          <HypeThemeToggle compact className="inline-flex" />
           <a href="#villas">
             <Button variant="gold" size="sm" className="gap-2 shadow-brand md:size-default">
               <Phone className="h-4 w-4" />
