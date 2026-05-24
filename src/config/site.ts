@@ -27,7 +27,7 @@ export const siteConfig = {
     ogImage: "/brand/shima-ak-og.svg",
     ambientBg: "/brand/shima-ambient-loop.svg",
     /** Set after adding public/hero/hero-loop.mp4 (and optional .webm) — ~3s seamless loop */
-    heroVideoMp4: "/hero/hero-loop.mp4",
+    heroVideoMp4: "",
     heroVideoWebm: "",
   },
   animation: {
