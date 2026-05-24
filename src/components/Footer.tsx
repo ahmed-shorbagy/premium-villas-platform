@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, MapPin } from "lucide-react";
 import { buildLocalizedPath } from "@/routes";
 import { siteConfig } from "@/config";
 import { getCopyrightLine } from "@/lib/brand";
@@ -7,43 +7,59 @@ import { ShimaLogo } from "@/components/brand/ShimaLogo";
 
 const Footer = () => {
   return (
-    <footer className="shima-footer relative mt-16 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--gold)/0.08),transparent_60%)]" />
-      <div className="container relative py-14 md:py-16">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+    <footer className="shima-footer relative mt-20 overflow-hidden">
+      {/* Decorative gold glow at top */}
+      <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--gold)/0.06),transparent_50%)]" />
+
+      <div className="container relative py-16 md:py-20">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+          {/* Brand column */}
           <div>
-            <Link to={buildLocalizedPath.home()} className="mb-5 inline-flex items-center gap-3">
+            <Link to={buildLocalizedPath.home()} className="mb-6 inline-flex items-center gap-3">
               <ShimaLogo variant="icon" size="md" />
               <ShimaLogo variant="wordmark" size="md" light />
             </Link>
-            <p className="max-w-xs text-sm leading-relaxed text-white/60">{siteConfig.brand.taglineAr}</p>
-            <p className="mt-3 text-xs tracking-widest text-brand/80 uppercase">إيجار فلل فاخرة فقط</p>
+            <p className="max-w-xs text-sm leading-relaxed text-white/55">
+              {siteConfig.brand.taglineAr}
+            </p>
+            <p className="mt-4 text-xs tracking-[0.2em] text-brand/70 uppercase">
+              إيجار فلل فاخرة فقط
+            </p>
           </div>
 
+          {/* Links column */}
           <div>
-            <h4 className="mb-4 font-display text-lg text-white/90">روابط</h4>
-            <ul className="space-y-2.5">
+            <h4 className="mb-5 font-display text-lg font-medium text-white/90">روابط</h4>
+            <ul className="space-y-3">
               <li>
-                <Link to={buildLocalizedPath.home()} className="text-sm text-white/55 transition-colors hover:text-brand">
+                <Link
+                  to={buildLocalizedPath.home()}
+                  className="text-sm text-white/50 transition-colors duration-300 hover:text-brand"
+                >
                   الرئيسية
                 </Link>
               </li>
               <li>
-                <a href="#villas" className="text-sm text-white/55 transition-colors hover:text-brand">
+                <a
+                  href="#villas"
+                  className="text-sm text-white/50 transition-colors duration-300 hover:text-brand"
+                >
                   الفلل للإيجار
                 </a>
               </li>
             </ul>
           </div>
 
+          {/* Contact column */}
           <div>
-            <h4 className="mb-4 font-display text-lg text-white/90">تواصل</h4>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2.5 text-sm text-white/60">
+            <h4 className="mb-5 font-display text-lg font-medium text-white/90">تواصل</h4>
+            <ul className="space-y-3.5">
+              <li className="flex items-center gap-3 text-sm text-white/55">
                 <Phone className="h-4 w-4 shrink-0 text-brand" />
                 <span dir="ltr">{siteConfig.contact.adminWhatsAppDisplay}</span>
               </li>
-              <li className="flex items-start gap-2.5 text-sm text-white/60">
+              <li className="flex items-start gap-3 text-sm text-white/55">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                 حجز فلل — Shima AK
               </li>
@@ -51,8 +67,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="shima-divider my-10" />
-        <p className="text-center text-sm text-white/40">{getCopyrightLine()}</p>
+        <div className="shima-divider my-12" />
+
+        <p className="text-center text-sm text-white/35">{getCopyrightLine()}</p>
       </div>
     </footer>
   );

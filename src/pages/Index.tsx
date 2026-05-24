@@ -75,25 +75,25 @@ const Index = () => {
 
         <AdBanner />
 
-        <section id="villas" className="relative -mt-8 scroll-mt-24 pb-16 pt-4 md:-mt-12">
+        <section id="villas" className="relative -mt-6 scroll-mt-28 pb-20 pt-4 md:-mt-10">
           <div className="container">
             <div className="shima-section">
-              <div className="mb-10 flex flex-col gap-4 text-center md:flex-row md:items-end md:justify-between md:text-start">
+              <div className="mb-12 flex flex-col gap-4 text-center md:flex-row md:items-end md:justify-between md:text-start">
                 <div>
-                  <p className="mb-2 text-xs font-semibold tracking-[0.25em] text-brand uppercase">
+                  <p className="mb-2 text-xs font-semibold tracking-[0.25em] text-brand uppercase" dir="ltr">
                     {siteConfig.brand.name}
                   </p>
                   <h2 className="font-display text-3xl font-semibold text-foreground sm:text-4xl">
                     فلل لل<span className="text-gradient-brand">إيجار</span>
                   </h2>
-                  <p className="mt-2 max-w-lg text-muted-foreground">{siteConfig.brand.taglineAr}</p>
+                  <p className="mt-3 max-w-xl text-muted-foreground">{siteConfig.brand.taglineAr}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground">
                   {loading ? "..." : `${filteredProperties.length} فيلا متاحة`}
                 </p>
               </div>
 
-              <div className="mb-10">
+              <div className="mb-12">
                 <PropertyFilters sortBy={sortBy} onSortChange={setSortBy} />
               </div>
 

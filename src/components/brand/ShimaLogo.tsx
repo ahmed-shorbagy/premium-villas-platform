@@ -11,9 +11,9 @@ interface ShimaLogoProps {
 }
 
 const heights = {
-  sm: { full: "h-8", icon: "h-7 w-7", word: "text-base" },
-  md: { full: "h-10", icon: "h-9 w-9", word: "text-xl" },
-  lg: { full: "h-14", icon: "h-12 w-12", word: "text-3xl" },
+  sm: { full: "h-8", icon: "h-7 w-7", word: "text-base", gap: "gap-1.5" },
+  md: { full: "h-10", icon: "h-9 w-9", word: "text-xl", gap: "gap-2" },
+  lg: { full: "h-14", icon: "h-12 w-12", word: "text-3xl", gap: "gap-2.5" },
 };
 
 export function ShimaLogo({
@@ -45,11 +45,14 @@ export function ShimaLogo({
     );
   }
 
+  /* ── Wordmark: always LTR so "Shima AK" reads correctly in RTL pages ── */
   return (
     <span
+      dir="ltr"
       className={cn(
-        "inline-flex items-baseline gap-1 font-display leading-none",
+        "inline-flex items-baseline font-display leading-none",
         heights[size].word,
+        heights[size].gap,
         className,
       )}
     >
@@ -61,7 +64,7 @@ export function ShimaLogo({
       >
         Shima
       </span>
-      <span className="font-bold tracking-[0.18em] text-gradient-brand">AK</span>
+      <span className="font-bold tracking-[0.1em] text-gradient-brand">AK</span>
     </span>
   );
 }

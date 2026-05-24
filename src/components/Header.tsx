@@ -10,11 +10,12 @@ const navLinkClass =
 
 const Header = () => {
   return (
-    <header className="sticky top-0 z-50 w-full px-3 pt-3 md:px-4 md:pt-4">
-      <div className="shima-float-header flex h-14 items-center justify-between px-4 md:h-[3.75rem] md:px-6">
+    <header className="sticky top-0 z-50 w-full px-3 pt-3 md:px-6 md:pt-4">
+      <div className="shima-float-header flex h-16 items-center justify-between px-5 md:h-[4.25rem] md:px-8">
+        {/* ── Brand ── */}
         <Link
           to={buildLocalizedPath.home()}
-          className="group flex items-center gap-2.5 transition-opacity hover:opacity-90"
+          className="group flex items-center gap-3 transition-opacity hover:opacity-90"
         >
           <ShimaLogo
             variant="icon"
@@ -26,7 +27,8 @@ const Header = () => {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex">
+        {/* ── Navigation ── */}
+        <nav className="hidden items-center gap-8 lg:flex">
           <Link to={buildLocalizedPath.home()} className={navLinkClass}>
             الرئيسية
           </Link>
@@ -35,10 +37,11 @@ const Header = () => {
           </a>
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* ── Actions ── */}
+        <div className="flex items-center gap-3">
           <HypeThemeToggle compact className="hidden sm:inline-flex" />
           <a href="#villas">
-            <Button variant="gold" size="sm" className="gap-1.5 shadow-brand md:size-default">
+            <Button variant="gold" size="sm" className="gap-2 shadow-brand md:size-default">
               <Phone className="h-4 w-4" />
               <span className="hidden sm:inline">احجز فيلا</span>
             </Button>

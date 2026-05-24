@@ -170,6 +170,8 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -205,9 +207,11 @@
   .shima-float-header {
     @apply mx-3 mt-3 rounded-2xl border border-glass-border md:mx-auto md:mt-4 md:max-w-6xl;
     background: hsl(var(--glass-bg));
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow:
+      var(--shadow-float),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.08);
   }
 
   .shima-card {
@@ -224,7 +228,7 @@
   }
 
   .shima-section {
-    @apply glass-panel rounded-[1.75rem] p-6 md:p-10 lg:p-12;
+    @apply glass-panel rounded-[1.75rem] p-6 md:p-10 lg:p-14;
   }
 
   .shima-pill {
@@ -240,7 +244,7 @@
   }
 
   .shima-input {
-    @apply h-11 rounded-xl border-0 bg-secondary/80 px-4 text-sm shadow-inner ring-1 ring-border/50 transition-all placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-brand/50;
+    @apply h-12 rounded-xl border-0 bg-secondary/80 px-4 text-sm shadow-inner ring-1 ring-border/50 transition-all placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-brand/50;
   }
 
   .shima-divider {
