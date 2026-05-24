@@ -312,26 +312,24 @@
   }
 
   .shima-hero-media {
-    will-change: transform;
+    will-change: auto;
   }
 
   .shima-hero-bg {
-    animation:
-      shima-ken-burns 22s ease-in-out infinite alternate,
-      shima-hero-breathe 8s ease-in-out infinite;
+    /* Static fallback image — no animation, video does the work */
   }
 
   .shima-hero-shimmer {
     background: linear-gradient(
       115deg,
       transparent 0%,
-      hsl(var(--gold-light) / 0.06) 45%,
+      hsl(var(--gold-light) / 0.04) 45%,
       transparent 55%,
-      hsl(0 0% 100% / 0.04) 70%,
+      hsl(0 0% 100% / 0.02) 70%,
       transparent 100%
     );
     background-size: 220% 100%;
-    animation: shima-hero-shimmer 6s ease-in-out infinite;
+    animation: shima-hero-shimmer 10s ease-in-out infinite;
     mix-blend-mode: soft-light;
   }
 
@@ -379,30 +377,6 @@
   }
 }
 
-@keyframes shima-ken-burns {
-  0% {
-    transform: scale(1.04) translate(0, 0);
-  }
-  33% {
-    transform: scale(1.1) translate(-1.5%, -0.5%);
-  }
-  66% {
-    transform: scale(1.07) translate(1%, -1.5%);
-  }
-  100% {
-    transform: scale(1.12) translate(-0.5%, 0.5%);
-  }
-}
-
-@keyframes shima-hero-breathe {
-  0%,
-  100% {
-    filter: brightness(0.88) saturate(1.05) contrast(1.02);
-  }
-  50% {
-    filter: brightness(0.96) saturate(1.12) contrast(1.04);
-  }
-}
 
 @keyframes shima-hero-shimmer {
   0% {
