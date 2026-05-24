@@ -122,7 +122,7 @@ const PropertyDetails = () => {
         <main className="flex flex-1 items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-muted-foreground">جاري تحميل بيانات العقار...</p>
+            <p className="text-muted-foreground">جاري تحميل بيانات الفيلا...</p>
           </div>
         </main>
         <Footer />
@@ -140,10 +140,10 @@ const PropertyDetails = () => {
               <FileQuestion className="h-12 w-12 text-muted-foreground" />
             </div>
             <h1 className="mb-2 font-display text-2xl font-bold text-foreground">
-              عذراً، العقار غير موجود
+              عذراً، الفيلا غير موجودة
             </h1>
             <p className="mb-8 text-muted-foreground">
-              ربما تم حذف العقار أو أن الرابط الذي حاولت الوصول إليه غير صحيح.
+              ربما تم حذف الفيلا أو أن الرابط غير صحيح.
             </p>
             <div className="flex w-full gap-3 sm:w-auto">
               <Link to={buildLocalizedPath.home()} className="w-full sm:w-auto">
@@ -238,9 +238,7 @@ const PropertyDetails = () => {
             <Badge variant="property">
               {propertyTypeLabels[property.type] || property.type}
             </Badge>
-            <Badge className={`${property.listingType === 'sale' ? 'bg-blue-600' : 'bg-green-600'} text-white`}>
-              {property.listingType === 'sale' ? 'بيع' : 'إيجار'}
-            </Badge>
+            <Badge className="bg-green-600 text-white">إيجار</Badge>
             {property.featured && <Badge variant="featured">مميز</Badge>}
           </div>
         </section>
@@ -264,23 +262,7 @@ const PropertyDetails = () => {
                     <span className="font-display text-3xl font-bold text-gold">
                       {formatPrice(property.price)}
                     </span>
-                    {property.installments_available && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border-emerald-200">
-                          متاح تقسيط
-                        </Badge>
-                        {property.installment_period && (
-                          <span className="text-sm font-medium text-emerald-700">
-                            على {property.installment_period}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    {property.installments_available && property.installment_value && (
-                      <div className="text-sm text-muted-foreground">
-                        قيمة القسط: <span className="font-semibold text-foreground">{formatPrice(property.installment_value)}</span>
-                      </div>
-                    )}
+                    <p className="text-sm text-muted-foreground">السعر لليلة الواحدة</p>
                   </div>
                 </div>
 
@@ -321,7 +303,7 @@ const PropertyDetails = () => {
                         هذا {propertyTypeLabels[property.type] || property.type} الرائع يقع في منطقة {property.area} المرموقة.
                         يتميز {property.bedrooms > 0 ? `بـ ${property.bedrooms} غرف نوم فسيحة، ` : ''}
                         {property.bathrooms} حمامات عصرية، ومساحة معيشة سخية تبلغ {property.areaSize} متر مربع.
-                        يتميز العقار بتشطيبات عالية الجودة وتركيبات فاخرة وإطلالات خلابة على المنطقة المحيطة.
+                        تتميز الفيلا بتشطيبات عالية الجودة وتركيبات فاخرة وإطلالات خلابة على المنطقة المحيطة.
                         مثالي للعائلات أو المحترفين الباحثين عن نمط حياة فاخر في أحد أكثر الأحياء المرغوبة.
                       </>
                     )}
@@ -350,10 +332,10 @@ const PropertyDetails = () => {
               <div className="hidden lg:block">
                 <div className="sticky top-24 rounded-xl border border-border bg-card p-6 shadow-card">
                   <h3 className="mb-4 font-display text-lg font-semibold text-foreground">
-                    مهتم بهذا العقار؟
+                    مهتم بهذه الفيلا؟
                   </h3>
                   <p className="mb-6 text-sm text-muted-foreground">
-                    تواصل معنا لترتيب موعد معاينة أو للحصول على مزيد من المعلومات حول هذا العقار.
+                    تواصل معنا لحجز الفيلا أو للحصول على مزيد من التفاصيل.
                   </p>
 
                   <PreviewRequestDialog

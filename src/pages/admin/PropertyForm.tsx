@@ -5,20 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, ArrowRight } from 'lucide-react';
 import { buildLocalizedPath } from '@/routes';
 import { featureLabels } from '@/data/properties';
-
-const propertyTypes = ['apartment', 'villa', 'commercial', 'duplex', 'office', 'land'];
+import { platformScope } from '@/config/platform';
 
 const PropertyForm = () => {
     const { id } = useParams();
@@ -35,7 +26,7 @@ const PropertyForm = () => {
         }
         return {
             title: '',
-            type: 'apartment',
+            type: platformScope.propertyType,
             price: '',
             location: '',
             area: '',
@@ -43,7 +34,7 @@ const PropertyForm = () => {
             bathrooms: '',
             area_size: '',
             description: '',
-            listing_type: 'sale',
+            listing_type: platformScope.listingType,
             featured: false,
             images: [] as string[],
             features: [] as string[],
@@ -72,14 +63,14 @@ const PropertyForm = () => {
                 if (error) {
                     toast({
                         title: 'خطأ',
-                        description: 'فشل تحميل بيانات العقار',
+                        description: 'فشل تحميل بيانات الفيلا',
                         variant: 'destructive',
                     });
                     navigate(buildLocalizedPath.adminListings());
                 } else if (data) {
                     setFormData({
                         title: data.title,
-                        type: data.type,
+                        type: platformScope.propertyType,
                         price: data.price.toString(),
                         location: data.location,
                         area: data.area,
@@ -87,7 +78,7 @@ const PropertyForm = () => {
                         bathrooms: data.bathrooms.toString(),
                         area_size: data.area_size.toString(),
                         description: data.description || '',
-                        listing_type: (data as any).listing_type || 'sale',
+                        listing_type: platformScope.listingType,
                         featured: data.featured,
                         images: data.images || [],
                         features: data.features || [],
@@ -139,7 +130,7 @@ const PropertyForm = () => {
 
         const propertyData = {
             title: formData.title,
-            type: formData.type,
+            type: platformScope.propertyType,
             price: parseFloat(formData.price),
             location: formData.location,
             area: formData.area,
@@ -147,13 +138,13 @@ const PropertyForm = () => {
             bathrooms: parseInt(formData.bathrooms) || 0,
             area_size: parseFloat(formData.area_size),
             description: formData.description,
-            listing_type: formData.listing_type,
+            listing_type: platformScope.listingType,
             featured: formData.featured,
             images: formData.images,
             features: formData.features,
-            installments_available: formData.installments_available,
-            installment_period: formData.installments_available ? formData.installment_period : null,
-            installment_value: formData.installments_available && formData.installment_value ? parseFloat(formData.installment_value) : null,
+            installments_available: false,
+            installment_period: null,
+            installment_value: null,
         };
 
         let error;
@@ -174,13 +165,13 @@ const PropertyForm = () => {
         if (error) {
             toast({
                 title: 'خطأ',
-                description: id ? 'فشل تحديث بيانات العقار' : 'فشل إنشاء عقار جديد',
+                description: id ? 'فشل تحديث بيانات الفيلا' : 'فشل إنشاء فيلا جديدة',
                 variant: 'destructive',
             });
         } else {
             toast({
                 title: 'تم بنجاح',
-                description: id ? 'تم تحديث بيانات العقار بنجاح' : 'تم إضافة العقار بنجاح',
+                description: id ? 'تم تحديث الفيلا بنجاح' : 'تم إضافة الفيلا بنجاح',
             });
             // Clear draft
             if (!id) localStorage.removeItem('property-form-draft');
@@ -204,72 +195,30 @@ const PropertyForm = () => {
                 </Button>
                 <div>
                     <h1 className="text-3xl font-display font-bold text-foreground">
-                        {id ? 'تعديل العقار' : 'إضافة عقار جديد'}
+                        {id ? 'تعديل الفيلا' : 'إضافة فيلا للإيجار'}
                     </h1>
                     <p className="text-muted-foreground">
-                        {id ? 'تعديل بيانات العقار الحالي' : 'أدخل بيانات العقار الجديد'}
+                        {id ? 'تعديل بيانات الفيلا الحالية' : 'أدخل بيانات فيلا جديدة — إيجار فقط'}
                     </p>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-lg border border-border shadow-sm">
-                <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="space-y-2">
-                        <Label htmlFor="title">عنوان العقار</Label>
-                        <Input
-                            id="title"
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            required
-                            placeholder="مثال: شقة فاخرة في المعادي"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="type">نوع العقار</Label>
-                        <Select
-                            value={formData.type}
-                            onValueChange={(value) => setFormData({ ...formData, type: value })}
-                        >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {propertyTypes.map((type) => (
-                                    <SelectItem key={type} value={type}>
-                                        {type === 'apartment' ? 'شقة' :
-                                            type === 'villa' ? 'فيلا' :
-                                                type === 'commercial' ? 'تجاري' :
-                                                    type === 'duplex' ? 'دوبلكس' :
-                                                        type === 'office' ? 'مكتب' :
-                                                            type === 'land' ? 'أرض' : type}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                <div className="space-y-2">
+                    <Label htmlFor="title">عنوان الفيلا</Label>
+                    <Input
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        required
+                        placeholder="مثال: فيلا فاخرة مع مسبح خاص"
+                    />
+                    <p className="text-xs text-muted-foreground">نوع الإعلان: فيلا — إيجار فقط</p>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
-                        <Label htmlFor="listing_type">نوع العرض</Label>
-                        <Select
-                            value={formData.listing_type}
-                            onValueChange={(value) => setFormData({ ...formData, listing_type: value })}
-                        >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="sale">بيع (تمليك)</SelectItem>
-                                <SelectItem value="rent">إيجار</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="space-y-2">
-                        <Label htmlFor="price">السعر</Label>
+                        <Label htmlFor="price">السعر (لليلة)</Label>
                         <Input
                             id="price"
                             type="number"
@@ -290,48 +239,6 @@ const PropertyForm = () => {
                             min="0"
                         />
                     </div>
-                </div>
-
-                <div className="bg-muted/30 p-4 rounded-lg border border-border space-y-4">
-                    <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
-                        <div className="space-y-0.5">
-                            <Label htmlFor="installments_available" className="text-base">متاح للتقسيط</Label>
-                            <p className="text-sm text-muted-foreground">
-                                فعل هذا الخيار إذا كان العقار متاحاً بنظام التقسيط
-                            </p>
-                        </div>
-                        <Switch
-                            id="installments_available"
-                            checked={formData.installments_available}
-                            onCheckedChange={(checked) => setFormData({ ...formData, installments_available: checked })}
-                            dir="ltr"
-                        />
-                    </div>
-
-                    {formData.installments_available && (
-                        <div className="grid gap-6 sm:grid-cols-2 animate-in fade-in slide-in-from-top-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="installment_period">مدة التقسيط</Label>
-                                <Input
-                                    id="installment_period"
-                                    value={formData.installment_period}
-                                    onChange={(e) => setFormData({ ...formData, installment_period: e.target.value })}
-                                    placeholder="مثال: 12 شهر، 3 سنوات"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="installment_value">قيمة القسط (اختياري)</Label>
-                                <Input
-                                    id="installment_value"
-                                    type="number"
-                                    value={formData.installment_value}
-                                    onChange={(e) => setFormData({ ...formData, installment_value: e.target.value })}
-                                    min="0"
-                                    placeholder="0"
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
@@ -381,18 +288,18 @@ const PropertyForm = () => {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="description">وصف العقار</Label>
+                    <Label htmlFor="description">وصف الفيلا</Label>
                     <Textarea
                         id="description"
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         rows={6}
-                        placeholder="اكتب وصفاً مفصلاً للعقار..."
+                        placeholder="اكتب وصفاً مفصلاً للفيلا..."
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="images">صور العقار</Label>
+                    <Label htmlFor="images">صور الفيلا</Label>
                     <div className="flex flex-col gap-4">
                         <Input
                             id="images"
@@ -483,7 +390,7 @@ const PropertyForm = () => {
                         onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                         className="h-4 w-4 accent-primary"
                     />
-                    <Label htmlFor="featured" className="cursor-pointer">تمييز هذا العقار (يظهر في الصفحة الرئيسية)</Label>
+                    <Label htmlFor="featured" className="cursor-pointer">تمييز هذه الفيلا (تظهر في الصفحة الرئيسية)</Label>
                 </div>
 
                 <div className="flex justify-end gap-4 pt-4 border-t border-border">
@@ -495,7 +402,7 @@ const PropertyForm = () => {
                         إلغاء
                     </Button>
                     <Button type="submit" disabled={uploading}>
-                        {uploading ? 'جاري الحفظ...' : (id ? 'تحديث البيانات' : 'حفظ العقار')}
+                        {uploading ? 'جاري الحفظ...' : (id ? 'تحديث الفيلا' : 'حفظ الفيلا')}
                     </Button>
                 </div>
             </form>

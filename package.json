@@ -9,7 +9,13 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:sitemap": "node scripts/generate-sitemap.js"
+    "build:sitemap": "node scripts/generate-sitemap.js",
+    "supabase:link": "supabase link --project-ref idnehwkrufbgfmlkexvi",
+    "supabase:push": "supabase db push",
+    "supabase:types": "supabase gen types typescript --project-id idnehwkrufbgfmlkexvi --schema public > src/integrations/supabase/types.ts",
+    "supabase:bootstrap-sql": "node scripts/apply-migrations-bundle.js",
+    "supabase:fresh-bootstrap": "node scripts/apply-migrations-bundle.js",
+    "admin:create": "node scripts/create-admin-user.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

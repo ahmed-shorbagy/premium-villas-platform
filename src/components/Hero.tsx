@@ -1,164 +1,123 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, MapPin, Banknote, BedDouble, PlusCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { buildLocalizedPath } from '@/routes';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import heroImage from '@/assets/hero-cairo.jpg';
-import { useBanners } from '@/hooks/useBanners';
-import BannerCarousel from '@/components/BannerCarousel';
-import { siteConfig } from '@/config';
-import { ShimaLogo } from '@/components/brand/ShimaLogo';
+import { Search, MapPin, Banknote, BedDouble, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { siteConfig } from "@/config";
+import { ShimaLogo } from "@/components/brand/ShimaLogo";
+import HeroBackground from "@/components/HeroBackground";
 
 interface HeroProps {
-  onSearch: (filters: { location: string; maxPrice: string; bedrooms: string; listingType: string }) => void;
-  initialValues?: { location: string; maxPrice: string; bedrooms: string; listingType: string };
+  onSearch: (filters: { location: string; maxPrice: string; bedrooms: string }) => void;
+  initialValues?: { location: string; maxPrice: string; bedrooms: string };
 }
 
 const Hero = ({ onSearch, initialValues }: HeroProps) => {
-  const [listingType, setListingType] = useState(initialValues?.listingType || 'all');
-  const { banners } = useBanners();
-  const activeBanners = banners.filter(b => b.is_active);
-
-  useEffect(() => {
-    if (initialValues?.listingType) {
-      setListingType(initialValues.listingType);
-    }
-  }, [initialValues?.listingType]);
-
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const location = formData.get('location') as string || '';
-    const maxPrice = formData.get('maxPrice') as string || '';
-    const bedrooms = formData.get('bedrooms') as string || '';
-    onSearch({ location, maxPrice, bedrooms, listingType });
+    onSearch({
+      location: (formData.get("location") as string) || "",
+      maxPrice: (formData.get("maxPrice") as string) || "",
+      bedrooms: (formData.get("bedrooms") as string) || "",
+    });
   };
 
   return (
-    <section className="flex flex-col w-full">
-      {/* Top Banner Section */}
-      <div className="relative w-[calc(100%-2rem)] max-w-7xl mx-auto h-[140px] md:h-[280px] lg:h-[350px] overflow-hidden shrink-0 rounded-2xl mt-4">
-        {activeBanners.length > 0 ? (
-          <BannerCarousel banners={activeBanners} />
-        ) : (
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${heroImage})` }}
-          >
-            <div className="absolute inset-0 bg-black/10" />
-          </div>
-        )}
-      </div>
+    <section className="relative min-h-[88vh] overflow-hidden">
+      <HeroBackground />
 
-      {/* Content Section */}
-      <div className="container flex flex-col items-center justify-center px-4 py-12 text-center">
-        <div
-          className="glass-panel w-full max-w-4xl animate-fade-in rounded-3xl px-5 py-10 md:px-12 md:py-14"
-          style={{ animationDelay: "0.05s" }}
-        >
-          <span className="mb-5 inline-block rounded-full border border-gold/20 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase">
-            {siteConfig.brand.name}
-          </span>
-          <div className="mb-4 flex justify-center animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            <ShimaLogo variant="wordmark" size="lg" />
-          </div>
-          <p className="mb-2 font-display text-xl text-foreground/90 md:text-2xl" style={{ animationDelay: "0.15s" }}>
-            {siteConfig.brand.taglineAr}
-          </p>
-          <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-base text-muted-foreground md:text-lg" style={{ animationDelay: "0.2s" }}>
-            {siteConfig.seo.homeDescriptionAr}
-          </p>
+      <div className="container relative z-10 flex min-h-[88vh] flex-col justify-center px-4 py-20 lg:py-28">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="text-center lg:text-start">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.2em] text-white/90 backdrop-blur-md">
+              <Sparkles className="h-3.5 w-3.5 text-gold-light" />
+              إيجار فلل فاخرة
+            </div>
 
-        {/* Search Bar */}
-        <div className="w-full animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          {/* Listing Type Tabs */}
-          <div className="mb-4 flex gap-2 justify-center">
-            <button
-              onClick={() => setListingType('all')}
-              className={`rounded-lg px-6 py-2 text-sm font-semibold transition-all ${listingType === 'all' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
-            >
-              الكل
-            </button>
-            <button
-              onClick={() => setListingType('sale')}
-              className={`rounded-lg px-6 py-2 text-sm font-semibold transition-all ${listingType === 'sale' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
-            >
-              تمليك
-            </button>
-            <button
-              onClick={() => setListingType('rent')}
-              className={`rounded-lg px-6 py-2 text-sm font-semibold transition-all ${listingType === 'rent' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
-            >
-              إيجار
-            </button>
+            <div className="mb-5 flex justify-center lg:justify-start">
+              <ShimaLogo variant="wordmark" size="lg" inverse />
+            </div>
+
+            <h1 className="mb-4 font-display text-3xl font-medium leading-tight text-white sm:text-4xl md:text-5xl">
+              {siteConfig.brand.taglineAr}
+            </h1>
+            <p className="mx-auto max-w-md text-base leading-relaxed text-white/75 lg:mx-0 lg:text-lg">
+              {siteConfig.seo.homeDescriptionAr}
+            </p>
+
+            <div className="mt-8 hidden gap-6 lg:flex">
+              {[
+                { value: "50+", label: "فيلا للإيجار" },
+                { value: "24/7", label: "دعم الحجز" },
+                { value: "100%", label: "تجربة مميزة" },
+              ].map((stat) => (
+                <div key={stat.label} className="text-start">
+                  <div className="font-display text-2xl font-semibold text-gold-light">{stat.value}</div>
+                  <div className="text-xs text-white/60">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <form
-            onSubmit={handleSearch}
-            className="w-full rounded-2xl bg-card p-4 shadow-lg border border-border sm:p-6"
-          >
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="glass-panel animate-fade-in-up rounded-[1.75rem] p-6 shadow-float md:p-8">
+            <h2 className="mb-1 font-display text-xl font-semibold text-foreground">ابحث عن فيلتك</h2>
+            <p className="mb-6 text-sm text-muted-foreground">فلل للإيجار فقط — حجز سريع عبر واتساب</p>
+
+            <form onSubmit={handleSearch} className="space-y-4">
               <div className="relative">
-                <MapPin className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <MapPin className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand" />
                 <Input
                   name="location"
-                  placeholder="الموقع"
-                  className="ps-10 bg-secondary border-0"
+                  placeholder="المدينة أو المنطقة"
+                  className="shima-input ps-10"
                   defaultValue={initialValues?.location}
                 />
               </div>
 
-              <div className="relative">
-                <Banknote className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Select name="maxPrice" defaultValue={initialValues?.maxPrice}>
-                  <SelectTrigger className="ps-10 bg-secondary border-0">
-                    <SelectValue placeholder="أقصى سعر" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5000000">حتى 5 مليون</SelectItem>
-                    <SelectItem value="10000000">حتى 10 مليون</SelectItem>
-                    <SelectItem value="20000000">حتى 20 مليون</SelectItem>
-                    <SelectItem value="50000000">حتى 50 مليون</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="relative">
+                  <Banknote className="absolute start-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-brand" />
+                  <Select name="maxPrice" defaultValue={initialValues?.maxPrice}>
+                    <SelectTrigger className="shima-input ps-10">
+                      <SelectValue placeholder="الميزانية / الليلة" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3000">حتى 3,000</SelectItem>
+                      <SelectItem value="5000">حتى 5,000</SelectItem>
+                      <SelectItem value="10000">حتى 10,000</SelectItem>
+                      <SelectItem value="20000">حتى 20,000+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="relative">
+                  <BedDouble className="absolute start-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-brand" />
+                  <Select name="bedrooms" defaultValue={initialValues?.bedrooms}>
+                    <SelectTrigger className="shima-input ps-10">
+                      <SelectValue placeholder="غرف النوم" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2">2+ غرف</SelectItem>
+                      <SelectItem value="3">3+ غرف</SelectItem>
+                      <SelectItem value="4">4+ غرف</SelectItem>
+                      <SelectItem value="5">5+ غرف</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="relative">
-                <BedDouble className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Select name="bedrooms" defaultValue={initialValues?.bedrooms}>
-                  <SelectTrigger className="ps-10 bg-secondary border-0">
-                    <SelectValue placeholder="غرف النوم" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">غرفة نوم+</SelectItem>
-                    <SelectItem value="2">غرفتين نوم+</SelectItem>
-                    <SelectItem value="3">3 غرف نوم+</SelectItem>
-                    <SelectItem value="4">4 غرف نوم+</SelectItem>
-                    <SelectItem value="5">5 غرف نوم+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button type="submit" variant="gold" size="lg" className="gap-2 w-full">
+              <Button type="submit" variant="gold" size="lg" className="w-full gap-2">
                 <Search className="h-4 w-4" />
-                بحث
+                استكشف الفلل
               </Button>
-            </div>
-          </form>
-        </div>
-
-        {/* Add Property CTA */}
-        <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <p className="text-muted-foreground mb-4">هل لديك عقار تريد بيعه أو تأجيره؟</p>
-          <Link to={buildLocalizedPath.submitListing()}>
-            <Button variant="outline" size="lg" className="gap-2 border-gold text-gold hover:bg-gold hover:text-white transition-colors">
-              <PlusCircle className="h-5 w-5" />
-              اضف عقارك معنا
-            </Button>
-          </Link>
-        </div>
+            </form>
+          </div>
         </div>
       </div>
     </section>

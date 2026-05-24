@@ -210,27 +210,14 @@ export const formatPrice = (price: number): string => {
   }).format(price) + ' جنيه';
 };
 
-export const propertyTypes = [
-  { value: 'all', label: 'جميع العقارات' },
-  { value: 'apartment', label: 'شقق' },
-  { value: 'villa', label: 'فلل' },
-  { value: 'commercial', label: 'تجاري' },
-  { value: 'duplex', label: 'دوبلكس' },
-  { value: 'office', label: 'مكاتب' },
-  { value: 'land', label: 'أراضي' },
-] as const;
+/** Villas for rent only — kept for label lookups */
+export const propertyTypes = [{ value: 'villa', label: 'فلل' }] as const;
 
 export const propertyTypeLabels: Record<string, string> = {
-  apartment: 'شقة',
   villa: 'فيلا',
-  commercial: 'تجاري',
-  duplex: 'دوبلكس',
-  office: 'مكتب',
-  land: 'أرض',
 };
 
 export const listingTypeLabels: Record<string, string> = {
-  sale: 'بيع',
   rent: 'إيجار',
 };
 

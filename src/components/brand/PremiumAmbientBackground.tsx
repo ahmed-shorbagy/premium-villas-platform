@@ -49,8 +49,8 @@ export function PremiumAmbientBackground({ intensity = "full" }: PremiumAmbientB
       {/* Readability veil */}
       <div
         className={cn(
-          "absolute inset-0 bg-gradient-to-b from-background/40 via-background/55 to-background/85",
-          isWinter && "from-background/60 via-background/75 to-background/95",
+          "absolute inset-0 bg-gradient-to-b from-background/25 via-background/45 to-background/90",
+          isWinter && "from-background/50 via-background/70 to-background/95",
         )}
       />
 

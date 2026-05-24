@@ -2,62 +2,47 @@ import { Link } from "react-router-dom";
 import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildLocalizedPath } from "@/routes";
-import { siteConfig } from "@/config";
 import { ShimaLogo } from "@/components/brand/ShimaLogo";
 import { HypeThemeToggle } from "@/components/theme/HypeThemeToggle";
 
+const navLinkClass =
+  "relative text-sm font-medium text-muted-foreground transition-colors hover:text-foreground after:absolute after:-bottom-1 after:start-0 after:h-px after:w-0 after:bg-brand after:transition-all hover:after:w-full";
+
 const Header = () => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-glass-border bg-glass/85 backdrop-blur-glass supports-[backdrop-filter]:bg-glass/75 transition-colors duration-300">
-      <div className="container flex h-[4.25rem] items-center justify-between">
+    <header className="sticky top-0 z-50 w-full px-3 pt-3 md:px-4 md:pt-4">
+      <div className="shima-float-header flex h-14 items-center justify-between px-4 md:h-[3.75rem] md:px-6">
         <Link
           to={buildLocalizedPath.home()}
-          className="group flex items-center gap-3 transition-opacity hover:opacity-90"
+          className="group flex items-center gap-2.5 transition-opacity hover:opacity-90"
         >
-          <ShimaLogo variant="icon" size="md" className="transition-transform duration-300 group-hover:scale-105" />
-          <div className="hidden flex-col leading-tight sm:flex">
+          <ShimaLogo
+            variant="icon"
+            size="md"
+            className="transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="hidden leading-tight sm:block">
             <ShimaLogo variant="wordmark" size="md" />
-            <span className="mt-0.5 text-[10px] font-medium tracking-wide text-muted-foreground">
-              {siteConfig.brand.taglineAr}
-            </span>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
-          <Link
-            to={buildLocalizedPath.home()}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand"
-          >
+        <nav className="hidden items-center gap-7 lg:flex">
+          <Link to={buildLocalizedPath.home()} className={navLinkClass}>
             الرئيسية
           </Link>
-          <Link
-            to={buildLocalizedPath.propertyType("فلل")}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand"
-          >
-            فلل
-          </Link>
-          <Link
-            to={buildLocalizedPath.propertyType("شقق")}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand"
-          >
-            شقق
-          </Link>
-          <Link
-            to={buildLocalizedPath.submitListing()}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand"
-          >
-            أضف إعلانك
-          </Link>
+          <a href="#villas" className={navLinkClass}>
+            الفلل
+          </a>
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
           <HypeThemeToggle compact className="hidden sm:inline-flex" />
-          <Link to={buildLocalizedPath.submitListing()}>
-            <Button variant="gold" size="default" className="gap-2 premium-hover shadow-brand">
+          <a href="#villas">
+            <Button variant="gold" size="sm" className="gap-1.5 shadow-brand md:size-default">
               <Phone className="h-4 w-4" />
-              <span className="hidden sm:inline">احجز الآن</span>
+              <span className="hidden sm:inline">احجز فيلا</span>
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
     </header>

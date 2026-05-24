@@ -11,13 +11,12 @@ interface HypeThemeToggleProps {
 
 export function HypeThemeToggle({ className, compact = false }: HypeThemeToggleProps) {
   const { season, setSeason } = useHype();
-
   const options: HypeSeason[] = ["summer", "winter"];
 
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-0.5 rounded-full border border-glass-border bg-glass p-0.5 backdrop-blur-md transition-colors duration-300",
+        "inline-flex items-center gap-0.5 rounded-full border border-glass-border bg-card/50 p-0.5 backdrop-blur-md",
         className,
       )}
       role="group"
@@ -36,10 +35,10 @@ export function HypeThemeToggle({ className, compact = false }: HypeThemeToggleP
             aria-pressed={active}
             title={meta.descriptionAr}
             className={cn(
-              "relative flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out",
+              "relative flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-300",
               active
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                ? "bg-gradient-brand text-primary-foreground shadow-brand"
+                : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
               compact && "px-2",
             )}
           >

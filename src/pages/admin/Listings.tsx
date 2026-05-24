@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { buildLocalizedPath } from '@/routes';
+import { platformScope } from '@/config/platform';
 
 interface Property {
   id: string;
@@ -43,6 +44,8 @@ const Listings = () => {
     const { data, error } = await supabase
       .from('properties')
       .select('*')
+      .eq('type', platformScope.propertyType)
+      .eq('listing_type', platformScope.listingType)
       .order('created_at', { ascending: false });
 
     if (!error && data) {
@@ -56,18 +59,18 @@ const Listings = () => {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد أنك تريد حذف هذا العقار؟')) return;
+    if (!confirm('هل أنت متأكد أنك تريد حذف هذه الفيلا؟')) return;
 
     const { error } = await supabase.from('properties').delete().eq('id', id);
 
     if (error) {
       toast({
         title: 'خطأ',
-        description: 'فشل حذف العقار',
+        description: 'فشل حذف الفيلا',
         variant: 'destructive',
       });
     } else {
-      toast({ title: 'تم بنجاح', description: 'تم حذف العقار بنجاح' });
+      toast({ title: 'تم بنجاح', description: 'تم حذف الفيلا بنجاح' });
       fetchProperties();
     }
   };
@@ -80,8 +83,8 @@ const Listings = () => {
     <div className="p-4 md:p-8">
       <div className="mb-8 flex flex-col gap-4 items-start sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">إدارة العقارات</h1>
-          <p className="text-muted-foreground">إضافة، تعديل أو حذف إعلانات العقارات</p>
+          <h1 className="text-3xl font-display font-bold text-foreground">إدارة الفلل للإيجار</h1>
+          <p className="text-muted-foreground">إضافة، تعديل أو حذف فلل الإيجار</p>
         </div>
         <div className="flex w-full sm:w-auto gap-2">
           <Input
@@ -104,9 +107,7 @@ const Listings = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="whitespace-nowrap">العنوان</TableHead>
-                <TableHead className="whitespace-nowrap">النوع</TableHead>
-                <TableHead className="whitespace-nowrap">العرض</TableHead>
-                <TableHead className="whitespace-nowrap">السعر</TableHead>
+                <TableHead className="whitespace-nowrap">السعر / ليلة</TableHead>
                 <TableHead className="whitespace-nowrap">الموقع</TableHead>
                 <TableHead className="text-right whitespace-nowrap">الإجراءات</TableHead>
               </TableRow>
@@ -114,14 +115,14 @@ const Listings = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={4} className="text-center py-8">
                     جاري التحميل...
                   </TableCell>
                 </TableRow>
               ) : properties.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    لا توجد عقارات حالياً. أضف أول عقار الآن!
+                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                    لا توجد فلل حالياً. أضف أول فيلا الآن!
                   </TableCell>
                 </TableRow>
               ) : (
@@ -133,12 +134,6 @@ const Listings = () => {
                   .map((property) => (
                     <TableRow key={property.id}>
                       <TableCell className="font-medium whitespace-nowrap">{property.title}</TableCell>
-                      <TableCell className="capitalize whitespace-nowrap">{property.type}</TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <span className={`px-2 py-1 rounded-full text-xs ${property.listing_type === 'sale' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
-                          {property.listing_type === 'sale' ? 'بيع' : 'إيجار'}
-                        </span>
-                      </TableCell>
                       <TableCell className="whitespace-nowrap">{formatPrice(property.price)}</TableCell>
                       <TableCell className="whitespace-nowrap">{property.location}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">

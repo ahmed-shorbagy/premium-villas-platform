@@ -24,7 +24,7 @@ const LOCALIZED_ROUTES: Record<SupportedLocale, LocaleRoutes> = {
     submitListing: "/أضف-إعلانك",
     adminLogin: "/لوحة-التحكم/تسجيل-الدخول",
     adminDashboard: "/لوحة-التحكم",
-    adminListings: "/لوحة-التحكم/العقارات",
+    adminListings: "/لوحة-التحكم/الفلل",
     adminSettings: "/لوحة-التحكم/الإعدادات",
     adminBanners: "/لوحة-التحكم/البنرات",
     adminListingRequests: "/لوحة-التحكم/طلبات-الإعلانات",

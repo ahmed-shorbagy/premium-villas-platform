@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Building2, MousePointer, Users, Activity } from 'lucide-react';
+import { platformScope } from '@/config/platform';
 
 const Dashboard = () => {
   const [propertyCount, setPropertyCount] = useState(0);
@@ -16,7 +17,9 @@ const Dashboard = () => {
       // Fetch property count
       const { count: propCount } = await supabase
         .from('properties')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
+        .eq('type', platformScope.propertyType)
+        .eq('listing_type', platformScope.listingType);
 
       // Fetch WhatsApp clicks
       const { count: clickCount } = await supabase
@@ -63,7 +66,7 @@ const Dashboard = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              إجمالي عدد العقارات
+              فلل للإيجار
             </CardTitle>
             <Building2 className="h-5 w-5 text-primary" />
           </CardHeader>
@@ -72,7 +75,7 @@ const Dashboard = () => {
               {loading ? '...' : propertyCount}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              عدد العقارات النشطة في النظام
+              عدد الفلل المتاحة للإيجار
             </p>
           </CardContent>
         </Card>

@@ -7,18 +7,18 @@ export const siteConfig = {
     nameAr: "شيما AK",
     nameEn: "Shima AK",
     monogram: "SA",
-    taglineAr: "إقامة فاخرة في أرقى الفلل",
-    taglineEn: "Luxury villas, curated for you",
+    taglineAr: "إيجار فلل فاخرة في أرقى الوجهات",
+    taglineEn: "Luxury villa rentals only",
     defaultLocale: "ar" as const,
     direction: "rtl" as const,
   },
   seo: {
-    defaultTitleAr: "Shima AK — فلل فاخرة",
+    defaultTitleAr: "Shima AK — إيجار فلل فاخرة",
     defaultDescriptionAr:
-      "Shima AK — اكتشف فللاً فاخرة للإيجار. حجز سهل، مواصفات واضحة، وتواصل مباشر لتأكيد إقامتك.",
+      "Shima AK — حجز فلل فاخرة للإيجار فقط. تصفية ذكية، أسعار واضحة، وتواصل مباشر لتأكيد إقامتك.",
     homeDescriptionAr:
-      "منصة Shima AK لحجز الفلل الفاخرة — تجربة إقامة استثنائية، تصفية ذكية، وأسعار شفافة.",
-    keywordsAr: "Shima AK, فلل, إيجار فاخر, حجز فلل, إقامة فاخرة",
+      "اكتشف فللاً فاخرة للإيجار — منصة Shima AK مخصصة حصرياً لإيجار الفلل.",
+    keywordsAr: "Shima AK, إيجار فلل, فلل فاخرة, حجز فيلا, إقامة فاخرة",
   },
   assets: {
     logoSrc: "/brand/shima-ak-logo.svg",
@@ -26,6 +26,9 @@ export const siteConfig = {
     favicon: "/brand/shima-ak-icon.svg",
     ogImage: "/brand/shima-ak-og.svg",
     ambientBg: "/brand/shima-ambient-loop.svg",
+    /** Set after adding public/hero/hero-loop.mp4 (and optional .webm) — ~3s seamless loop */
+    heroVideoMp4: "",
+    heroVideoWebm: "",
   },
   animation: {
     ambientCycleSeconds: 3,

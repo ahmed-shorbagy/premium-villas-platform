@@ -2,14 +2,14 @@ import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
   // Check for environment variables
-  if (!process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_ANON_KEY) {
+  const supabaseKey =
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+  if (!process.env.VITE_SUPABASE_URL || !supabaseKey) {
     return res.status(500).json({ error: 'Missing Supabase environment variables' });
   }
 
-  const supabase = createClient(
-    process.env.VITE_SUPABASE_URL,
-    process.env.VITE_SUPABASE_ANON_KEY
-  );
+  const supabase = createClient(process.env.VITE_SUPABASE_URL, supabaseKey);
 
   const SITE_URL = (process.env.VITE_SITE_URL || '').replace(/\/$/, '');
   if (!SITE_URL) {

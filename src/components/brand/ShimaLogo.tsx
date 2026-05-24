@@ -5,7 +5,9 @@ interface ShimaLogoProps {
   variant?: "full" | "icon" | "wordmark";
   size?: "sm" | "md" | "lg";
   className?: string;
+  /** Light text for dark backgrounds (footer, hero) */
   light?: boolean;
+  inverse?: boolean;
 }
 
 const heights = {
@@ -19,6 +21,7 @@ export function ShimaLogo({
   size = "md",
   className,
   light = false,
+  inverse = false,
 }: ShimaLogoProps) {
   const { name } = siteConfig.brand;
 
@@ -53,7 +56,7 @@ export function ShimaLogo({
       <span
         className={cn(
           "font-display font-medium tracking-tight",
-          light ? "text-primary-foreground" : "text-foreground",
+          inverse || light ? "text-white" : "text-foreground",
         )}
       >
         Shima

@@ -1,27 +1,25 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { LayoutDashboard, Home, LogOut, Menu, Image as ImageIcon, ClipboardList } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { buildLocalizedPath } from '@/routes';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useState } from 'react';
-import { ShimaLogo } from '@/components/brand/ShimaLogo';
-import { getAdminTitle } from '@/lib/brand';
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { LayoutDashboard, Home, LogOut, Menu, Image as ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { buildLocalizedPath } from "@/routes";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
+import { ShimaLogo } from "@/components/brand/ShimaLogo";
+import { getAdminTitle } from "@/lib/brand";
 
 const navRoutes = {
   dashboard: buildLocalizedPath.adminDashboard(),
   listings: buildLocalizedPath.adminListings(),
   adminBanners: buildLocalizedPath.adminBanners(),
-  listingRequests: buildLocalizedPath.adminListingRequests(),
   login: buildLocalizedPath.adminLogin(),
 };
 
 export const navItems = [
-  { title: 'لوحة التحكم', icon: LayoutDashboard, path: navRoutes.dashboard },
-  { title: 'العقارات', icon: Home, path: navRoutes.listings },
-  { title: 'طلبات الإعلانات', icon: ClipboardList, path: navRoutes.listingRequests },
-  { title: 'البنرات', icon: ImageIcon, path: navRoutes.adminBanners },
+  { title: "لوحة التحكم", icon: LayoutDashboard, path: navRoutes.dashboard },
+  { title: "الفلل للإيجار", icon: Home, path: navRoutes.listings },
+  { title: "البنرات", icon: ImageIcon, path: navRoutes.adminBanners },
 ];
 
 const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
@@ -36,13 +34,11 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
 
   return (
     <div className="flex h-full flex-col bg-card">
-      {/* Header */}
       <div className="flex h-16 items-center gap-2 border-b border-border px-6">
         <ShimaLogo variant="icon" size="sm" />
         <span className="font-display text-lg font-semibold">{getAdminTitle()}</span>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => (
           <NavLink
@@ -52,10 +48,10 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )
             }
           >
@@ -65,7 +61,6 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
         ))}
       </nav>
 
-      {/* Footer */}
       <div className="border-t border-border p-4">
         <Button
           variant="ghost"
@@ -91,19 +86,17 @@ export const MobileSidebar = () => {
           <span className="sr-only">فتح القائمة</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="p-0 w-72">
+      <SheetContent side="right" className="w-72 p-0">
         <AdminSidebarContent onNavigate={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   );
 };
 
-const AdminSidebar = () => {
-  return (
-    <aside className="h-screen w-64 flex-col border-l border-border bg-card">
-      <AdminSidebarContent />
-    </aside>
-  );
-};
+const AdminSidebar = () => (
+  <aside className="flex h-screen w-64 flex-col border-l border-border bg-card">
+    <AdminSidebarContent />
+  </aside>
+);
 
 export default AdminSidebar;

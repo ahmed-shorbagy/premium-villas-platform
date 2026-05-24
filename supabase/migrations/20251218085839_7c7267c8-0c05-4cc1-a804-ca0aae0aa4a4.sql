@@ -115,11 +115,14 @@ INSERT INTO public.site_settings (key, value) VALUES
 ('banner', '{"image_url": "", "enabled": true}'),
 ('google_ads', '{"enabled": true}');
 
--- Create storage bucket for property images
-INSERT INTO storage.buckets (id, name, public) VALUES ('property-images', 'property-images', true);
+-- Create storage buckets (idempotent — safe if buckets already exist in Dashboard)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('property-images', 'property-images', true)
+ON CONFLICT (id) DO NOTHING;
 
--- Create storage bucket for banner images
-INSERT INTO storage.buckets (id, name, public) VALUES ('banners', 'banners', true);
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('banners', 'banners', true)
+ON CONFLICT (id) DO NOTHING;
 
 -- Storage policies for property-images
 CREATE POLICY "Anyone can view property images" ON storage.objects

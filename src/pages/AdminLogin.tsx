@@ -61,7 +61,7 @@ const AdminLogin = () => {
             <Building2 className="h-7 w-7 text-primary" />
           </div>
           <CardTitle className="text-2xl font-display">لوحة تحكم الإدارة</CardTitle>
-          <CardDescription>قم بتسجيل الدخول لإدارة العقارات</CardDescription>
+          <CardDescription>قم بتسجيل الدخول لإدارة فلل الإيجار</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
