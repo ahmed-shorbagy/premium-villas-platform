@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Maximize, Star, ArrowUpLeft } from "lucide-react";
+import { MapPin, BedDouble, Bath, Star, ArrowUpLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Property, formatPrice, propertyTypeLabels } from "@/data/properties";
 import { groupTypeLabels } from "@/config";
@@ -91,10 +91,6 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
           <span className="flex items-center gap-1.5">
             <Bath className="h-4 w-4 text-brand/70" />
             {property.bathrooms}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Maximize className="h-4 w-4 text-brand/70" />
-            {property.areaSize} م²
           </span>
         </div>
       </div>

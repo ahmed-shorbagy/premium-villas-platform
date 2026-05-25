@@ -296,16 +296,8 @@ const ListingRequests = () => {
                                             <p className="font-bold text-gold">{formatPrice(selectedRequest.price)}</p>
                                         </div>
                                         <div>
-                                            <span className="text-sm text-muted-foreground">المساحة</span>
-                                            <p className="font-medium">{selectedRequest.area_size} م²</p>
-                                        </div>
-                                        <div>
                                             <span className="text-sm text-muted-foreground">الموقع</span>
                                             <p className="font-medium">{selectedRequest.location}</p>
-                                        </div>
-                                        <div>
-                                            <span className="text-sm text-muted-foreground">المنطقة</span>
-                                            <p className="font-medium">{selectedRequest.area}</p>
                                         </div>
                                         <div>
                                             <span className="text-sm text-muted-foreground">غرف النوم</span>

@@ -9,8 +9,6 @@ export interface ListingRequest {
     listing_type: 'sale' | 'rent';
     price: number;
     location: string;
-    area: string;
-    area_size: number;
     bedrooms: number;
     bathrooms: number;
     features: string[] | null;
@@ -40,8 +38,6 @@ export interface ListingRequestInput {
     listing_type: 'sale' | 'rent';
     price: number;
     location: string;
-    area: string;
-    area_size: number;
     bedrooms: number;
     bathrooms: number;
     features?: string[] | null;

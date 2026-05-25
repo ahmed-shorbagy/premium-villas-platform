@@ -22,10 +22,8 @@ interface Property {
   type: string;
   price: number;
   location: string;
-  area: string;
   bedrooms: number;
   bathrooms: number;
-  area_size: number;
   description: string | null;
   images: string[];
   featured: boolean;

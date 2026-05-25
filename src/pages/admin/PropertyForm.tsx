@@ -37,10 +37,8 @@ const PropertyForm = () => {
             type: platformScope.propertyType,
             price: '',
             location: '',
-            area: '',
             bedrooms: '',
             bathrooms: '',
-            area_size: '',
             description: '',
             listing_type: platformScope.listingType,
             featured: false,
@@ -82,10 +80,8 @@ const PropertyForm = () => {
                         type: platformScope.propertyType,
                         price: data.price.toString(),
                         location: data.location,
-                        area: data.area,
                         bedrooms: data.bedrooms.toString(),
                         bathrooms: data.bathrooms.toString(),
-                        area_size: data.area_size.toString(),
                         description: data.description || '',
                         listing_type: platformScope.listingType,
                         featured: data.featured,
@@ -143,10 +139,10 @@ const PropertyForm = () => {
             type: platformScope.propertyType,
             price: parseFloat(formData.price),
             location: formData.location,
-            area: formData.area,
+            area: '',
             bedrooms: parseInt(formData.bedrooms) || 0,
             bathrooms: parseInt(formData.bathrooms) || 0,
-            area_size: parseFloat(formData.area_size),
+            area_size: 0,
             description: formData.description,
             listing_type: platformScope.listingType,
             featured: formData.featured,
@@ -227,29 +223,16 @@ const PropertyForm = () => {
                     <p className="text-xs text-muted-foreground">نوع الإعلان: فيلا — إيجار فقط</p>
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="space-y-2">
-                        <Label htmlFor="price">السعر (لليلة)</Label>
-                        <Input
-                            id="price"
-                            type="number"
-                            value={formData.price}
-                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                            required
-                            min="0"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="area_size">المساحة (م²)</Label>
-                        <Input
-                            id="area_size"
-                            type="number"
-                            value={formData.area_size}
-                            onChange={(e) => setFormData({ ...formData, area_size: e.target.value })}
-                            required
-                            min="0"
-                        />
-                    </div>
+                <div className="space-y-2">
+                    <Label htmlFor="price">السعر (لليلة)</Label>
+                    <Input
+                        id="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                        required
+                        min="0"
+                    />
                 </div>
 
                 <div className="space-y-2">
@@ -271,27 +254,15 @@ const PropertyForm = () => {
                     </Select>
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="space-y-2">
-                        <Label htmlFor="location">الموقع</Label>
-                        <Input
-                            id="location"
-                            value={formData.location}
-                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                            required
-                            placeholder="مثال: الرياض، حي العليا"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="area">المنطقة</Label>
-                        <Input
-                            id="area"
-                            value={formData.area}
-                            onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                            required
-                            placeholder="مثال: دبي"
-                        />
-                    </div>
+                <div className="space-y-2">
+                    <Label htmlFor="location">الموقع</Label>
+                    <Input
+                        id="location"
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        required
+                        placeholder="مثال: الرياض، حي العليا"
+                    />
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">

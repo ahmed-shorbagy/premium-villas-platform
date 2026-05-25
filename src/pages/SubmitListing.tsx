@@ -46,13 +46,6 @@ const formSchema = z.object({
     location: z.string()
         .min(3, 'الموقع يجب أن يكون 3 أحرف على الأقل')
         .max(100, 'الموقع يجب ألا يتجاوز 100 حرف'),
-    area: z.string()
-        .min(2, 'المنطقة يجب أن تكون حرفين على الأقل')
-        .max(50, 'المنطقة يجب ألا تتجاوز 50 حرف'),
-    area_size: z.string()
-        .min(1, 'يرجى إدخال المساحة')
-        .refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'المساحة يجب أن تكون رقماً موجباً')
-        .transform(v => Number(v)),
     bedrooms: z.string().transform(v => Number(v)),
     bathrooms: z.string().transform(v => Number(v)),
     features: z.string().max(500, 'المميزات يجب ألا تتجاوز 500 حرف').optional(),
@@ -97,8 +90,6 @@ const SubmitListing = () => {
             listing_type: undefined as 'sale' | 'rent' | undefined,
             price: '',
             location: '',
-            area: '',
-            area_size: '',
             bedrooms: '0',
             bathrooms: '1',
             features: '',
@@ -150,8 +141,6 @@ const SubmitListing = () => {
                 listing_type: values.listing_type,
                 price: values.price as number,
                 location: values.location,
-                area: values.area,
-                area_size: values.area_size as number,
                 bedrooms: values.bedrooms as number,
                 bathrooms: values.bathrooms as number,
                 features: values.features ? values.features.split(',').map(f => f.trim()) : null,
@@ -320,35 +309,19 @@ const SubmitListing = () => {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="price"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>السعر *</FormLabel>
-                                                    <FormControl>
-                                                        <Input type="number" placeholder="0" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="area_size"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>المساحة (م²) *</FormLabel>
-                                                    <FormControl>
-                                                        <Input type="number" placeholder="0" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    <FormField
+                                        control={form.control}
+                                        name="price"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>السعر *</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" placeholder="0" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
                                     {/* Installments Section */}
                                     <div className="bg-muted/30 p-4 rounded-lg border border-border space-y-4">
@@ -407,35 +380,19 @@ const SubmitListing = () => {
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="location"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>الموقع *</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="مثال: حي العليا، الرياض" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="area"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>المنطقة *</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="مثال: دبي" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    <FormField
+                                        control={form.control}
+                                        name="location"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>الموقع *</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="مثال: حي العليا، الرياض" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <FormField

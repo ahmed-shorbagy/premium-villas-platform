@@ -5,7 +5,6 @@ import {
   MapPin,
   BedDouble,
   Bath,
-  Maximize,
   Calendar,
   Phone,
   Share2,
@@ -39,10 +38,8 @@ interface PropertyDetailsType {
   type: string;
   price: number;
   location: string;
-  area: string;
   bedrooms: number;
   bathrooms: number;
-  areaSize: number;
   images: string[];
   listingType: 'sale' | 'rent';
   featured: boolean;
@@ -86,10 +83,8 @@ const PropertyDetails = () => {
           type: data.type,
           price: data.price,
           location: data.location,
-          area: data.area,
           bedrooms: data.bedrooms,
           bathrooms: data.bathrooms,
-          areaSize: data.area_size,
           images: data.images || [],
           listingType: (data as any).listing_type as 'sale' | 'rent',
           featured: data.featured,
@@ -169,7 +164,7 @@ const PropertyDetails = () => {
         description={property.description}
         image={property.images[0]}
         price={property.price}
-        location={`${property.location}, ${property.area}`}
+        location={property.location}
         type="product"
       />
       <Header />
@@ -267,7 +262,7 @@ const PropertyDetails = () => {
                 </div>
 
                 {/* Quick Stats */}
-                <div className="mb-8 grid grid-cols-3 gap-4 rounded-xl bg-secondary p-4 sm:grid-cols-4">
+                <div className="mb-8 grid grid-cols-3 gap-4 rounded-xl bg-secondary p-4">
                   {property.bedrooms > 0 && (
                     <div className="flex flex-col items-center gap-1 text-center">
                       <BedDouble className="h-6 w-6 text-gold" />
@@ -279,11 +274,6 @@ const PropertyDetails = () => {
                     <Bath className="h-6 w-6 text-gold" />
                     <span className="text-sm font-medium text-foreground">{property.bathrooms}</span>
                     <span className="text-xs text-muted-foreground">حمامات</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1 text-center">
-                    <Maximize className="h-6 w-6 text-gold" />
-                    <span className="text-sm font-medium text-foreground">{property.areaSize} م²</span>
-                    <span className="text-xs text-muted-foreground">المساحة</span>
                   </div>
                   <div className="flex flex-col items-center gap-1 text-center">
                     <Calendar className="h-6 w-6 text-gold" />
@@ -300,9 +290,9 @@ const PropertyDetails = () => {
                   <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                     {property.description || (
                       <>
-                        هذا {propertyTypeLabels[property.type] || property.type} الرائع يقع في منطقة {property.area} المرموقة.
+                        هذا {propertyTypeLabels[property.type] || property.type} الرائع يقع في {property.location}.
                         يتميز {property.bedrooms > 0 ? `بـ ${property.bedrooms} غرف نوم فسيحة، ` : ''}
-                        {property.bathrooms} حمامات عصرية، ومساحة معيشة سخية تبلغ {property.areaSize} متر مربع.
+                        {property.bathrooms} حمامات عصرية.
                         تتميز الفيلا بتشطيبات عالية الجودة وتركيبات فاخرة وإطلالات خلابة على المنطقة المحيطة.
                         مثالي للعائلات أو المحترفين الباحثين عن نمط حياة فاخر في أحد أكثر الأحياء المرغوبة.
                       </>
