@@ -20,6 +20,7 @@ const Header = () => {
         >
           <ShimaLogo
             surface="light"
+            presentation="tight"
             size="md"
             className="transition-transform duration-300 group-hover:scale-[1.02]"
           />

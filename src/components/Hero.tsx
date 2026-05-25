@@ -52,9 +52,14 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
               إيجار فلل فاخرة
             </div>
 
-            {/* Logo wordmark */}
-            <div className="mb-8 flex justify-center lg:justify-start">
-              <ShimaLogo surface="dark" size="hero" className="drop-shadow-[0_8px_32px_rgba(0,0,0,0.35)]" />
+            {/* Brand wordmark — no framed PNG on photo background */}
+            <div className="mb-6 flex justify-center lg:justify-start">
+              <ShimaLogo
+                variant="wordmark"
+                surface="dark"
+                size="hero"
+                className="drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]"
+              />
             </div>
 
             {/* Tagline */}

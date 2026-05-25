@@ -1,6 +1,7 @@
 /**
  * Confirmed Shima AK lockups — gold on light (light) or gold on charcoal (dark).
- * Use `surface` on ShimaLogo to pick the asset that matches the UI background.
+ * Use `surface` on ShimaLogo to match the UI background.
+ * Use `presentation="tight"` to crop frame/padding; use `variant="wordmark"` on hero photos.
  */
 export const brandLogos = {
   onLight: "/brand/shima-ak-logo-light.png",

@@ -41,7 +41,7 @@ const AdminLayout = () => {
       {/* Mobile Header - Only visible on mobile */}
       <header className="md:hidden sticky top-0 z-50 flex h-16 items-center justify-between border-b bg-card px-4">
         <MobileSidebar />
-        <ShimaLogo surface="light" size="sm" className="max-w-[9rem]" />
+        <ShimaLogo surface="light" presentation="tight" size="sm" />
       </header>
 
       {/* Main Content Area */}

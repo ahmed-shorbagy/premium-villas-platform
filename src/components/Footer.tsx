@@ -17,7 +17,7 @@ const Footer = () => {
           {/* Brand column */}
           <div>
             <Link to={buildLocalizedPath.home()} className="mb-6 inline-block" aria-label="Shima AK — الرئيسية">
-              <ShimaLogo surface="dark" size="lg" />
+              <ShimaLogo surface="dark" presentation="tight" size="lg" />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-white/55">
               {siteConfig.brand.taglineAr}
