@@ -11,6 +11,7 @@ import { buildLocalizedPath } from '@/routes';
 import { featureLabels } from '@/data/properties';
 import { platformScope } from '@/config/platform';
 import { groupTypes } from '@/config/filters';
+import AvailabilityManager from '@/components/admin/AvailabilityManager';
 import {
     Select,
     SelectContent,
@@ -45,6 +46,7 @@ const PropertyForm = () => {
             group_type: 'family',
             images: [] as string[],
             features: [] as string[],
+            pricing_type: 'per_night' as 'per_night' | 'per_stay',
             installments_available: false,
             installment_period: '',
             installment_value: '',
@@ -88,6 +90,7 @@ const PropertyForm = () => {
                         group_type: (data as { group_type?: string }).group_type || 'family',
                         images: data.images || [],
                         features: data.features || [],
+                        pricing_type: (data as any).pricing_type || 'per_night',
                         installments_available: (data as any).installments_available || false,
                         installment_period: (data as any).installment_period || '',
                         installment_value: (data as any).installment_value ? (data as any).installment_value.toString() : '',
@@ -149,6 +152,7 @@ const PropertyForm = () => {
             group_type: formData.group_type,
             images: formData.images,
             features: formData.features,
+            pricing_type: formData.pricing_type,
             installments_available: false,
             installment_period: null,
             installment_value: null,
@@ -223,16 +227,33 @@ const PropertyForm = () => {
                     <p className="text-xs text-muted-foreground">نوع الإعلان: فيلا — إيجار</p>
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="price">السعر (لليلة)</Label>
-                    <Input
-                        id="price"
-                        type="number"
-                        value={formData.price}
-                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                        required
-                        min="0"
-                    />
+                <div className="grid gap-6 sm:grid-cols-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="price">السعر</Label>
+                        <Input
+                            id="price"
+                            type="number"
+                            value={formData.price}
+                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                            required
+                            min="0"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="pricing_type">نوع التسعير</Label>
+                        <Select
+                            value={formData.pricing_type}
+                            onValueChange={(value: 'per_night' | 'per_stay') => setFormData({ ...formData, pricing_type: value })}
+                        >
+                            <SelectTrigger id="pricing_type">
+                                <SelectValue placeholder="اختر نوع التسعير" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="per_night">لليلة الواحدة</SelectItem>
+                                <SelectItem value="per_stay">للإقامة الكاملة</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
 
                 <div className="space-y-2">
@@ -407,6 +428,13 @@ const PropertyForm = () => {
                     </Button>
                 </div>
             </form>
+
+            {/* Availability Manager — only for existing properties */}
+            {id && (
+                <div className="mt-8">
+                    <AvailabilityManager propertyId={id} />
+                </div>
+            )}
         </div>
     );
 };

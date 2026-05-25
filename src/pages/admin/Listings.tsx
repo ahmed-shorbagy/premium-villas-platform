@@ -105,7 +105,7 @@ const Listings = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="whitespace-nowrap">العنوان</TableHead>
-                <TableHead className="whitespace-nowrap">السعر / ليلة</TableHead>
+                <TableHead className="whitespace-nowrap">السعر</TableHead>
                 <TableHead className="whitespace-nowrap">الموقع</TableHead>
                 <TableHead className="text-right whitespace-nowrap">الإجراءات</TableHead>
               </TableRow>

@@ -14,6 +14,7 @@ import Listings from "./pages/admin/Listings";
 import Settings from "./pages/admin/Settings";
 import PropertyForm from "./pages/admin/PropertyForm";
 import Banners from "./pages/admin/Banners";
+import Reservations from "./pages/admin/Reservations";
 import PropertyTypePage from "./pages/PropertyTypePage";
 import NotFound from "./pages/NotFound";
 import { getLocalizedRoutes, buildLocalizedPath } from "./routes";
@@ -45,6 +46,14 @@ const legacyAdminBannersPath = englishRoutes.adminBanners
   .replace(`${englishRoutes.adminDashboard}`, "")
   .replace(/^\//, "");
 const legacyAdminSettingsPath = englishRoutes.adminSettings
+  .replace(`${englishRoutes.adminDashboard}/`, "")
+  .replace(`${englishRoutes.adminDashboard}`, "")
+  .replace(/^\//, "");
+const adminReservationsPath = localizedRoutes.adminReservations
+  .replace(`${localizedRoutes.adminDashboard}/`, "")
+  .replace(`${localizedRoutes.adminDashboard}`, "")
+  .replace(/^\//, "");
+const legacyAdminReservationsPath = englishRoutes.adminReservations
   .replace(`${englishRoutes.adminDashboard}/`, "")
   .replace(`${englishRoutes.adminDashboard}`, "")
   .replace(/^\//, "");
@@ -81,6 +90,7 @@ const App = () => (
                   <Route path={`${adminListingsPath}/new`} element={<PropertyForm />} />
                   <Route path={`${adminListingsPath}/:id`} element={<PropertyForm />} />
                   <Route path={adminBannersPath} element={<Banners />} />
+                  <Route path={adminReservationsPath} element={<Reservations />} />
                   <Route path={adminSettingsPath} element={<Settings />} />
                 </Route>
 
@@ -90,6 +100,7 @@ const App = () => (
                   <Route path={`${legacyAdminListingsPath}/new`} element={<PropertyForm />} />
                   <Route path={`${legacyAdminListingsPath}/:id`} element={<PropertyForm />} />
                   <Route path={legacyAdminBannersPath} element={<Banners />} />
+                  <Route path={legacyAdminReservationsPath} element={<Reservations />} />
                   <Route path={legacyAdminSettingsPath} element={<Settings />} />
                 </Route>
 
