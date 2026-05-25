@@ -1,6 +1,5 @@
 export { siteConfig } from "./site";
 export { brandLogos, getBrandLogoSrc } from "./brand";
-export type { BrandLogoSurface } from "./brand";
 export { platformScope } from "./platform";
 export { bookingPolicies, pricingTiers, getPriceTierForDate, isWeekendDay } from "./booking";
 export { amenitiesCatalog, amenitiesList, AMENITY_IDS } from "./amenities";
