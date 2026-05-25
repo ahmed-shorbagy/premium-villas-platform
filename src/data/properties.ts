@@ -9,6 +9,7 @@ export interface Property {
   bedrooms: number;
   bathrooms: number;
   image: string;
+  images?: string[];
   listingType: 'sale' | 'rent';
   featured: boolean;
   groupType?: GroupTypeId;

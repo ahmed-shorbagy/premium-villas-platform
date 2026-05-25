@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Star, ArrowUpLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Property, formatPrice, propertyTypeLabels } from "@/data/properties";
 import { groupTypeLabels } from "@/config";
 import { buildLocalizedPath } from "@/routes";
@@ -13,31 +20,62 @@ interface PropertyCardProps {
 
 const isVideo = (url: string) => /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
 
+function MediaRenderer({ url, alt }: { url: string; alt: string }) {
+  if (isVideo(url)) {
+    return (
+      <video
+        src={url}
+        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        muted
+        playsInline
+        autoPlay
+        loop
+      />
+    );
+  }
+  return (
+    <img
+      src={url}
+      alt={alt}
+      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+    />
+  );
+}
+
 const PropertyCard = ({ property, className }: PropertyCardProps) => {
+  const mediaList = property.images && property.images.length > 0 ? property.images : [property.image];
+
   return (
     <Link
       to={buildLocalizedPath.propertyDetails(property.id)}
       className={cn("group shima-card block", className)}
     >
       <div className="relative aspect-[5/4] overflow-hidden">
-        {isVideo(property.image) ? (
-          <video
-            src={property.image}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            muted
-            playsInline
-            autoPlay
-            loop
-          />
+        {mediaList.length > 1 ? (
+          <Carousel className="h-full w-full" opts={{ loop: true }}>
+            <CarouselContent className="-ml-0 h-full">
+              {mediaList.map((url, i) => (
+                <CarouselItem key={i} className="relative h-full w-full pl-0">
+                  <MediaRenderer url={url} alt={`${property.title} - ${i + 1}`} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div
+              className="absolute inset-0 z-20 pointer-events-none opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <CarouselPrevious className="pointer-events-auto left-3 border-white/20 bg-black/20 text-white hover:bg-black/40" />
+              <CarouselNext className="pointer-events-auto right-3 border-white/20 bg-black/20 text-white hover:bg-black/40" />
+            </div>
+          </Carousel>
         ) : (
-          <img
-            src={property.image}
-            alt={property.title}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
+          <MediaRenderer url={mediaList[0]} alt={property.title} />
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />
 
         <div className="absolute start-3 top-3 flex flex-wrap gap-2">
           <Badge variant="property">{propertyTypeLabels[property.type] || property.type}</Badge>
