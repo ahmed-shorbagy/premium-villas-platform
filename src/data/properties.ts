@@ -34,7 +34,7 @@ export const properties: Property[] = [
     bathrooms: 5,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
     images: [
-      'https://videos.pexels.com/video-files/4988701/4988701-hd_1920_1080_30fps.mp4',
+      'https://assets.mixkit.co/videos/preview/mixkit-modern-luxury-house-and-swimming-pool-41908-large.mp4',
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
       'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80'
     ],
@@ -56,7 +56,7 @@ export const properties: Property[] = [
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
-      'https://videos.pexels.com/video-files/8283401/8283401-hd_1920_1080_30fps.mp4',
+      'https://assets.mixkit.co/videos/preview/mixkit-swimming-pool-in-a-luxury-hotel-41885-large.mp4',
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'
     ],
     listingType: 'rent',
