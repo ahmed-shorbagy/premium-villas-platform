@@ -34,7 +34,7 @@ export const properties: Property[] = [
     bathrooms: 5,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
     images: [
-      'https://assets.mixkit.co/videos/preview/mixkit-modern-luxury-house-and-swimming-pool-41908-large.mp4',
+      'https://cdn.coverr.co/videos/coverr-a-beautiful-modern-house-with-a-pool-9494/1080p.mp4',
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
       'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80'
     ],
@@ -56,7 +56,7 @@ export const properties: Property[] = [
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
-      'https://assets.mixkit.co/videos/preview/mixkit-swimming-pool-in-a-luxury-hotel-41885-large.mp4',
+      'https://cdn.coverr.co/videos/coverr-living-room-with-a-white-couch-4147/1080p.mp4',
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'
     ],
     listingType: 'rent',
