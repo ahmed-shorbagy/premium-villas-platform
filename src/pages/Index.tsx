@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import PropertyFilters from "@/components/PropertyFilters";
 import PropertyGrid from "@/components/PropertyGrid";
+import PropertyHorizontalList from "@/components/PropertyHorizontalList";
 import AdBanner from "@/components/AdBanner";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -63,6 +64,10 @@ const Index = () => {
     return filtered;
   }, [sortBy, searchFilters, properties]);
 
+  const topVillasThisWeek = useMemo(() => {
+    return properties.filter((p) => p.isTopWeek);
+  }, [properties]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <SEO title="الرئيسية" description={siteConfig.seo.homeDescriptionAr} />
@@ -73,7 +78,19 @@ const Index = () => {
 
         <AdBanner />
 
-        <section id="villas" className="relative -mt-6 scroll-mt-28 pb-20 pt-4 md:-mt-10">
+        {topVillasThisWeek.length > 0 && (
+          <section className="relative -mt-6 scroll-mt-28 pb-10 pt-4 md:-mt-10">
+            <div className="container">
+              <PropertyHorizontalList 
+                title="أفضل الفلل هذا الأسبوع" 
+                properties={topVillasThisWeek} 
+                loading={loading} 
+              />
+            </div>
+          </section>
+        )}
+
+        <section id="villas" className="relative scroll-mt-28 pb-20 pt-4">
           <div className="container">
             <div className="shima-section">
               <div className="mb-12 flex flex-col gap-4 text-center md:flex-row md:items-end md:justify-between md:text-start">

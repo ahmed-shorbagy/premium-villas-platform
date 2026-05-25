@@ -6,6 +6,7 @@ import {
   BedDouble,
   Bath,
   Calendar,
+  CalendarDays,
   Phone,
   Share2,
   Heart,

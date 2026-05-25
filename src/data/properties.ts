@@ -12,6 +12,7 @@ export interface Property {
   images?: string[];
   listingType: 'sale' | 'rent';
   featured: boolean;
+  isTopWeek?: boolean;
   groupType?: GroupTypeId;
   features?: string[];
   createdAt: Date;
@@ -23,6 +24,48 @@ export interface Property {
 
 
 export const properties: Property[] = [
+  {
+    id: 'v1',
+    title: 'فيلا الأحلام في الساحل الشمالي',
+    type: 'villa',
+    price: 15000,
+    location: 'الساحل الشمالي، مصر',
+    bedrooms: 6,
+    bathrooms: 5,
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+    images: [
+      'https://www.w3schools.com/html/mov_bbb.mp4',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80'
+    ],
+    listingType: 'rent',
+    featured: true,
+    isTopWeek: true,
+    groupType: 'family',
+    features: ['pool', 'garden', 'security_24_7', 'air_conditioning'],
+    createdAt: new Date('2024-12-20'),
+  },
+  {
+    id: 'v2',
+    title: 'فيلا أوشن فيو الفاخرة',
+    type: 'villa',
+    price: 22000,
+    location: 'دبي، الإمارات',
+    bedrooms: 5,
+    bathrooms: 6,
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'
+    ],
+    listingType: 'rent',
+    featured: true,
+    isTopWeek: true,
+    groupType: 'family',
+    features: ['pool', 'gym', 'modern_kitchen', 'parking'],
+    createdAt: new Date('2024-12-22'),
+  },
   {
     id: '1',
     title: 'شقة فاخرة بإطلالة على النيل',
