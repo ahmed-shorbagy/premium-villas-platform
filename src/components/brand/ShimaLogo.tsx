@@ -2,51 +2,57 @@ import { siteConfig } from "@/config/site";
 import { getBrandLogoSrc } from "@/config/brand";
 import { cn } from "@/lib/utils";
 
+/**
+ * Which lockup file to show — based on the **UI background**, not hero text color.
+ * - `light` → cream lockup (`shima-ak-logo-light.png`) on bright surfaces
+ * - `dark` → charcoal lockup (`shima-ak-logo-dark.png`) on navy/dark surfaces
+ */
 export type ShimaLogoSurface = "light" | "dark";
 
 export interface ShimaLogoProps {
-  /**
-   * Background the logo sits on (not the filename).
-   * `light` → cream lockup · `dark` → charcoal lockup.
-   */
   surface?: ShimaLogoSurface;
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "hero";
+  /** Soft rounded card around the lockup (header, hero, footer) */
+  framed?: boolean;
   className?: string;
-  /** @deprecated Use `surface="dark"` */
+  /** @deprecated Use `surface` — was misleading; do not use */
   light?: boolean;
-  /** @deprecated Use `surface="dark"` */
+  /** @deprecated Use `surface` — was misleading; do not use */
   inverse?: boolean;
 }
 
 const heights: Record<NonNullable<ShimaLogoProps["size"]>, string> = {
   xs: "h-8",
   sm: "h-10",
-  md: "h-12",
-  lg: "h-16",
-  xl: "h-20",
-  hero: "h-[7.5rem] sm:h-32 md:h-36",
+  md: "h-11",
+  lg: "h-14",
+  xl: "h-[4.5rem] sm:h-20",
+  hero: "h-[4.75rem] sm:h-[5.25rem] md:h-24",
+};
+
+const frameBySurface: Record<ShimaLogoSurface, string> = {
+  light:
+    "inline-flex overflow-hidden rounded-2xl border border-glass-border bg-card/90 p-1.5 shadow-float ring-1 ring-white/70 backdrop-blur-md",
+  dark:
+    "inline-flex overflow-hidden rounded-2xl border border-white/12 bg-navy/50 p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/8 backdrop-blur-md",
 };
 
 function resolveSurface({
   surface,
-  light,
-  inverse,
 }: Pick<ShimaLogoProps, "surface" | "light" | "inverse">): ShimaLogoSurface {
   if (surface) return surface;
-  if (light || inverse) return "dark";
   return "light";
 }
 
 export function ShimaLogo({
   surface,
   size = "md",
+  framed = false,
   className,
-  light,
-  inverse,
 }: ShimaLogoProps) {
-  const resolvedSurface = resolveSurface({ surface, light, inverse });
+  const resolvedSurface = resolveSurface({ surface });
 
-  return (
+  const image = (
     <img
       src={getBrandLogoSrc(resolvedSurface)}
       alt={siteConfig.brand.name}
@@ -57,8 +63,16 @@ export function ShimaLogo({
       className={cn(
         "w-auto max-w-full shrink-0 object-contain object-center",
         heights[size],
-        className,
+        framed && "rounded-[calc(1rem-6px)]",
       )}
     />
+  );
+
+  if (!framed) {
+    return <span className={cn("inline-flex shrink-0", className)}>{image}</span>;
+  }
+
+  return (
+    <span className={cn(frameBySurface[resolvedSurface], className)}>{image}</span>
   );
 }

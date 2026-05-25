@@ -1,6 +1,6 @@
 /**
  * Confirmed Shima AK lockups (user-cropped PNGs).
- * `surface` on ShimaLogo picks the asset for the UI background — no extra cropping in CSS.
+ * Pick by **page background**: light UI → onLight, dark footer → onDark. No CSS cropping.
  */
 export const brandLogos = {
   onLight: "/brand/shima-ak-logo-light.png",

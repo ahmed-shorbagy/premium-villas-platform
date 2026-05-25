@@ -59,7 +59,7 @@ const AdminLogin = () => {
       <Card className="w-full max-w-md shadow-2xl border-border/50">
         <CardHeader className="space-y-4 text-center">
           <div className="mx-auto">
-            <ShimaLogo surface="light" size="lg" className="mx-auto" />
+            <ShimaLogo surface="light" size="lg" framed className="mx-auto" />
           </div>
           <CardTitle className="text-2xl font-display">لوحة تحكم الإدارة</CardTitle>
           <CardDescription>قم بتسجيل الدخول لإدارة فلل الإيجار</CardDescription>

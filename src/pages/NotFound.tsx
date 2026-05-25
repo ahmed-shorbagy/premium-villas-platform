@@ -12,7 +12,7 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-muted px-4">
-      <ShimaLogo surface="light" size="lg" />
+      <ShimaLogo surface="light" size="lg" framed />
       <div className="text-center">
         <h1 className="mb-2 font-display text-4xl font-semibold text-foreground">404</h1>
         <p className="mb-6 text-muted-foreground">الصفحة غير موجودة</p>

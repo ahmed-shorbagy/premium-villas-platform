@@ -34,7 +34,7 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
   return (
     <div className="flex h-full flex-col bg-card">
       <div className="flex h-16 items-center border-b border-border px-4">
-        <ShimaLogo surface="light" size="sm" />
+        <ShimaLogo surface="light" size="sm" framed />
       </div>
 
       <nav className="flex-1 space-y-1 p-4">

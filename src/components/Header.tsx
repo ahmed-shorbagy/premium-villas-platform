@@ -21,6 +21,7 @@ const Header = () => {
           <ShimaLogo
             surface="light"
             size="md"
+            framed
             className="transition-transform duration-300 group-hover:scale-[1.02]"
           />
         </Link>
