@@ -206,9 +206,8 @@ const PropertyDetails = () => {
             onMouseLeave={plugin.current.reset}
             opts={{
               loop: true,
-              direction: 'ltr',
+              direction: 'rtl',
             }}
-            dir="ltr"
           >
             <CarouselContent className="h-[50vh] min-h-[400px] ml-0">
               {property.images.length > 0 ? (
