@@ -19,7 +19,7 @@ const Header = () => {
           aria-label="Shima AK — الرئيسية"
         >
           <ShimaLogo
-            surface="light"
+            surface="auto"
             size="md"
             framed
             className="transition-transform duration-300 group-hover:scale-[1.02]"

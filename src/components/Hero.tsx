@@ -53,7 +53,7 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
             </div>
 
             <div className="mb-6 flex justify-center lg:justify-start">
-              <ShimaLogo surface="light" size="xl" framed />
+              <ShimaLogo surface="auto" size="xl" framed />
             </div>
 
             {/* Tagline */}
