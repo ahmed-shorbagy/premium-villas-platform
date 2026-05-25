@@ -15,7 +15,7 @@ export const siteConfig = {
   seo: {
     defaultTitleAr: "Shima AK — إيجار فلل فاخرة",
     defaultDescriptionAr:
-      "Shima AK — حجز فلل فاخرة للإيجار فقط. تصفية ذكية، أسعار واضحة، وتواصل مباشر لتأكيد إقامتك.",
+      "Shima AK — حجز فلل فاخرة للإيجار. تصفية ذكية، أسعار واضحة، وتواصل مباشر لتأكيد إقامتك.",
     homeDescriptionAr:
       "اكتشف فللاً فاخرة للإيجار — منصة Shima AK مخصصة حصرياً لإيجار الفلل.",
     keywordsAr: "Shima AK, إيجار فلل, فلل فاخرة, حجز فيلا, إقامة فاخرة",

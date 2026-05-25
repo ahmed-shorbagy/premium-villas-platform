@@ -95,7 +95,7 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
                 ابحث عن فيلتك
               </h2>
               <p className="mb-7 text-sm text-muted-foreground">
-                فلل للإيجار فقط — حجز سريع عبر واتساب
+                فلل للإيجار — حجز سريع عبر واتساب
               </p>
 
               <form onSubmit={handleSearch} className="space-y-4">

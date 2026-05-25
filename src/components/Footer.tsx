@@ -23,7 +23,7 @@ const Footer = () => {
               {siteConfig.brand.taglineAr}
             </p>
             <p className="mt-4 text-xs tracking-[0.2em] text-brand/70 uppercase">
-              إيجار فلل فاخرة فقط
+              إيجار فلل فاخرة
             </p>
           </div>
 

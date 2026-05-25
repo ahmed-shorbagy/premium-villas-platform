@@ -205,7 +205,7 @@ const PropertyForm = () => {
                         {id ? 'تعديل الفيلا' : 'إضافة فيلا للإيجار'}
                     </h1>
                     <p className="text-muted-foreground">
-                        {id ? 'تعديل بيانات الفيلا الحالية' : 'أدخل بيانات فيلا جديدة — إيجار فقط'}
+                        {id ? 'تعديل بيانات الفيلا الحالية' : 'أدخل بيانات فيلا جديدة — إيجار'}
                     </p>
                 </div>
             </div>
@@ -220,7 +220,7 @@ const PropertyForm = () => {
                         required
                         placeholder="مثال: فيلا فاخرة مع مسبح خاص"
                     />
-                    <p className="text-xs text-muted-foreground">نوع الإعلان: فيلا — إيجار فقط</p>
+                    <p className="text-xs text-muted-foreground">نوع الإعلان: فيلا — إيجار</p>
                 </div>
 
                 <div className="space-y-2">
