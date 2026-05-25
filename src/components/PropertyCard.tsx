@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Maximize, Star, ArrowUpLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Property, formatPrice, propertyTypeLabels } from "@/data/properties";
+import { groupTypeLabels } from "@/config";
 import { buildLocalizedPath } from "@/routes";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +41,11 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
 
         <div className="absolute start-3 top-3 flex flex-wrap gap-2">
           <Badge variant="property">{propertyTypeLabels[property.type] || property.type}</Badge>
+          {property.groupType && (
+            <Badge variant="secondary" className="normal-case">
+              {groupTypeLabels[property.groupType]}
+            </Badge>
+          )}
           {property.featured && (
             <Badge variant="featured" className="gap-1 normal-case">
               <Star className="h-3 w-3 fill-current" />

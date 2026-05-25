@@ -10,6 +10,14 @@ import { Trash2, ArrowRight } from 'lucide-react';
 import { buildLocalizedPath } from '@/routes';
 import { featureLabels } from '@/data/properties';
 import { platformScope } from '@/config/platform';
+import { groupTypes } from '@/config/filters';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 const PropertyForm = () => {
     const { id } = useParams();
@@ -36,6 +44,7 @@ const PropertyForm = () => {
             description: '',
             listing_type: platformScope.listingType,
             featured: false,
+            group_type: 'family',
             images: [] as string[],
             features: [] as string[],
             installments_available: false,
@@ -80,6 +89,7 @@ const PropertyForm = () => {
                         description: data.description || '',
                         listing_type: platformScope.listingType,
                         featured: data.featured,
+                        group_type: (data as { group_type?: string }).group_type || 'family',
                         images: data.images || [],
                         features: data.features || [],
                         installments_available: (data as any).installments_available || false,
@@ -140,6 +150,7 @@ const PropertyForm = () => {
             description: formData.description,
             listing_type: platformScope.listingType,
             featured: formData.featured,
+            group_type: formData.group_type,
             images: formData.images,
             features: formData.features,
             installments_available: false,
@@ -239,6 +250,25 @@ const PropertyForm = () => {
                             min="0"
                         />
                     </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="group_type">نوع الإيجار</Label>
+                    <Select
+                        value={formData.group_type}
+                        onValueChange={(value) => setFormData({ ...formData, group_type: value })}
+                    >
+                        <SelectTrigger id="group_type">
+                            <SelectValue placeholder="اختر نوع الإيجار" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {groupTypes.map((type) => (
+                                <SelectItem key={type.id} value={type.id}>
+                                    {type.labelAr}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">

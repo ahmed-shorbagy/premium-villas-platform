@@ -1,6 +1,6 @@
-import { Search, MapPin, Banknote, BedDouble, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, Users, Banknote, BedDouble, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -8,24 +8,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { siteConfig } from "@/config";
+import { siteConfig, groupTypes } from "@/config";
+import type { GroupTypeId } from "@/config";
 import { ShimaLogo } from "@/components/brand/ShimaLogo";
 import HeroBackground from "@/components/HeroBackground";
 
-interface HeroProps {
-  onSearch: (filters: { location: string; maxPrice: string; bedrooms: string }) => void;
-  initialValues?: { location: string; maxPrice: string; bedrooms: string };
+export interface HeroSearchFilters {
+  groupType: GroupTypeId | "";
+  maxPrice: string;
+  bedrooms: string;
 }
 
+interface HeroProps {
+  onSearch: (filters: HeroSearchFilters) => void;
+  initialValues?: HeroSearchFilters;
+}
+
+const emptyFilters: HeroSearchFilters = { groupType: "", maxPrice: "", bedrooms: "" };
+
 const Hero = ({ onSearch, initialValues }: HeroProps) => {
+  const [filters, setFilters] = useState<HeroSearchFilters>(initialValues ?? emptyFilters);
+
+  useEffect(() => {
+    if (initialValues) setFilters(initialValues);
+  }, [initialValues]);
+
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    onSearch({
-      location: (formData.get("location") as string) || "",
-      maxPrice: (formData.get("maxPrice") as string) || "",
-      bedrooms: (formData.get("bedrooms") as string) || "",
-    });
+    onSearch(filters);
   };
 
   return (
@@ -91,19 +101,33 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
 
               <form onSubmit={handleSearch} className="space-y-4">
                 <div className="relative">
-                  <MapPin className="absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-brand" />
-                  <Input
-                    name="location"
-                    placeholder="المدينة أو المنطقة"
-                    className="shima-input ps-10"
-                    defaultValue={initialValues?.location}
-                  />
+                  <Users className="absolute start-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-brand" />
+                  <Select
+                    value={filters.groupType || undefined}
+                    onValueChange={(value) =>
+                      setFilters((prev) => ({ ...prev, groupType: value as GroupTypeId }))
+                    }
+                  >
+                    <SelectTrigger className="shima-input ps-10">
+                      <SelectValue placeholder="نوع الإيجار" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groupTypes.map((type) => (
+                        <SelectItem key={type.id} value={type.id}>
+                          {type.labelAr}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="relative">
                     <Banknote className="absolute start-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-brand" />
-                    <Select name="maxPrice" defaultValue={initialValues?.maxPrice}>
+                    <Select
+                      value={filters.maxPrice || undefined}
+                      onValueChange={(value) => setFilters((prev) => ({ ...prev, maxPrice: value }))}
+                    >
                       <SelectTrigger className="shima-input ps-10">
                         <SelectValue placeholder="الميزانية / الليلة" />
                       </SelectTrigger>
@@ -118,7 +142,10 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
 
                   <div className="relative">
                     <BedDouble className="absolute start-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-brand" />
-                    <Select name="bedrooms" defaultValue={initialValues?.bedrooms}>
+                    <Select
+                      value={filters.bedrooms || undefined}
+                      onValueChange={(value) => setFilters((prev) => ({ ...prev, bedrooms: value }))}
+                    >
                       <SelectTrigger className="shima-input ps-10">
                         <SelectValue placeholder="غرف النوم" />
                       </SelectTrigger>

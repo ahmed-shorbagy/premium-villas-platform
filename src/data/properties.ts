@@ -1,3 +1,5 @@
+import type { GroupTypeId } from "@/config/filters";
+
 export interface Property {
   id: string;
   title: string;
@@ -11,6 +13,7 @@ export interface Property {
   image: string;
   listingType: 'sale' | 'rent';
   featured: boolean;
+  groupType?: GroupTypeId;
   features?: string[];
   createdAt: Date;
   contact_name?: string;
@@ -214,6 +217,7 @@ export const properties: Property[] = [
     image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&q=80',
     listingType: 'rent',
     featured: true,
+    groupType: 'family',
     features: ['pool', 'security_24_7', 'modern_kitchen', 'garden', 'air_conditioning'],
     createdAt: new Date('2024-05-18'),
   },
@@ -230,6 +234,7 @@ export const properties: Property[] = [
     image: 'https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=800&q=80',
     listingType: 'rent',
     featured: true,
+    groupType: 'youth_male',
     features: ['pool', 'balcony', 'security_system', 'parking'],
     createdAt: new Date('2024-05-20'),
   },
@@ -246,6 +251,7 @@ export const properties: Property[] = [
     image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80',
     listingType: 'rent',
     featured: false,
+    groupType: 'women_only',
     features: ['air_conditioning', 'gym', 'parking', 'garden'],
     createdAt: new Date('2024-05-22'),
   },
@@ -262,6 +268,7 @@ export const properties: Property[] = [
     image: 'https://images.unsplash.com/photo-1512915922686-57c11dde9b6b?w=800&q=80',
     listingType: 'rent',
     featured: true,
+    groupType: 'family',
     features: ['pool', 'balcony', 'garden', 'air_conditioning'],
     createdAt: new Date('2024-05-23'),
   },

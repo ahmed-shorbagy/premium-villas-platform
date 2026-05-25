@@ -9,29 +9,31 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { useProperties } from "@/hooks/useProperties";
 import { siteConfig, platformScope } from "@/config";
+import type { GroupTypeId } from "@/config";
+import type { HeroSearchFilters } from "@/components/Hero";
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { properties, loading } = useProperties();
   const [sortBy, setSortBy] = useState("newest");
-  const [searchFilters, setSearchFilters] = useState({
-    location: searchParams.get("location") || "",
+  const [searchFilters, setSearchFilters] = useState<HeroSearchFilters>({
+    groupType: (searchParams.get("groupType") as GroupTypeId) || "",
     maxPrice: searchParams.get("maxPrice") || "",
     bedrooms: searchParams.get("bedrooms") || "",
   });
 
   useEffect(() => {
     setSearchFilters({
-      location: searchParams.get("location") || "",
+      groupType: (searchParams.get("groupType") as GroupTypeId) || "",
       maxPrice: searchParams.get("maxPrice") || "",
       bedrooms: searchParams.get("bedrooms") || "",
     });
   }, [searchParams]);
 
-  const handleSearch = (filters: { location: string; maxPrice: string; bedrooms: string }) => {
+  const handleSearch = (filters: HeroSearchFilters) => {
     setSearchFilters(filters);
     const params = new URLSearchParams();
-    if (filters.location) params.set("location", filters.location);
+    if (filters.groupType) params.set("groupType", filters.groupType);
     if (filters.maxPrice) params.set("maxPrice", filters.maxPrice);
     if (filters.bedrooms) params.set("bedrooms", filters.bedrooms);
     setSearchParams(params);
@@ -39,12 +41,8 @@ const Index = () => {
 
   const filteredProperties = useMemo(() => {
     let filtered = [...properties];
-    if (searchFilters.location) {
-      filtered = filtered.filter(
-        (p) =>
-          p.location.toLowerCase().includes(searchFilters.location.toLowerCase()) ||
-          p.area.toLowerCase().includes(searchFilters.location.toLowerCase()),
-      );
+    if (searchFilters.groupType) {
+      filtered = filtered.filter((p) => p.groupType === searchFilters.groupType);
     }
     if (searchFilters.maxPrice) {
       filtered = filtered.filter((p) => p.price <= parseInt(searchFilters.maxPrice));
