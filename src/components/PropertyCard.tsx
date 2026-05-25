@@ -44,8 +44,20 @@ function MediaRenderer({ url, alt, poster }: { url: string; alt: string; poster?
   );
 }
 
+function buildCardMedia(property: Property): string[] {
+  const photos =
+    property.images?.filter((url) => !isVideo(url)) ??
+    (isVideo(property.image) ? [] : [property.image]);
+  const gallery = photos.length > 0 ? photos : [property.image];
+  if (property.demoVideo) {
+    return [property.demoVideo, ...gallery.filter((url) => url !== property.demoVideo)];
+  }
+  if (property.images?.length) return property.images;
+  return [property.image];
+}
+
 const PropertyCard = ({ property, className }: PropertyCardProps) => {
-  const mediaList = property.images && property.images.length > 0 ? property.images : [property.image];
+  const mediaList = buildCardMedia(property);
 
   return (
     <Link

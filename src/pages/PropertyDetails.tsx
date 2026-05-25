@@ -118,7 +118,12 @@ const PropertyDetails = () => {
             location: localProperty.location,
             bedrooms: localProperty.bedrooms,
             bathrooms: localProperty.bathrooms,
-            images: localProperty.images || [localProperty.image],
+            images: [
+              ...(localProperty.demoVideo ? [localProperty.demoVideo] : []),
+              ...(localProperty.images || [localProperty.image]).filter(
+                (url) => url !== localProperty.demoVideo
+              ),
+            ],
             listingType: localProperty.listingType,
             featured: localProperty.featured || false,
             createdAt: localProperty.createdAt || new Date(),
