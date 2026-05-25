@@ -21,11 +21,12 @@ interface PropertyCardProps {
 
 const isVideo = (url: string) => /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
 
-function MediaRenderer({ url, alt }: { url: string; alt: string }) {
+function MediaRenderer({ url, alt, poster }: { url: string; alt: string; poster?: string }) {
   if (isVideo(url)) {
     return (
       <video
         src={url}
+        poster={poster}
         className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         muted
         playsInline
@@ -57,7 +58,11 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
             <CarouselContent className="-ml-0 h-full">
               {mediaList.map((url, i) => (
                 <CarouselItem key={i} className="relative h-full w-full pl-0">
-                  <MediaRenderer url={url} alt={`${property.title} - ${i + 1}`} />
+                  <MediaRenderer 
+                    url={url} 
+                    alt={`${property.title} - ${i + 1}`} 
+                    poster={property.images?.find(img => !isVideo(img)) || property.image} 
+                  />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -76,7 +81,11 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
             </div>
           </Carousel>
         ) : (
-          <MediaRenderer url={mediaList[0]} alt={property.title} />
+          <MediaRenderer 
+            url={mediaList[0]} 
+            alt={property.title} 
+            poster={property.images?.find(img => !isVideo(img)) || property.image} 
+          />
         )}
 
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />

@@ -29,7 +29,7 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import SEO from '@/components/SEO';
 
-import { formatPrice, propertyTypeLabels, featureLabels } from '@/data/properties';
+import { formatPrice, propertyTypeLabels, featureLabels, properties as dummyProperties } from '@/data/properties';
 import { supabase } from '@/integrations/supabase/client';
 import { buildLocalizedPath } from '@/routes';
 import ReservationDialog from '@/components/ReservationDialog';
@@ -106,6 +106,27 @@ const PropertyDetails = () => {
           installment_value: (data as any).installment_value,
           pricing_type: (data as any).pricing_type || 'per_night',
         });
+      } else {
+        // Fallback to local dummy data if not found in Supabase (especially for preview v1, v2)
+        const localProperty = dummyProperties.find(p => p.id === id);
+        if (localProperty) {
+          setProperty({
+            id: localProperty.id,
+            title: localProperty.title,
+            type: localProperty.type,
+            price: localProperty.price,
+            location: localProperty.location,
+            bedrooms: localProperty.bedrooms,
+            bathrooms: localProperty.bathrooms,
+            images: localProperty.images || [localProperty.image],
+            listingType: localProperty.listingType,
+            featured: localProperty.featured || false,
+            createdAt: localProperty.createdAt || new Date(),
+            description: localProperty.description,
+            features: localProperty.features || [],
+            pricing_type: 'per_night',
+          });
+        }
       }
       setLoading(false);
     };
@@ -197,6 +218,7 @@ const PropertyDetails = () => {
                         src={url}
                         controls
                         playsInline
+                        poster={property.images.find(img => !isVideo(img))}
                         className="h-full w-full object-cover"
                       />
                     ) : (
