@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Building2, Mail, Lock } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
+import { ShimaLogo } from '@/components/brand/ShimaLogo';
 import { buildLocalizedPath } from '@/routes';
 
 const AdminLogin = () => {
@@ -56,9 +57,9 @@ const AdminLogin = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
       <Card className="w-full max-w-md shadow-2xl border-border/50">
-        <CardHeader className="space-y-2 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-            <Building2 className="h-7 w-7 text-primary" />
+        <CardHeader className="space-y-4 text-center">
+          <div className="mx-auto">
+            <ShimaLogo surface="light" size="lg" />
           </div>
           <CardTitle className="text-2xl font-display">لوحة تحكم الإدارة</CardTitle>
           <CardDescription>قم بتسجيل الدخول لإدارة فلل الإيجار</CardDescription>

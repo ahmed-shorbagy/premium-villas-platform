@@ -1,70 +1,69 @@
 import { siteConfig } from "@/config/site";
+import { getBrandLogoSrc } from "@/config/brand";
 import { cn } from "@/lib/utils";
 
-interface ShimaLogoProps {
-  variant?: "full" | "icon" | "wordmark";
-  size?: "sm" | "md" | "lg";
+export type ShimaLogoSurface = "light" | "dark";
+
+export interface ShimaLogoProps {
+  /**
+   * UI background behind the logo — not the image file name.
+   * `light` → cream lockup for headers, cards, admin.
+   * `dark` → charcoal lockup for hero, footer.
+   */
+  surface?: ShimaLogoSurface;
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "hero";
   className?: string;
-  /** Light text for dark backgrounds (footer, hero) */
+  /** @deprecated Use `surface="dark"` */
   light?: boolean;
+  /** @deprecated Use `surface="dark"` */
   inverse?: boolean;
+  /** @deprecated Lockup only — kept for call-site compatibility */
+  variant?: "full" | "icon" | "wordmark" | "lockup";
 }
 
-const heights = {
-  sm: { full: "h-8", icon: "h-7 w-7", word: "text-base", gap: "gap-1.5" },
-  md: { full: "h-10", icon: "h-9 w-9", word: "text-xl", gap: "gap-2" },
-  lg: { full: "h-14", icon: "h-12 w-12", word: "text-3xl", gap: "gap-2.5" },
+const heights: Record<NonNullable<ShimaLogoProps["size"]>, string> = {
+  xs: "h-7",
+  sm: "h-9",
+  md: "h-11",
+  lg: "h-16",
+  xl: "h-20",
+  hero: "h-28 sm:h-36 md:h-40",
 };
 
+function resolveSurface({
+  surface,
+  light,
+  inverse,
+}: Pick<ShimaLogoProps, "surface" | "light" | "inverse">): ShimaLogoSurface {
+  if (surface) return surface;
+  if (light || inverse) return "dark";
+  return "light";
+}
+
 export function ShimaLogo({
-  variant = "full",
+  surface,
   size = "md",
   className,
-  light = false,
-  inverse = false,
+  light,
+  inverse,
 }: ShimaLogoProps) {
-  const { name } = siteConfig.brand;
+  const resolvedSurface = resolveSurface({ surface, light, inverse });
+  const src = getBrandLogoSrc(resolvedSurface);
 
-  if (variant === "icon") {
-    return (
-      <img
-        src={siteConfig.assets.logoIconSrc}
-        alt={name}
-        className={cn("shrink-0 object-contain", heights[size].icon, className)}
-      />
-    );
-  }
-
-  if (variant === "full") {
-    return (
-      <img
-        src={siteConfig.assets.logoSrc}
-        alt={name}
-        className={cn("w-auto shrink-0 object-contain", heights[size].full, className)}
-      />
-    );
-  }
-
-  /* ── Wordmark: always LTR so "Shima AK" reads correctly in RTL pages ── */
   return (
-    <span
-      dir="ltr"
+    <img
+      src={src}
+      alt={siteConfig.brand.name}
+      width={280}
+      height={320}
+      decoding="async"
       className={cn(
-        "inline-flex items-baseline font-display leading-none",
-        heights[size].word,
-        heights[size].gap,
+        "w-auto shrink-0 object-contain object-center",
+        heights[size],
+        resolvedSurface === "light" && "rounded-lg",
+        resolvedSurface === "dark" && "rounded-xl",
         className,
       )}
-    >
-      <span
-        className={cn(
-          "font-display font-medium tracking-tight",
-          inverse || light ? "text-white" : "text-foreground",
-        )}
-      >
-        Shima
-      </span>
-      <span className="font-bold tracking-[0.1em] text-gradient-brand">AK</span>
-    </span>
+    />
   );
 }

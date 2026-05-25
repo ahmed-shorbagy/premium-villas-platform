@@ -16,9 +16,8 @@ const Footer = () => {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
           {/* Brand column */}
           <div>
-            <Link to={buildLocalizedPath.home()} className="mb-6 inline-flex items-center gap-3">
-              <ShimaLogo variant="icon" size="md" />
-              <ShimaLogo variant="wordmark" size="md" light />
+            <Link to={buildLocalizedPath.home()} className="mb-6 inline-block" aria-label="Shima AK — الرئيسية">
+              <ShimaLogo surface="dark" size="lg" />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-white/55">
               {siteConfig.brand.taglineAr}

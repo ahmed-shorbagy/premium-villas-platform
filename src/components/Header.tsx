@@ -15,16 +15,14 @@ const Header = () => {
         {/* ── Brand ── */}
         <Link
           to={buildLocalizedPath.home()}
-          className="group flex items-center gap-3 transition-opacity hover:opacity-90"
+          className="group transition-opacity hover:opacity-90"
+          aria-label="Shima AK — الرئيسية"
         >
           <ShimaLogo
-            variant="icon"
+            surface="light"
             size="md"
-            className="transition-transform duration-300 group-hover:scale-105"
+            className="transition-transform duration-300 group-hover:scale-[1.02]"
           />
-          <div className="hidden leading-tight sm:block">
-            <ShimaLogo variant="wordmark" size="md" />
-          </div>
         </Link>
 
         {/* ── Navigation ── */}

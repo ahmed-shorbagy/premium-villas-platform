@@ -21,10 +21,13 @@ export const siteConfig = {
     keywordsAr: "Shima AK, إيجار فلل, فلل فاخرة, حجز فيلا, إقامة فاخرة",
   },
   assets: {
-    logoSrc: "/brand/shima-ak-logo.svg",
+    logoOnLight: "/brand/shima-ak-logo-light.png",
+    logoOnDark: "/brand/shima-ak-logo-dark.png",
+    /** @deprecated Use logoOnLight / ShimaLogo */
+    logoSrc: "/brand/shima-ak-logo-light.png",
     logoIconSrc: "/brand/shima-ak-icon.svg",
     favicon: "/brand/shima-ak-icon.svg",
-    ogImage: "/brand/shima-ak-og.svg",
+    ogImage: "/brand/shima-ak-og.png",
     ambientBg: "/brand/shima-ambient-loop.svg",
     /** Set after adding public/hero/hero-loop.mp4 (and optional .webm) — ~3s seamless loop */
     heroVideoMp4: "",

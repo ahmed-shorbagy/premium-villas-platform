@@ -7,7 +7,6 @@ import { buildLocalizedPath } from "@/routes";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import { ShimaLogo } from "@/components/brand/ShimaLogo";
-import { getAdminTitle } from "@/lib/brand";
 
 const navRoutes = {
   dashboard: buildLocalizedPath.adminDashboard(),
@@ -34,9 +33,8 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
 
   return (
     <div className="flex h-full flex-col bg-card">
-      <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-        <ShimaLogo variant="icon" size="sm" />
-        <span className="font-display text-lg font-semibold">{getAdminTitle()}</span>
+      <div className="flex h-16 items-center border-b border-border px-4">
+        <ShimaLogo surface="light" size="sm" className="max-w-[10rem]" />
       </div>
 
       <nav className="flex-1 space-y-1 p-4">
