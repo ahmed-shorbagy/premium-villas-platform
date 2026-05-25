@@ -24,6 +24,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselDots,
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import SEO from '@/components/SEO';
@@ -220,6 +221,9 @@ const PropertyDetails = () => {
               <>
                 <CarouselPrevious className="hidden md:flex left-4 text-white hover:text-white border-white/20 bg-black/20 hover:bg-black/40" />
                 <CarouselNext className="hidden md:flex right-4 text-white hover:text-white border-white/20 bg-black/20 hover:bg-black/40" />
+                <div className="absolute bottom-4 left-0 right-0 z-20 pointer-events-auto">
+                  <CarouselDots />
+                </div>
               </>
             )}
           </Carousel>

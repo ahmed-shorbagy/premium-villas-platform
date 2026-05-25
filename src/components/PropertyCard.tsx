@@ -7,6 +7,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselDots,
 } from "@/components/ui/carousel";
 import { Property, formatPrice, propertyTypeLabels } from "@/data/properties";
 import { groupTypeLabels } from "@/config";
@@ -69,6 +70,9 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
             >
               <CarouselPrevious className="pointer-events-auto left-3 border-white/20 bg-black/20 text-white hover:bg-black/40" />
               <CarouselNext className="pointer-events-auto right-3 border-white/20 bg-black/20 text-white hover:bg-black/40" />
+            </div>
+            <div className="absolute bottom-3 left-0 right-0 z-20 pointer-events-auto">
+              <CarouselDots />
             </div>
           </Carousel>
         ) : (

@@ -221,4 +221,56 @@ const CarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentProps<ty
 );
 CarouselNext.displayName = "CarouselNext";
 
-export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext };
+const CarouselDots = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => {
+    const { api } = useCarousel();
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+
+    React.useEffect(() => {
+      if (!api) return;
+
+      setScrollSnaps(api.scrollSnapList());
+      setSelectedIndex(api.selectedScrollSnap());
+
+      const onSelect = () => {
+        setSelectedIndex(api.selectedScrollSnap());
+      };
+
+      api.on("select", onSelect);
+      api.on("reInit", () => {
+        setScrollSnaps(api.scrollSnapList());
+        setSelectedIndex(api.selectedScrollSnap());
+      });
+
+      return () => {
+        api.off("select", onSelect);
+      };
+    }, [api]);
+
+    if (scrollSnaps.length <= 1) return null;
+
+    return (
+      <div ref={ref} className={cn("flex justify-center gap-1.5", className)} {...props}>
+        {scrollSnaps.map((_, index) => (
+          <button
+            key={index}
+            className={cn(
+              "h-1.5 rounded-full transition-all duration-300",
+              index === selectedIndex ? "w-4 bg-white" : "w-1.5 bg-white/50 hover:bg-white/75"
+            )}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              api?.scrollTo(index);
+            }}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    );
+  }
+);
+CarouselDots.displayName = "CarouselDots";
+
+export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, CarouselDots };
