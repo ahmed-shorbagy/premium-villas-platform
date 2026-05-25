@@ -32,9 +32,9 @@ const heights: Record<NonNullable<ShimaLogoProps["size"]>, string> = {
 
 const frameBySurface: Record<ShimaLogoSurface, string> = {
   light:
-    "inline-flex overflow-hidden rounded-2xl border border-glass-border bg-card/90 p-1.5 shadow-float ring-1 ring-white/70 backdrop-blur-md",
+    "inline-flex overflow-hidden rounded-[1.25rem] border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 bg-white",
   dark:
-    "inline-flex overflow-hidden rounded-2xl border border-white/12 bg-navy/50 p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/8 backdrop-blur-md",
+    "inline-flex overflow-hidden rounded-[1.25rem] border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)] ring-1 ring-white/5 bg-[#1a1f2e]",
 };
 
 function resolveSurface({
@@ -62,8 +62,7 @@ export function ShimaLogo({
       draggable={false}
       className={cn(
         "w-auto max-w-full shrink-0 object-contain object-center",
-        heights[size],
-        framed && "rounded-[calc(1rem-6px)]",
+        heights[size]
       )}
     />
   );
