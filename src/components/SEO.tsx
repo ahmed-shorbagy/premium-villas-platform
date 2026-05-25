@@ -20,7 +20,7 @@ const SEO = ({
   url,
   type = "website",
   price,
-  currency = "EGP",
+  currency = "ILS",
   location,
 }: SEOProps) => {
   const siteTitle = siteConfig.seo.defaultTitleAr;

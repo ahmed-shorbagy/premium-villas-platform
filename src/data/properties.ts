@@ -244,7 +244,7 @@ export const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ar-EG', {
     style: 'decimal',
     maximumFractionDigits: 0,
-  }).format(price) + ' جنيه';
+  }).format(price) + ' شيكل';
 };
 
 /** Villas for rent only — kept for label lookups */

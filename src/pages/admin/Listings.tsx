@@ -74,7 +74,7 @@ const Listings = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-EG').format(price) + ' جنيه';
+    return new Intl.NumberFormat('ar-EG').format(price) + ' شيكل';
   };
 
   return (
