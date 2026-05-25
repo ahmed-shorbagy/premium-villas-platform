@@ -54,7 +54,7 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
     >
       <div className="relative aspect-[5/4] overflow-hidden">
         {mediaList.length > 1 ? (
-          <Carousel className="h-full w-full" opts={{ loop: true }}>
+          <Carousel className="h-full w-full" opts={{ loop: true, direction: "ltr" }} dir="ltr">
             <CarouselContent className="-ml-0 h-full">
               {mediaList.map((url, i) => (
                 <CarouselItem key={i} className="relative h-full w-full pl-0">
