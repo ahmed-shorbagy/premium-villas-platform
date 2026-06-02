@@ -52,6 +52,8 @@ const PropertyForm = () => {
             installments_available: false,
             installment_period: '',
             installment_value: '',
+            available_from: '',
+            available_to: '',
         };
     });
 
@@ -173,8 +175,20 @@ const PropertyForm = () => {
                 .eq('id', id);
             error = updateError;
         } else {
-            const { error: insertError } = await supabase.from('properties').insert([propertyData]);
+            const { data: insertData, error: insertError } = await supabase
+                .from('properties')
+                .insert([propertyData])
+                .select()
+                .single();
             error = insertError;
+
+            if (!insertError && insertData && formData.available_from && formData.available_to) {
+                await supabase.from('property_availability').insert({
+                    property_id: insertData.id,
+                    available_from: formData.available_from,
+                    available_to: formData.available_to
+                });
+            }
         }
 
         setUploading(false);
@@ -442,6 +456,39 @@ const PropertyForm = () => {
                     />
                     <Label htmlFor="featured" className="cursor-pointer">تمييز هذه الفيلا (تظهر في الصفحة الرئيسية)</Label>
                 </div>
+
+                {!id && (
+                    <div className="pt-6 border-t border-border space-y-4">
+                        <h3 className="font-semibold text-lg">تواريخ التوفر المبدئية (مطلوب)</h3>
+                        <div className="grid gap-6 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="available_from">متاح من تاريخ</Label>
+                                <Input
+                                    id="available_from"
+                                    type="date"
+                                    dir="ltr"
+                                    className="text-right"
+                                    value={formData.available_from}
+                                    onChange={(e) => setFormData({ ...formData, available_from: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="available_to">متاح إلى تاريخ</Label>
+                                <Input
+                                    id="available_to"
+                                    type="date"
+                                    dir="ltr"
+                                    className="text-right"
+                                    value={formData.available_to}
+                                    onChange={(e) => setFormData({ ...formData, available_to: e.target.value })}
+                                    required
+                                    min={formData.available_from}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 <div className="flex justify-end gap-4 pt-4 border-t border-border">
                     <Button

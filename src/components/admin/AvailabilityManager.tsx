@@ -82,6 +82,8 @@ const AvailabilityManager = ({ propertyId }: AvailabilityManagerProps) => {
                 <Input
                   id="avail-from"
                   type="date"
+                  dir="ltr"
+                  className="text-right"
                   value={newPeriod.available_from}
                   onChange={(e) =>
                     setNewPeriod({ ...newPeriod, available_from: e.target.value })
@@ -93,6 +95,8 @@ const AvailabilityManager = ({ propertyId }: AvailabilityManagerProps) => {
                 <Input
                   id="avail-to"
                   type="date"
+                  dir="ltr"
+                  className="text-right"
                   value={newPeriod.available_to}
                   onChange={(e) =>
                     setNewPeriod({ ...newPeriod, available_to: e.target.value })
