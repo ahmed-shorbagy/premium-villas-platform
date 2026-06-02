@@ -1,14 +1,7 @@
 import { Link } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  CarouselDots,
-} from "@/components/ui/carousel";
+
 import { Property, formatPrice, propertyTypeLabels } from "@/data/properties";
 import { groupTypeLabels } from "@/config";
 import { buildLocalizedPath } from "@/routes";
@@ -65,40 +58,52 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
       className={cn("group shima-card block", className)}
     >
       <div className="relative aspect-[5/4] overflow-hidden">
-        {mediaList.length > 1 ? (
-          <Carousel className="h-full w-full" opts={{ loop: true, direction: "rtl" }}>
-            <CarouselContent className="-ml-0 h-full">
-              {mediaList.map((url, i) => (
-                <CarouselItem key={i} className="relative h-full w-full pl-0">
-                  <MediaRenderer 
-                    url={url} 
-                    alt={`${property.title} - ${i + 1}`} 
-                    poster={property.images?.find(img => !isVideo(img)) || property.image} 
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div
-              className="absolute inset-0 z-20 pointer-events-none opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              <CarouselPrevious className="pointer-events-auto left-3 border-white/20 bg-black/20 text-white hover:bg-black/40" />
-              <CarouselNext className="pointer-events-auto right-3 border-white/20 bg-black/20 text-white hover:bg-black/40" />
+        {(() => {
+          const count = Math.min(mediaList.length, 4);
+          const sliced = mediaList.slice(0, 4);
+          const poster = property.images?.find(img => !isVideo(img)) || property.image;
+
+          const renderMedia = (url: string, idx: number) => (
+            <div key={idx} className="relative h-full w-full overflow-hidden bg-muted">
+              <MediaRenderer url={url} alt={`${property.title} - ${idx + 1}`} poster={poster} />
             </div>
-            <div className="absolute bottom-3 left-0 right-0 z-20 pointer-events-auto">
-              <CarouselDots />
+          );
+
+          if (count === 1) {
+            return renderMedia(sliced[0], 0);
+          }
+          if (count === 2) {
+            return (
+              <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
+                {renderMedia(sliced[0], 0)}
+                {renderMedia(sliced[1], 1)}
+              </div>
+            );
+          }
+          if (count === 3) {
+            return (
+              <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
+                {renderMedia(sliced[0], 0)}
+                <div className="grid grid-rows-2 gap-1 h-full w-full">
+                  {renderMedia(sliced[1], 1)}
+                  {renderMedia(sliced[2], 2)}
+                </div>
+              </div>
+            );
+          }
+          return (
+            <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
+              {renderMedia(sliced[0], 0)}
+              <div className="grid grid-rows-2 gap-1 h-full w-full">
+                {renderMedia(sliced[1], 1)}
+                <div className="grid grid-cols-2 gap-1 h-full w-full">
+                  {renderMedia(sliced[2], 2)}
+                  {renderMedia(sliced[3], 3)}
+                </div>
+              </div>
             </div>
-          </Carousel>
-        ) : (
-          <MediaRenderer 
-            url={mediaList[0]} 
-            alt={property.title} 
-            poster={property.images?.find(img => !isVideo(img)) || property.image} 
-          />
-        )}
+          );
+        })()}
 
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />
 
