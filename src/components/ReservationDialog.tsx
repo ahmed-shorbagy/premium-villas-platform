@@ -179,6 +179,21 @@ const ReservationDialog = ({
       // non-critical
     }
 
+    // Build WhatsApp message
+    const message = `طلب حجز فيلا
+الفيلا: ${propertyTitle}
+تاريخ الدخول: ${formData.check_in}
+تاريخ الخروج: ${formData.check_out}
+عدد الليالي: ${numNights}
+السعر الإجمالي: ${formatPrice(totalPrice)}
+رقم العميل: \u202A${formData.customer_phone}\u202C
+الملاحظات: ${formData.customer_notes || 'لا يوجد'}`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const targetNumber = siteConfig.contact.adminWhatsApp.replace(/\D/g, '');
+    const whatsappUrl = `https://wa.me/${targetNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+
     setSubmitted(true);
   };
 
@@ -322,6 +337,8 @@ const ReservationDialog = ({
                   <Input
                     id="res-checkin"
                     type="date"
+                    dir="ltr"
+                    className="text-right"
                     value={formData.check_in}
                     onChange={(e) =>
                       setFormData({ ...formData, check_in: e.target.value })
@@ -337,6 +354,8 @@ const ReservationDialog = ({
                   <Input
                     id="res-checkout"
                     type="date"
+                    dir="ltr"
+                    className="text-right"
                     value={formData.check_out}
                     onChange={(e) =>
                       setFormData({ ...formData, check_out: e.target.value })
