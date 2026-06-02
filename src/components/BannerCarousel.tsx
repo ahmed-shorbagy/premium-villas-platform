@@ -33,12 +33,36 @@ const BannerCarousel = ({ banners }: BannerCarouselProps) => {
             >
                 <CarouselContent className="h-full ml-0">
                     {banners.map((banner) => (
-                        <CarouselItem key={banner.id} className="relative h-full pl-0">
-                            <div
-                                className="w-full h-full bg-cover bg-center transition-transform duration-500 hover:scale-105"
-                                style={{ backgroundImage: `url(${banner.image_url})` }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-hero" />
+                        <CarouselItem key={banner.id} className="relative h-full pl-0 overflow-hidden">
+                            {banner.link ? (
+                                <a href={banner.link} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative group">
+                                    <div
+                                        className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                        style={{ backgroundImage: `url(${banner.image_url})` }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                                    {(banner.title || banner.description) && (
+                                        <div className="absolute bottom-4 right-6 left-6 md:bottom-8 md:right-10 md:left-10 text-white z-20 pointer-events-none">
+                                            {banner.title && <h3 className="text-xl md:text-3xl font-display font-bold mb-2 drop-shadow-lg">{banner.title}</h3>}
+                                            {banner.description && <p className="text-sm md:text-base opacity-90 drop-shadow-md max-w-2xl">{banner.description}</p>}
+                                        </div>
+                                    )}
+                                </a>
+                            ) : (
+                                <div className="w-full h-full relative group">
+                                    <div
+                                        className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                        style={{ backgroundImage: `url(${banner.image_url})` }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                                    {(banner.title || banner.description) && (
+                                        <div className="absolute bottom-4 right-6 left-6 md:bottom-8 md:right-10 md:left-10 text-white z-20 pointer-events-none">
+                                            {banner.title && <h3 className="text-xl md:text-3xl font-display font-bold mb-2 drop-shadow-lg">{banner.title}</h3>}
+                                            {banner.description && <p className="text-sm md:text-base opacity-90 drop-shadow-md max-w-2xl">{banner.description}</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </CarouselItem>
                     ))}
                 </CarouselContent>

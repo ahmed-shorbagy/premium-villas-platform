@@ -84,9 +84,11 @@ const Index = () => {
         <Hero onSearch={handleSearch} initialValues={searchFilters} />
 
         {/* Dynamic Banners */}
-        {!bannersLoading && banners && banners.length > 0 && (
-          <div className="container -mt-6 mb-2 px-4 relative z-10">
-            <BannerCarousel banners={banners} />
+        {!bannersLoading && banners && banners.filter(b => b.is_active).length > 0 && (
+          <div className="container -mt-6 mb-8 px-4 relative z-10 h-[200px] sm:h-[300px] md:h-[400px]">
+            <div className="w-full h-full rounded-2xl overflow-hidden shadow-lg border border-border">
+              <BannerCarousel banners={banners.filter(b => b.is_active)} />
+            </div>
           </div>
         )}
 
