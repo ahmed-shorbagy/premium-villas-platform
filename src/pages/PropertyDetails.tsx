@@ -41,6 +41,8 @@ interface PropertyDetailsType {
   title: string;
   type: string;
   price: number;
+  price_weekend?: number | null;
+  rent_count?: number | null;
   location: string;
   bedrooms: number;
   bathrooms: number;
@@ -89,6 +91,8 @@ const PropertyDetails = () => {
           title: data.title,
           type: data.type,
           price: data.price,
+          price_weekend: data.price_weekend ?? null,
+          rent_count: data.rent_count ?? null,
           location: data.location,
           bedrooms: data.bedrooms,
           bathrooms: data.bathrooms,
@@ -116,6 +120,8 @@ const PropertyDetails = () => {
             title: localProperty.title,
             type: localProperty.type,
             price: localProperty.price,
+            price_weekend: localProperty.price_weekend ?? null,
+            rent_count: localProperty.rent_count ?? null,
             location: localProperty.location,
             bedrooms: localProperty.bedrooms,
             bathrooms: localProperty.bathrooms,
