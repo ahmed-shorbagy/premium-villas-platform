@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, History } from "lucide-react";
+import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Carousel,
@@ -166,9 +166,9 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
             </span>
           </div>
           {property.rent_count && property.rent_count > 0 ? (
-            <span className="flex items-center gap-1 bg-gold/10 px-2 py-0.5 rounded border border-gold/20 text-gold text-xs font-semibold">
-              <History className="h-3 w-3" />
-              حُجزت {property.rent_count} {property.rent_count === 1 ? 'مرة' : 'مرات'}
+            <span className="flex items-center gap-1.5 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100 text-cyan-600 text-xs font-medium">
+              <Eye className="h-3.5 w-3.5" />
+              {property.rent_count} حجز سابق
             </span>
           ) : null}
         </div>
