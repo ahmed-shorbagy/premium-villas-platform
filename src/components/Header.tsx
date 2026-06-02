@@ -3,7 +3,6 @@ import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildLocalizedPath } from "@/routes";
 import { ShimaLogo } from "@/components/brand/ShimaLogo";
-import { HypeThemeToggle } from "@/components/theme/HypeThemeToggle";
 
 const navLinkClass =
   "relative text-sm font-medium text-muted-foreground transition-colors hover:text-foreground after:absolute after:-bottom-1 after:start-0 after:h-px after:w-0 after:bg-brand after:transition-all hover:after:w-full";
@@ -38,7 +37,6 @@ const Header = () => {
 
         {/* ── Actions ── */}
         <div className="flex items-center gap-3">
-          <HypeThemeToggle compact className="inline-flex" />
           <a href="#villas">
             <Button variant="gold" size="sm" className="gap-2 shadow-brand md:size-default">
               <Phone className="h-4 w-4" />

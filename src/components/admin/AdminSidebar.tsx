@@ -7,6 +7,7 @@ import { buildLocalizedPath } from "@/routes";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import { ShimaLogo } from "@/components/brand/ShimaLogo";
+import { HypeThemeToggle } from "@/components/theme/HypeThemeToggle";
 
 const navRoutes = {
   dashboard: buildLocalizedPath.adminDashboard(),
@@ -63,7 +64,11 @@ const AdminSidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
         ))}
       </nav>
 
-      <div className="border-t border-border p-4">
+      <div className="border-t border-border p-4 space-y-2">
+        <div className="flex items-center justify-between px-3 py-2">
+          <span className="text-sm font-medium text-muted-foreground">المظهر</span>
+          <HypeThemeToggle compact />
+        </div>
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
