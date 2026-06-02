@@ -1,7 +1,7 @@
 -- Shima AK — fresh Supabase project bootstrap
 -- Project: idnehwkrufbgfmlkexvi
 -- Run once on an EMPTY database (SQL Editor → New query → Run)
--- Generated: 2026-05-24T05:54:10.748Z
+-- Generated: 2026-06-02T05:15:35.843Z
 
 
 -- ═══════════════════════════════════════
@@ -125,11 +125,14 @@ INSERT INTO public.site_settings (key, value) VALUES
 ('banner', '{"image_url": "", "enabled": true}'),
 ('google_ads', '{"enabled": true}');
 
--- Create storage bucket for property images
-INSERT INTO storage.buckets (id, name, public) VALUES ('property-images', 'property-images', true);
+-- Create storage buckets (idempotent — safe if buckets already exist in Dashboard)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('property-images', 'property-images', true)
+ON CONFLICT (id) DO NOTHING;
 
--- Create storage bucket for banner images
-INSERT INTO storage.buckets (id, name, public) VALUES ('banners', 'banners', true);
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('banners', 'banners', true)
+ON CONFLICT (id) DO NOTHING;
 
 -- Storage policies for property-images
 CREATE POLICY "Anyone can view property images" ON storage.objects
@@ -454,4 +457,180 @@ DROP POLICY IF EXISTS "Admins can delete banners" ON public.banners;
 CREATE POLICY "Admins can delete banners" ON public.banners
 FOR DELETE TO authenticated
 USING (public.has_role(auth.uid(), 'admin'));
+
+
+-- ═══════════════════════════════════════
+-- 20260525120000_add_group_type_to_properties.sql
+-- ═══════════════════════════════════════
+
+-- Audience / rental group for villa listings
+ALTER TABLE public.properties
+ADD COLUMN IF NOT EXISTS group_type TEXT CHECK (group_type IN ('family', 'youth_male', 'women_only'));
+
+
+-- ═══════════════════════════════════════
+-- 20260525130000_deprecate_area_columns.sql
+-- ═══════════════════════════════════════
+
+-- Area fields no longer collected in the app; keep columns with defaults for compatibility
+ALTER TABLE public.properties
+  ALTER COLUMN area SET DEFAULT '',
+  ALTER COLUMN area_size SET DEFAULT 0;
+
+ALTER TABLE public.listing_requests
+  ALTER COLUMN area SET DEFAULT '',
+  ALTER COLUMN area_size SET DEFAULT 0;
+
+
+-- ═══════════════════════════════════════
+-- 20260525_reservations_availability.sql
+-- ═══════════════════════════════════════
+
+-- =====================================================
+-- RESERVATIONS TABLE
+-- =====================================================
+-- Stores all villa booking requests from customers
+
+CREATE TABLE IF NOT EXISTS public.reservations (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  -- Villa reference
+  property_id uuid NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
+  
+  -- Customer info (PRIVATE — admin-only access)
+  customer_name text NOT NULL,
+  customer_phone text NOT NULL,
+  customer_email text,
+  customer_notes text,
+  
+  -- Reservation dates
+  check_in date NOT NULL,
+  check_out date NOT NULL,
+  num_guests integer DEFAULT 1,
+  
+  -- Pricing snapshot
+  pricing_type text NOT NULL DEFAULT 'per_night' CHECK (pricing_type IN ('per_night', 'per_stay')),
+  price_per_night numeric,
+  total_price numeric NOT NULL,
+  
+  -- Status tracking
+  status text NOT NULL DEFAULT 'pending' 
+    CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),
+  admin_notes text,
+  
+  -- WhatsApp notification tracking
+  whatsapp_notified boolean DEFAULT false,
+  whatsapp_notified_at timestamptz,
+  
+  -- Timestamps
+  created_at timestamptz DEFAULT timezone('utc', now()) NOT NULL,
+  updated_at timestamptz DEFAULT timezone('utc', now()) NOT NULL
+);
+
+-- Enable RLS
+ALTER TABLE public.reservations ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can submit a reservation (no auth required for customers)
+CREATE POLICY "Anyone can submit reservations"
+  ON public.reservations FOR INSERT WITH CHECK (true);
+
+-- Only admins can view reservations
+CREATE POLICY "Admins can view reservations"
+  ON public.reservations FOR SELECT
+  USING (auth.uid() IN (
+    SELECT user_id FROM public.user_roles WHERE role = 'admin'
+  ));
+
+-- Only admins can update reservations
+CREATE POLICY "Admins can update reservations"
+  ON public.reservations FOR UPDATE
+  USING (auth.uid() IN (
+    SELECT user_id FROM public.user_roles WHERE role = 'admin'
+  ));
+
+-- Only admins can delete reservations
+CREATE POLICY "Admins can delete reservations"
+  ON public.reservations FOR DELETE
+  USING (auth.uid() IN (
+    SELECT user_id FROM public.user_roles WHERE role = 'admin'
+  ));
+
+
+-- =====================================================
+-- VILLA AVAILABILITY TABLE
+-- =====================================================
+-- Admin-managed date ranges when each villa is available
+
+CREATE TABLE IF NOT EXISTS public.villa_availability (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  property_id uuid NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
+  
+  -- Date range
+  available_from date NOT NULL,
+  available_to date NOT NULL,
+  
+  -- Optional price override for seasonal pricing
+  price_override numeric,
+  
+  -- Notes (e.g. "Eid season", "Summer rates")
+  notes text,
+  
+  -- Timestamps
+  created_at timestamptz DEFAULT timezone('utc', now()) NOT NULL,
+  updated_at timestamptz DEFAULT timezone('utc', now()) NOT NULL,
+  
+  CONSTRAINT valid_date_range CHECK (available_to >= available_from)
+);
+
+ALTER TABLE public.villa_availability ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can read availability (customers need to see available dates)
+CREATE POLICY "Anyone can view availability"
+  ON public.villa_availability FOR SELECT USING (true);
+
+-- Only admins can manage availability
+CREATE POLICY "Admins can insert availability"
+  ON public.villa_availability FOR INSERT
+  WITH CHECK (auth.uid() IN (
+    SELECT user_id FROM public.user_roles WHERE role = 'admin'
+  ));
+
+CREATE POLICY "Admins can update availability"
+  ON public.villa_availability FOR UPDATE
+  USING (auth.uid() IN (
+    SELECT user_id FROM public.user_roles WHERE role = 'admin'
+  ));
+
+CREATE POLICY "Admins can delete availability"
+  ON public.villa_availability FOR DELETE
+  USING (auth.uid() IN (
+    SELECT user_id FROM public.user_roles WHERE role = 'admin'
+  ));
+
+
+-- =====================================================
+-- ADD PRICING TYPE TO PROPERTIES
+-- =====================================================
+ALTER TABLE public.properties 
+  ADD COLUMN IF NOT EXISTS pricing_type text DEFAULT 'per_night' 
+    CHECK (pricing_type IN ('per_night', 'per_stay'));
+
+
+-- ═══════════════════════════════════════
+-- 20260602120000_add_price_weekend.sql
+-- ═══════════════════════════════════════
+
+-- Add price_weekend column to public.properties table
+ALTER TABLE public.properties 
+  ADD COLUMN IF NOT EXISTS price_weekend numeric;
+
+-- Also check/update any other tables if needed. No other tables require this since the reservation stores the total_price which we will calculate dynamically.
+
+
+-- ═══════════════════════════════════════
+-- 20260602130000_add_rent_count.sql
+-- ═══════════════════════════════════════
+
+-- Add rent_count column to public.properties table
+ALTER TABLE public.properties 
+  ADD COLUMN IF NOT EXISTS rent_count integer DEFAULT 0;
 

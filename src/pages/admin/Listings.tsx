@@ -21,6 +21,7 @@ interface Property {
   title: string;
   type: string;
   price: number;
+  price_weekend?: number | null;
   location: string;
   bedrooms: number;
   bathrooms: number;
@@ -132,7 +133,16 @@ const Listings = () => {
                   .map((property) => (
                     <TableRow key={property.id}>
                       <TableCell className="font-medium whitespace-nowrap">{property.title}</TableCell>
-                      <TableCell className="whitespace-nowrap">{formatPrice(property.price)}</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex flex-col">
+                          <span>{formatPrice(property.price)} <span className="text-xs text-muted-foreground">(وسط الأسبوع)</span></span>
+                          {property.price_weekend && (
+                            <span className="text-xs text-gold font-medium">
+                              {formatPrice(property.price_weekend)} <span className="text-muted-foreground font-normal">(نهاية الأسبوع)</span>
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="whitespace-nowrap">{property.location}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <Button

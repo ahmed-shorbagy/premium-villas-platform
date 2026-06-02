@@ -13,6 +13,7 @@ import {
   Check,
   FileQuestion,
   Loader2,
+  History,
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -290,18 +291,40 @@ const PropertyDetails = () => {
                     <MapPin className="h-5 w-5 text-gold" />
                     <span>{property.location}</span>
                   </div>
-                  <div className="mt-4 flex flex-col gap-2">
-                    <span className="font-display text-3xl font-bold text-gold">
-                      {formatPrice(property.price)}
-                    </span>
-                    <p className="text-sm text-muted-foreground">
-                      {property.pricing_type === 'per_stay' ? 'السعر للإقامة الكاملة' : 'السعر لليلة الواحدة'}
-                    </p>
+                  <div className="mt-4">
+                    {property.pricing_type === 'per_stay' ? (
+                      <div className="flex flex-col gap-1">
+                        <span className="font-display text-3xl font-bold text-gold">
+                          {formatPrice(property.price)}
+                        </span>
+                        <p className="text-sm text-muted-foreground">السعر للإقامة الكاملة</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-x-6 gap-y-2 p-4 bg-secondary/50 rounded-xl border border-border max-w-xl">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-muted-foreground mb-1">وسط الأسبوع (السبت - الأربعاء)</span>
+                          <span className="font-display text-2xl font-bold text-gold">
+                            {formatPrice(property.price)}
+                            <span className="text-xs text-muted-foreground font-normal"> / ليلة</span>
+                          </span>
+                        </div>
+                        {property.price_weekend && (
+                          <div className="flex flex-col border-r border-border pr-6">
+                            <span className="text-xs text-muted-foreground mb-1">نهاية الأسبوع (الخميس - الجمعة)</span>
+                            <span className="font-display text-2xl font-bold text-gold">
+                              {formatPrice(property.price_weekend)}
+                              <span className="text-xs text-muted-foreground font-normal"> / ليلة</span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Quick Stats */}
-                <div className="mb-8 grid grid-cols-3 gap-4 rounded-xl bg-secondary p-4">
+                <div className={`mb-8 grid gap-4 rounded-xl bg-secondary p-4 ${property.rent_count && property.rent_count > 0 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'
+                  }`}>
                   {property.bedrooms > 0 && (
                     <div className="flex flex-col items-center gap-1 text-center">
                       <BedDouble className="h-6 w-6 text-gold" />
@@ -314,6 +337,13 @@ const PropertyDetails = () => {
                     <span className="text-sm font-medium text-foreground">{property.bathrooms}</span>
                     <span className="text-xs text-muted-foreground">حمامات</span>
                   </div>
+                  {property.rent_count && property.rent_count > 0 ? (
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <History className="h-6 w-6 text-gold" />
+                      <span className="text-sm font-medium text-foreground">{property.rent_count} {property.rent_count === 1 ? 'مرة' : 'مرات'}</span>
+                      <span className="text-xs text-muted-foreground">تم تأجيرها سابقاً</span>
+                    </div>
+                  ) : null}
                   <div className="flex flex-col items-center gap-1 text-center">
                     <Calendar className="h-6 w-6 text-gold" />
                     <span className="text-sm font-medium text-foreground">
@@ -381,6 +411,7 @@ const PropertyDetails = () => {
                     propertyId={property.id}
                     propertyTitle={property.title}
                     propertyPrice={property.price}
+                    propertyPriceWeekend={property.price_weekend}
                     propertyLocation={property.location}
                     pricingType={property.pricing_type || 'per_night'}
                     checkIn={selectedCheckIn}
@@ -404,6 +435,7 @@ const PropertyDetails = () => {
           propertyId={property.id}
           propertyTitle={property.title}
           propertyPrice={property.price}
+          propertyPriceWeekend={property.price_weekend}
           propertyLocation={property.location}
           pricingType={property.pricing_type || 'per_night'}
           checkIn={selectedCheckIn}

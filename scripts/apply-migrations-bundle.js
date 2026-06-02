@@ -24,6 +24,11 @@ const MIGRATION_ORDER = [
   "20260202132700_update_property_types.sql",
   "20260205_add_land_type.sql",
   "20260228130000_create_banners_table.sql",
+  "20260525120000_add_group_type_to_properties.sql",
+  "20260525130000_deprecate_area_columns.sql",
+  "20260525_reservations_availability.sql",
+  "20260602120000_add_price_weekend.sql",
+  "20260602130000_add_rent_count.sql",
 ];
 
 let sql = `-- Shima AK — fresh Supabase project bootstrap

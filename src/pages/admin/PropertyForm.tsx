@@ -37,6 +37,8 @@ const PropertyForm = () => {
             title: '',
             type: platformScope.propertyType,
             price: '',
+            price_weekend: '',
+            rent_count: '0',
             location: '',
             bedrooms: '',
             bathrooms: '',
@@ -81,6 +83,8 @@ const PropertyForm = () => {
                         title: data.title,
                         type: platformScope.propertyType,
                         price: data.price.toString(),
+                        price_weekend: (data as any).price_weekend ? (data as any).price_weekend.toString() : '',
+                        rent_count: (data as any).rent_count ? (data as any).rent_count.toString() : '0',
                         location: data.location,
                         bedrooms: data.bedrooms.toString(),
                         bathrooms: data.bathrooms.toString(),
@@ -141,6 +145,8 @@ const PropertyForm = () => {
             title: formData.title,
             type: platformScope.propertyType,
             price: parseFloat(formData.price),
+            price_weekend: formData.price_weekend ? parseFloat(formData.price_weekend) : null,
+            rent_count: parseInt(formData.rent_count) || 0,
             location: formData.location,
             area: '',
             bedrooms: parseInt(formData.bedrooms) || 0,
@@ -227,9 +233,9 @@ const PropertyForm = () => {
                     <p className="text-xs text-muted-foreground">نوع الإعلان: فيلا — إيجار</p>
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-2">
+                <div className="grid gap-6 sm:grid-cols-3">
                     <div className="space-y-2">
-                        <Label htmlFor="price">السعر</Label>
+                        <Label htmlFor="price">السعر لوسط الأسبوع (السبت - الأربعاء)</Label>
                         <Input
                             id="price"
                             type="number"
@@ -237,6 +243,18 @@ const PropertyForm = () => {
                             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                             required
                             min="0"
+                            placeholder="شيكل / ليلة"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="price_weekend">السعر لنهاية الأسبوع (الخميس - الجمعة)</Label>
+                        <Input
+                            id="price_weekend"
+                            type="number"
+                            value={formData.price_weekend}
+                            onChange={(e) => setFormData({ ...formData, price_weekend: e.target.value })}
+                            min="0"
+                            placeholder="سعر وسط الأسبوع كافتراضي"
                         />
                     </div>
                     <div className="space-y-2">
@@ -286,7 +304,7 @@ const PropertyForm = () => {
                     />
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-2">
+                <div className="grid gap-6 sm:grid-cols-3">
                     <div className="space-y-2">
                         <Label htmlFor="bedrooms">عدد غرف النوم</Label>
                         <Input
@@ -304,6 +322,16 @@ const PropertyForm = () => {
                             type="number"
                             value={formData.bathrooms}
                             onChange={(e) => setFormData({ ...formData, bathrooms: e.target.value })}
+                            min="0"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="rent_count">عدد مرات الحجز السابقة</Label>
+                        <Input
+                            id="rent_count"
+                            type="number"
+                            value={formData.rent_count}
+                            onChange={(e) => setFormData({ ...formData, rent_count: e.target.value })}
                             min="0"
                         />
                     </div>

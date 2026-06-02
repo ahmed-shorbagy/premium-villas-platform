@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Star, ArrowUpLeft } from "lucide-react";
+import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Carousel,
@@ -123,8 +123,16 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
 
         <div className="absolute bottom-3 start-3 end-3 flex items-end justify-between gap-2">
           <div>
-            <p className="font-display text-2xl font-semibold text-white">{formatPrice(property.price)}</p>
-            <p className="text-xs text-white/70">/ ليلة</p>
+            <p className="font-display text-2xl font-semibold text-white">
+              {formatPrice(
+                (new Date().getDay() === 4 || new Date().getDay() === 5)
+                  ? property.price_weekend ?? property.price
+                  : property.price
+              )}
+            </p>
+            <p className="text-xs text-white/70">
+              / ليلة {property.price_weekend ? ((new Date().getDay() === 4 || new Date().getDay() === 5) ? "(نهاية الأسبوع)" : "(وسط الأسبوع)") : ""}
+            </p>
           </div>
           <Badge variant="rent" className="normal-case">
             إيجار
@@ -144,17 +152,25 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
 
         <div className="shima-divider" />
 
-        <div className="flex items-center gap-5 text-sm text-muted-foreground">
-          {property.bedrooms > 0 && (
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center gap-5">
+            {property.bedrooms > 0 && (
+              <span className="flex items-center gap-1.5">
+                <BedDouble className="h-4 w-4 text-brand/70" />
+                {property.bedrooms}
+              </span>
+            )}
             <span className="flex items-center gap-1.5">
-              <BedDouble className="h-4 w-4 text-brand/70" />
-              {property.bedrooms}
+              <Bath className="h-4 w-4 text-brand/70" />
+              {property.bathrooms}
             </span>
-          )}
-          <span className="flex items-center gap-1.5">
-            <Bath className="h-4 w-4 text-brand/70" />
-            {property.bathrooms}
-          </span>
+          </div>
+          {property.rent_count && property.rent_count > 0 ? (
+            <span className="flex items-center gap-1 bg-gold/10 px-2 py-0.5 rounded border border-gold/20 text-gold text-xs font-semibold">
+              <History className="h-3 w-3" />
+              حُجزت {property.rent_count} {property.rent_count === 1 ? 'مرة' : 'مرات'}
+            </span>
+          ) : null}
         </div>
       </div>
     </Link>

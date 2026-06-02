@@ -60,6 +60,8 @@ export type Database = {
           images: string[] | null
           location: string
           price: number
+          price_weekend: number | null
+          rent_count: number | null
           title: string
           type: string
           updated_at: string
@@ -77,6 +79,8 @@ export type Database = {
           images?: string[] | null
           location: string
           price: number
+          price_weekend?: number | null
+          rent_count?: number | null
           title: string
           type: string
           updated_at?: string
@@ -94,6 +98,8 @@ export type Database = {
           images?: string[] | null
           location?: string
           price?: number
+          price_weekend?: number | null
+          rent_count?: number | null
           title?: string
           type?: string
           updated_at?: string

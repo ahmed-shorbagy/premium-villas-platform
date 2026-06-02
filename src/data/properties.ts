@@ -5,6 +5,8 @@ export interface Property {
   title: string;
   type: 'apartment' | 'villa' | 'commercial' | 'duplex' | 'office' | 'land';
   price: number;
+  price_weekend?: number | null;
+  rent_count?: number | null;
   location: string;
   bedrooms: number;
   bathrooms: number;
@@ -22,6 +24,7 @@ export interface Property {
   contact_phone?: string;
   contact_email?: string;
   contact_location?: string;
+  description?: string | null;
 }
 
 

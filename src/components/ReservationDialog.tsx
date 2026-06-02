@@ -30,6 +30,7 @@ interface ReservationDialogProps {
   propertyId: string;
   propertyTitle: string;
   propertyPrice: number;
+  propertyPriceWeekend?: number | null;
   propertyLocation: string;
   pricingType: 'per_night' | 'per_stay';
   children: React.ReactNode;
@@ -42,6 +43,7 @@ const ReservationDialog = ({
   propertyId,
   propertyTitle,
   propertyPrice,
+  propertyPriceWeekend,
   propertyLocation,
   pricingType,
   children,
@@ -75,10 +77,41 @@ const ReservationDialog = ({
     return d > 0 ? d : 0;
   }, [formData.check_in, formData.check_out]);
 
-  const totalPrice = useMemo(() => {
-    if (pricingType === 'per_stay') return propertyPrice;
-    return numNights * propertyPrice;
-  }, [numNights, propertyPrice, pricingType]);
+  const priceDetails = useMemo(() => {
+    if (!formData.check_in || !formData.check_out || numNights <= 0) {
+      return { total: 0, weekdayNights: 0, weekendNights: 0 };
+    }
+
+    if (pricingType === 'per_stay') {
+      return { total: propertyPrice, weekdayNights: 0, weekendNights: 0 };
+    }
+
+    let total = 0;
+    let weekdayNights = 0;
+    let weekendNights = 0;
+
+    const start = new Date(formData.check_in);
+    for (let i = 0; i < numNights; i++) {
+      const currentDate = new Date(start);
+      currentDate.setDate(start.getDate() + i);
+      const day = currentDate.getDay();
+      
+      // Weekends: Thursday (4) and Friday (5)
+      const isWeekend = day === 4 || day === 5;
+      
+      if (isWeekend && propertyPriceWeekend !== undefined && propertyPriceWeekend !== null) {
+        total += propertyPriceWeekend;
+        weekendNights++;
+      } else {
+        total += propertyPrice;
+        weekdayNights++;
+      }
+    }
+
+    return { total, weekdayNights, weekendNights };
+  }, [formData.check_in, formData.check_out, numNights, propertyPrice, propertyPriceWeekend, pricingType]);
+
+  const totalPrice = priceDetails.total;
 
   const formatPrice = (p: number) =>
     new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 0 }).format(p) + ' شيكل';
@@ -353,15 +386,28 @@ const ReservationDialog = ({
 
               {/* Price summary */}
               {numNights > 0 && (
-                <div className="rounded-lg border border-gold/30 bg-gold/5 p-3">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-muted-foreground">
-                      {pricingType === 'per_night'
-                        ? `${formatPrice(propertyPrice)} × ${numNights} ${numNights === 1 ? 'ليلة' : 'ليالي'}`
-                        : 'إقامة كاملة'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-bold">
+                <div className="rounded-lg border border-gold/30 bg-gold/5 p-3 space-y-1.5 text-right">
+                  {pricingType === 'per_stay' ? (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">إقامة كاملة</span>
+                    </div>
+                  ) : (
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      {priceDetails.weekdayNights > 0 && (
+                        <div className="flex justify-between">
+                          <span>وسط الأسبوع ({formatPrice(propertyPrice)} × {priceDetails.weekdayNights} {priceDetails.weekdayNights === 1 ? 'ليلة' : 'ليالي'})</span>
+                          <span>{formatPrice(propertyPrice * priceDetails.weekdayNights)}</span>
+                        </div>
+                      )}
+                      {priceDetails.weekendNights > 0 && propertyPriceWeekend && (
+                        <div className="flex justify-between text-gold/90 font-medium">
+                          <span>نهاية الأسبوع ({formatPrice(propertyPriceWeekend)} × {priceDetails.weekendNights} {priceDetails.weekendNights === 1 ? 'ليلة' : 'ليالي'})</span>
+                          <span>{formatPrice(propertyPriceWeekend * priceDetails.weekendNights)}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div className="border-t border-gold/20 pt-1.5 flex justify-between font-bold">
                     <span>الإجمالي:</span>
                     <span className="text-gold text-lg">{formatPrice(totalPrice)}</span>
                   </div>
