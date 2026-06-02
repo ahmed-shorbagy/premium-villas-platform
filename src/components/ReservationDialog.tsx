@@ -111,7 +111,7 @@ const ReservationDialog = ({
     return { total, weekdayNights, weekendNights };
   }, [formData.check_in, formData.check_out, numNights, propertyPrice, propertyPriceWeekend, pricingType]);
 
-  const totalPrice = priceDetails.total;
+  const totalPrice = propertyPrice;
 
   const formatPrice = (p: number) =>
     new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 0 }).format(p) + ' شيكل';
@@ -125,11 +125,6 @@ const ReservationDialog = ({
     } else {
       const cleaned = formData.customer_phone.replace(/\D/g, '');
       if (cleaned.length < 9) errs.customer_phone = 'يرجى إدخال رقم هاتف صحيح';
-    }
-    if (!formData.check_in) errs.check_in = 'تاريخ الدخول مطلوب';
-    if (!formData.check_out) errs.check_out = 'تاريخ الخروج مطلوب';
-    if (formData.check_in && formData.check_out && formData.check_out <= formData.check_in) {
-      errs.check_out = 'تاريخ الخروج يجب أن يكون بعد تاريخ الدخول';
     }
 
     setErrors(errs);
@@ -147,12 +142,12 @@ const ReservationDialog = ({
       customer_phone: formData.customer_phone.trim(),
       customer_email: formData.customer_email.trim() || null,
       customer_notes: formData.customer_notes.trim() || null,
-      check_in: formData.check_in,
-      check_out: formData.check_out,
+      check_in: null,
+      check_out: null,
       num_guests: parseInt(formData.num_guests) || 1,
       pricing_type: pricingType,
       price_per_night: pricingType === 'per_night' ? propertyPrice : null,
-      total_price: totalPrice,
+      total_price: null,
     });
 
     setIsSubmitting(false);
@@ -170,9 +165,6 @@ const ReservationDialog = ({
         property_id: propertyId,
         metadata: {
           property_title: propertyTitle,
-          check_in: formData.check_in,
-          check_out: formData.check_out,
-          total_price: totalPrice,
         },
       });
     } catch {
@@ -180,12 +172,8 @@ const ReservationDialog = ({
     }
 
     // Build WhatsApp message
-    const message = `طلب حجز فيلا
+    const message = `طلب استفسار/حجز فيلا
 الفيلا: ${propertyTitle}
-تاريخ الدخول: ${formData.check_in}
-تاريخ الخروج: ${formData.check_out}
-عدد الليالي: ${numNights}
-السعر الإجمالي: ${formatPrice(totalPrice)}
 رقم العميل: \u202A${formData.customer_phone}\u202C
 الملاحظات: ${formData.customer_notes || 'لا يوجد'}`;
 
@@ -207,8 +195,8 @@ const ReservationDialog = ({
         customer_phone: '',
         customer_email: '',
         customer_notes: '',
-        check_in: preCheckIn || '',
-        check_out: preCheckOut || '',
+        check_in: '',
+        check_out: '',
         num_guests: '1',
       });
       setErrors({});
@@ -247,7 +235,7 @@ const ReservationDialog = ({
                 حجز الفيلا
               </DialogTitle>
               <DialogDescription className="text-right">
-                أدخل بياناتك وتواريخ الإقامة وسنتواصل معك لتأكيد الحجز
+                أدخل بياناتك وسنتواصل معك بأقرب وقت لتأكيد الحجز وتحديد التواريخ
               </DialogDescription>
             </DialogHeader>
 
@@ -330,40 +318,6 @@ const ReservationDialog = ({
                 />
               </div>
 
-              {/* Dates */}
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="res-checkin">تاريخ الدخول *</Label>
-                  <Input
-                    id="res-checkin"
-                    type="date"
-                    value={formData.check_in}
-                    onChange={(e) =>
-                      setFormData({ ...formData, check_in: e.target.value })
-                    }
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                  {errors.check_in && (
-                    <p className="text-xs text-destructive">{errors.check_in}</p>
-                  )}
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="res-checkout">تاريخ الخروج *</Label>
-                  <Input
-                    id="res-checkout"
-                    type="date"
-                    value={formData.check_out}
-                    onChange={(e) =>
-                      setFormData({ ...formData, check_out: e.target.value })
-                    }
-                    min={formData.check_in || new Date().toISOString().split('T')[0]}
-                  />
-                  {errors.check_out && (
-                    <p className="text-xs text-destructive">{errors.check_out}</p>
-                  )}
-                </div>
-              </div>
-
               {/* Guests */}
               <div className="space-y-1.5">
                 <Label htmlFor="res-guests" className="flex items-center gap-1.5">
@@ -399,35 +353,6 @@ const ReservationDialog = ({
                 />
               </div>
 
-              {/* Price summary */}
-              {numNights > 0 && (
-                <div className="rounded-lg border border-gold/30 bg-gold/5 p-3 space-y-1.5 text-right">
-                  {pricingType === 'per_stay' ? (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">إقامة كاملة</span>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-muted-foreground space-y-1">
-                      {priceDetails.weekdayNights > 0 && (
-                        <div className="flex justify-between">
-                          <span>وسط الأسبوع ({formatPrice(propertyPrice)} × {priceDetails.weekdayNights} {priceDetails.weekdayNights === 1 ? 'ليلة' : 'ليالي'})</span>
-                          <span>{formatPrice(propertyPrice * priceDetails.weekdayNights)}</span>
-                        </div>
-                      )}
-                      {priceDetails.weekendNights > 0 && propertyPriceWeekend && (
-                        <div className="flex justify-between text-gold/90 font-medium">
-                          <span>نهاية الأسبوع ({formatPrice(propertyPriceWeekend)} × {priceDetails.weekendNights} {priceDetails.weekendNights === 1 ? 'ليلة' : 'ليالي'})</span>
-                          <span>{formatPrice(propertyPriceWeekend * priceDetails.weekendNights)}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div className="border-t border-gold/20 pt-1.5 flex justify-between font-bold">
-                    <span>الإجمالي:</span>
-                    <span className="text-gold text-lg">{formatPrice(totalPrice)}</span>
-                  </div>
-                </div>
-              )}
 
               {errors.submit && (
                 <p className="text-sm text-destructive text-center">{errors.submit}</p>
