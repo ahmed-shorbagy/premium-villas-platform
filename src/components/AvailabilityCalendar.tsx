@@ -207,6 +207,39 @@ const AvailabilityCalendar = ({ propertyId, onDateSelect }: AvailabilityCalendar
               الآن اختر تاريخ الخروج
             </p>
           )}
+
+          {/* List of upcoming periods */}
+          {periods.filter(p => !isBefore(new Date(p.available_to), today)).length > 0 && (
+            <div className="mt-5 border-t border-border pt-4">
+              <h4 className="text-xs font-semibold text-foreground mb-3 flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 text-brand" />
+                فترات التوفر القادمة:
+              </h4>
+              <div className="space-y-2 max-h-36 overflow-y-auto pe-1 custom-scrollbar">
+                {periods
+                  .filter(p => !isBefore(new Date(p.available_to), today))
+                  .sort((a, b) => new Date(a.available_from).getTime() - new Date(b.available_from).getTime())
+                  .map((period, i) => (
+                  <div key={i} className="flex justify-between items-center text-xs bg-secondary/30 p-2.5 rounded-lg border border-border/50">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-muted-foreground font-medium">
+                        من: <span className="text-foreground">{format(new Date(period.available_from), 'd MMM yyyy', { locale: ar })}</span>
+                      </span>
+                      <span className="text-muted-foreground font-medium">
+                        إلى: <span className="text-foreground">{format(new Date(period.available_to), 'd MMM yyyy', { locale: ar })}</span>
+                      </span>
+                    </div>
+                    {period.price_override && (
+                      <div className="flex flex-col items-end">
+                        <span className="text-[10px] text-muted-foreground">سعر خاص</span>
+                        <span className="text-gold font-bold">{period.price_override} ₪/ليلة</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

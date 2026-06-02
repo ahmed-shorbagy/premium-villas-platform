@@ -183,7 +183,7 @@ const PropertyForm = () => {
             error = insertError;
 
             if (!insertError && insertData && formData.available_from && formData.available_to) {
-                await supabase.from('property_availability').insert({
+                await supabase.from('villa_availability').insert({
                     property_id: insertData.id,
                     available_from: formData.available_from,
                     available_to: formData.available_to
