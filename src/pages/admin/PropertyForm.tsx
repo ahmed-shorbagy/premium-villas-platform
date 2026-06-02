@@ -466,8 +466,6 @@ const PropertyForm = () => {
                                 <Input
                                     id="available_from"
                                     type="date"
-                                    dir="ltr"
-                                    className="text-right"
                                     value={formData.available_from}
                                     onChange={(e) => setFormData({ ...formData, available_from: e.target.value })}
                                     required
@@ -478,8 +476,6 @@ const PropertyForm = () => {
                                 <Input
                                     id="available_to"
                                     type="date"
-                                    dir="ltr"
-                                    className="text-right"
                                     value={formData.available_to}
                                     onChange={(e) => setFormData({ ...formData, available_to: e.target.value })}
                                     required

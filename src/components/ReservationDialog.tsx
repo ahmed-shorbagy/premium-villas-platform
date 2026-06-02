@@ -337,8 +337,6 @@ const ReservationDialog = ({
                   <Input
                     id="res-checkin"
                     type="date"
-                    dir="ltr"
-                    className="text-right"
                     value={formData.check_in}
                     onChange={(e) =>
                       setFormData({ ...formData, check_in: e.target.value })
@@ -354,8 +352,6 @@ const ReservationDialog = ({
                   <Input
                     id="res-checkout"
                     type="date"
-                    dir="ltr"
-                    className="text-right"
                     value={formData.check_out}
                     onChange={(e) =>
                       setFormData({ ...formData, check_out: e.target.value })
