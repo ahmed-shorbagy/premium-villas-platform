@@ -108,7 +108,6 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />
 
         <div className="absolute start-3 top-3 flex flex-wrap gap-2">
-          <Badge variant="property">{propertyTypeLabels[property.type] || property.type}</Badge>
           {property.groupType && (
             <Badge variant="secondary" className="normal-case">
               {groupTypeLabels[property.groupType]}
