@@ -5,10 +5,11 @@ import Hero from "@/components/Hero";
 import PropertyFilters from "@/components/PropertyFilters";
 import PropertyGrid from "@/components/PropertyGrid";
 import PropertyHorizontalList from "@/components/PropertyHorizontalList";
-import AdBanner from "@/components/AdBanner";
+import BannerCarousel from "@/components/BannerCarousel";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { useProperties } from "@/hooks/useProperties";
+import { useBanners } from "@/hooks/useBanners";
 import { siteConfig, platformScope } from "@/config";
 import type { GroupTypeId } from "@/config";
 import type { HeroSearchFilters } from "@/components/Hero";
@@ -16,6 +17,7 @@ import type { HeroSearchFilters } from "@/components/Hero";
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { properties, loading } = useProperties();
+  const { banners, loading: bannersLoading } = useBanners();
   const [sortBy, setSortBy] = useState("newest");
   const [searchFilters, setSearchFilters] = useState<HeroSearchFilters>({
     groupType: (searchParams.get("groupType") as GroupTypeId) || "",
@@ -76,7 +78,12 @@ const Index = () => {
       <main className="flex-1">
         <Hero onSearch={handleSearch} initialValues={searchFilters} />
 
-        <AdBanner />
+        {/* Dynamic Banners */}
+        {!bannersLoading && banners && banners.length > 0 && (
+          <div className="container -mt-6 mb-2 px-4 relative z-10">
+            <BannerCarousel banners={banners} />
+          </div>
+        )}
 
         {topVillasThisWeek.length > 0 && (
           <section className="relative -mt-6 scroll-mt-28 pb-10 pt-4 md:-mt-10">
