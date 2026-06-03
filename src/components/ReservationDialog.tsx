@@ -16,6 +16,7 @@ import {
   Phone,
   CalendarDays,
   User,
+  MapPin,
   Mail,
   Users,
   FileText,
@@ -58,6 +59,7 @@ const ReservationDialog = ({
   const [formData, setFormData] = useState({
     customer_name: '',
     customer_phone: '',
+    customer_location: '',
     customer_email: '',
     customer_notes: '',
     check_in: preCheckIn || '',
@@ -172,8 +174,18 @@ const ReservationDialog = ({
     }
 
     // Build WhatsApp message
+    let datesText = 'لم يتم التحديد';
+    if (formData.check_in && formData.check_out) {
+      datesText = `من ${formData.check_in} إلى ${formData.check_out}`;
+    } else if (formData.check_in) {
+      datesText = `من ${formData.check_in}`;
+    }
+
     const message = `طلب استفسار/حجز فيلا
 الفيلا: ${propertyTitle}
+الاسم: ${formData.customer_name}
+المدينة/المكان: ${formData.customer_location || 'غير محدد'}
+تاريخ الحجز: ${datesText}
 رقم العميل: \u202A${formData.customer_phone}\u202C
 الملاحظات: ${formData.customer_notes || 'لا يوجد'}`;
 
@@ -193,6 +205,7 @@ const ReservationDialog = ({
       setFormData({
         customer_name: '',
         customer_phone: '',
+        customer_location: '',
         customer_email: '',
         customer_notes: '',
         check_in: '',
@@ -269,6 +282,22 @@ const ReservationDialog = ({
                 {errors.customer_name && (
                   <p className="text-xs text-destructive">{errors.customer_name}</p>
                 )}
+              </div>
+
+              {/* Location */}
+              <div className="space-y-1.5">
+                <Label htmlFor="res-location" className="flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5" />
+                  المدينة / مكان الإقامة
+                </Label>
+                <Input
+                  id="res-location"
+                  placeholder="مثال: الرياض، دبي، إلخ"
+                  value={formData.customer_location}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_location: e.target.value })
+                  }
+                />
               </div>
 
               {/* Phone */}
