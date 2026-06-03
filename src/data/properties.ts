@@ -26,6 +26,7 @@ export interface Property {
   contact_email?: string;
   contact_location?: string;
   description?: string | null;
+  is_negotiable?: boolean;
 }
 
 

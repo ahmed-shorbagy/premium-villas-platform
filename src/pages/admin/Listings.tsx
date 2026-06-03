@@ -30,6 +30,7 @@ interface Property {
   featured: boolean;
   listing_type: 'sale' | 'rent';
   created_at: string;
+  is_negotiable?: boolean;
 }
 
 const Listings = () => {

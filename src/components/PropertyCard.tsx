@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, Eye, Users } from "lucide-react";
+import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, Eye, Users, MessageSquareMore } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import { Property, formatPrice, propertyTypeLabels } from "@/data/properties";
@@ -142,6 +142,12 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
             <p className="text-xs text-white/70">
               / ليلة {property.price_weekend ? ((new Date().getDay() === 4 || new Date().getDay() === 5) ? "(نهاية الأسبوع)" : "(وسط الأسبوع)") : ""}
             </p>
+            {property.is_negotiable && (
+              <div className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-[#fdf3d1] px-2 py-0.5 text-[11px] font-medium text-[#7a5c18]">
+                السعر قابل للتفاوض
+                <MessageSquareMore className="h-3 w-3" />
+              </div>
+            )}
           </div>
           <Badge variant="rent" className="normal-case">
             إيجار

@@ -15,6 +15,7 @@ import {
   Loader2,
   History,
   Users,
+  MessageSquareMore,
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -62,6 +63,7 @@ interface PropertyDetailsType {
   installment_period?: string;
   installment_value?: number;
   pricing_type?: 'per_night' | 'per_stay';
+  is_negotiable?: boolean;
 }
 
 const PropertyDetails = () => {
@@ -113,6 +115,7 @@ const PropertyDetails = () => {
           installment_period: (data as any).installment_period,
           installment_value: (data as any).installment_value,
           pricing_type: (data as any).pricing_type || 'per_night',
+          is_negotiable: (data as any).is_negotiable || false,
         });
       } else {
         setProperty(null);
@@ -303,6 +306,12 @@ const PropertyDetails = () => {
                       </div>
                     )}
                   </div>
+                  {property.is_negotiable && (
+                    <div className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-[#fdf3d1] px-3 py-1.5 text-sm font-medium text-[#7a5c18]">
+                      السعر قابل للتفاوض
+                      <MessageSquareMore className="h-4 w-4" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Quick Stats */}

@@ -57,6 +57,7 @@ const PropertyForm = () => {
             installment_value: '',
             available_from: '',
             available_to: '',
+            is_negotiable: false,
         };
     });
 
@@ -104,6 +105,7 @@ const PropertyForm = () => {
                         installments_available: (data as any).installments_available || false,
                         installment_period: (data as any).installment_period || '',
                         installment_value: (data as any).installment_value ? (data as any).installment_value.toString() : '',
+                        is_negotiable: (data as any).is_negotiable || false,
                     });
                 }
                 setLoading(false);
@@ -169,6 +171,7 @@ const PropertyForm = () => {
             installments_available: false,
             installment_period: null,
             installment_value: null,
+            is_negotiable: formData.is_negotiable,
         };
 
         let error;
@@ -556,6 +559,17 @@ const PropertyForm = () => {
                         className="h-4 w-4 accent-primary"
                     />
                     <Label htmlFor="featured" className="cursor-pointer">تمييز هذه الفيلا (تظهر في الصفحة الرئيسية)</Label>
+                </div>
+
+                <div className="flex items-center gap-2 p-4 bg-muted/30 rounded-lg">
+                    <input
+                        type="checkbox"
+                        id="is_negotiable"
+                        checked={formData.is_negotiable}
+                        onChange={(e) => setFormData({ ...formData, is_negotiable: e.target.checked })}
+                        className="h-4 w-4 accent-primary"
+                    />
+                    <Label htmlFor="is_negotiable" className="cursor-pointer">السعر قابل للتفاوض</Label>
                 </div>
 
                 {!id && (
