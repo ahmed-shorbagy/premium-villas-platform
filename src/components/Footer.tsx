@@ -4,8 +4,11 @@ import { buildLocalizedPath } from "@/routes";
 import { siteConfig } from "@/config";
 import { getCopyrightLine } from "@/lib/brand";
 import { ShimaLogo } from "@/components/brand/ShimaLogo";
+import { useVillaOwnerWhatsApp } from '@/hooks/useReservations';
 
 const Footer = () => {
+  const { ownerWhatsApp, loading } = useVillaOwnerWhatsApp();
+
   return (
     <footer className="shima-footer relative mt-20 overflow-hidden">
       {/* Decorative gold glow at top */}
@@ -56,7 +59,11 @@ const Footer = () => {
             <ul className="space-y-3.5">
               <li className="flex items-center gap-3 text-sm text-white/55">
                 <Phone className="h-4 w-4 shrink-0 text-brand" />
-                <span dir="ltr">{siteConfig.contact.adminWhatsAppDisplay}</span>
+                <span dir="ltr">
+                  {loading 
+                    ? siteConfig.contact.adminWhatsAppDisplay 
+                    : (ownerWhatsApp || siteConfig.contact.adminWhatsAppDisplay)}
+                </span>
               </li>
               <li className="flex items-start gap-3 text-sm text-white/55">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />

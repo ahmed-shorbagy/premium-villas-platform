@@ -34,8 +34,8 @@ export const siteConfig = {
     ambientCycleSeconds: 3,
   },
   contact: {
-    adminWhatsApp: "+972594106293",
-    adminWhatsAppDisplay: "+972 59-410-6293",
+    adminWhatsApp: "+972597470912",
+    adminWhatsAppDisplay: "+972 59-747-0912",
     phone: "",
     email: "",
     locationAr: "",

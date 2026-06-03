@@ -53,7 +53,7 @@ const Settings = () => {
             رقم واتساب صاحبة الفلل
           </CardTitle>
           <CardDescription>
-            رقم الواتساب الذي سيتم إرسال إشعارات الحجوزات إليه. يجب إدخال الرقم مع رمز الدولة (مثال: 972594106293)
+            رقم الواتساب الذي سيتم إرسال إشعارات الحجوزات إليه، وهو أيضاً الرقم الذي سيظهر للعملاء في الموقع للتواصل. يجب إدخال الرقم مع رمز الدولة (مثال: +972597470912)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -70,7 +70,7 @@ const Settings = () => {
                   <Input
                     id="owner-whatsapp"
                     type="tel"
-                    placeholder="972594106293"
+                    placeholder="+972597470912"
                     value={editNumber}
                     onChange={(e) => setEditNumber(e.target.value.replace(/[^\d+\-\s]/g, ''))}
                     className="ps-10"
@@ -78,7 +78,7 @@ const Settings = () => {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  هذا الرقم سيستقبل تفاصيل كل حجز جديد (بدون رقم هاتف العميل). يمكنك تغييره في أي وقت.
+                  هذا الرقم سيظهر في أسفل الموقع للعملاء، وسيستقبل تفاصيل كل حجز جديد. يمكنك تغييره في أي وقت.
                 </p>
               </div>
 

@@ -26,6 +26,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { siteConfig } from '@/config/site';
 import { differenceInDays } from 'date-fns';
+import { useVillaOwnerWhatsApp } from '@/hooks/useReservations';
 
 interface ReservationDialogProps {
   propertyId: string;
@@ -51,6 +52,7 @@ const ReservationDialog = ({
   checkIn: preCheckIn,
   checkOut: preCheckOut,
 }: ReservationDialogProps) => {
+  const { ownerWhatsApp } = useVillaOwnerWhatsApp();
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -190,7 +192,7 @@ const ReservationDialog = ({
 الملاحظات: ${formData.customer_notes || 'لا يوجد'}`;
 
     const encodedMessage = encodeURIComponent(message);
-    const targetNumber = siteConfig.contact.adminWhatsApp.replace(/\D/g, '');
+    const targetNumber = (ownerWhatsApp || siteConfig.contact.adminWhatsApp).replace(/\D/g, '');
     const whatsappUrl = `https://wa.me/${targetNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
