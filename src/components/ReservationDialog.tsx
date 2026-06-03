@@ -183,8 +183,7 @@ const ReservationDialog = ({
       datesText = `من ${formData.check_in}`;
     }
 
-    const message = `طلب استفسار/حجز فيلا
-الفيلا: ${propertyTitle}
+    const message = `حجز جديد لفيلا
 الاسم: ${formData.customer_name}
 المدينة/المكان: ${formData.customer_location || 'غير محدد'}
 تاريخ الحجز: ${datesText}

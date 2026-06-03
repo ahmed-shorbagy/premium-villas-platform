@@ -94,8 +94,7 @@ const PreviewRequestDialog = ({
         // Build WhatsApp message - compact format
         // Build WhatsApp message - simple and clean format
         // \u202A and \u202C ensure the phone number is treated as LTR text preventing scrambling in RTL context
-        const message = `طلب حجز فيلا
-الفيلا: ${propertyTitle}
+        const message = `حجز جديد لفيلا
 السعر: ${propertyPrice}
 الموقع: ${propertyLocation}
 رقم العميل: \u202A${formatPhoneForDisplay(cleanedPhone)}\u202C`;
