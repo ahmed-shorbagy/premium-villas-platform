@@ -1,7 +1,7 @@
 -- Shima AK — fresh Supabase project bootstrap
 -- Project: idnehwkrufbgfmlkexvi
 -- Run once on an EMPTY database (SQL Editor → New query → Run)
--- Generated: 2026-06-03T05:41:15.993Z
+-- Generated: 2026-06-03T05:56:23.954Z
 
 
 -- ═══════════════════════════════════════
@@ -652,4 +652,13 @@ ALTER TABLE public.reservations ALTER COLUMN total_price DROP NOT NULL;
 -- Update group_type constraint to allow 'all'
 ALTER TABLE public.properties DROP CONSTRAINT IF EXISTS properties_group_type_check;
 ALTER TABLE public.properties ADD CONSTRAINT properties_group_type_check CHECK (group_type IN ('family', 'youth_male', 'women_only', 'all'));
+
+
+-- ═══════════════════════════════════════
+-- 20260603100000_add_max_guests.sql
+-- ═══════════════════════════════════════
+
+-- Add max_guests column to properties table
+ALTER TABLE public.properties
+ADD COLUMN IF NOT EXISTS max_guests INTEGER;
 

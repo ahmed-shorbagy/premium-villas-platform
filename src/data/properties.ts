@@ -7,6 +7,7 @@ export interface Property {
   price: number;
   price_weekend?: number | null;
   rent_count?: number | null;
+  max_guests?: number | null;
   location: string;
   bedrooms: number;
   bathrooms: number;

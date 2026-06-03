@@ -14,6 +14,7 @@ import {
   FileQuestion,
   Loader2,
   History,
+  Users,
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -43,6 +44,7 @@ interface PropertyDetailsType {
   price: number;
   price_weekend?: number | null;
   rent_count?: number | null;
+  max_guests?: number | null;
   location: string;
   bedrooms: number;
   bathrooms: number;
@@ -93,6 +95,7 @@ const PropertyDetails = () => {
           price: data.price,
           price_weekend: data.price_weekend ?? null,
           rent_count: data.rent_count ?? null,
+          max_guests: data.max_guests ?? null,
           location: data.location,
           bedrooms: data.bedrooms,
           bathrooms: data.bathrooms,
@@ -303,8 +306,7 @@ const PropertyDetails = () => {
                 </div>
 
                 {/* Quick Stats */}
-                <div className={`mb-8 grid gap-4 rounded-xl bg-secondary p-4 ${property.rent_count && property.rent_count > 0 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'
-                  }`}>
+                <div className="mb-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 rounded-xl bg-secondary p-4">
                   {property.bedrooms > 0 && (
                     <div className="flex flex-col items-center gap-1 text-center">
                       <BedDouble className="h-6 w-6 text-gold" />
@@ -322,6 +324,13 @@ const PropertyDetails = () => {
                       <History className="h-6 w-6 text-gold" />
                       <span className="text-sm font-medium text-foreground">{property.rent_count} {property.rent_count === 1 ? 'مرة' : 'مرات'}</span>
                       <span className="text-xs text-muted-foreground">تم تأجيرها سابقاً</span>
+                    </div>
+                  ) : null}
+                  {property.max_guests ? (
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <Users className="h-6 w-6 text-gold" />
+                      <span className="text-sm font-medium text-foreground">لغاية {property.max_guests} شخص</span>
+                      <span className="text-xs text-muted-foreground">الحد الأقصى</span>
                     </div>
                   ) : null}
                   <div className="flex flex-col items-center gap-1 text-center">

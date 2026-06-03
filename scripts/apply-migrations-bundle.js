@@ -31,6 +31,7 @@ const MIGRATION_ORDER = [
   "20260602130000_add_rent_count.sql",
   "20260602140000_make_reservation_dates_optional.sql",
   "20260603090000_update_group_type_check.sql",
+  "20260603100000_add_max_guests.sql",
 ];
 
 let sql = `-- Shima AK — fresh Supabase project bootstrap

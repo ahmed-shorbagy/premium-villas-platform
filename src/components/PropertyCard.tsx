@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, Eye } from "lucide-react";
+import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, Eye, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import { Property, formatPrice, propertyTypeLabels } from "@/data/properties";
@@ -168,6 +168,12 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
               <Bath className="h-4 w-4 text-brand/70" />
               {property.bathrooms}
             </span>
+            {property.max_guests ? (
+              <span className="flex items-center gap-1.5" title="الحد الأقصى للأفراد">
+                <Users className="h-4 w-4 text-brand/70" />
+                {property.max_guests}
+              </span>
+            ) : null}
           </div>
           {property.rent_count && property.rent_count > 0 ? (
             <span className="flex items-center gap-1.5 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100 text-cyan-600 text-xs font-medium">

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, ArrowRight } from 'lucide-react';
+import { Trash2, ArrowRight, Plus, Settings } from 'lucide-react';
 import { buildLocalizedPath } from '@/routes';
 import { featureLabels } from '@/data/properties';
 import { platformScope } from '@/config/platform';
@@ -19,6 +19,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const PropertyForm = () => {
     const { id } = useParams();
@@ -26,6 +27,7 @@ const PropertyForm = () => {
     const { toast } = useToast();
     const [loading, setLoading] = useState(!!id);
     const [uploading, setUploading] = useState(false);
+    const [customFeature, setCustomFeature] = useState('');
 
     // Initialize form data from localStorage if new property, or defaults
     const [formData, setFormData] = useState(() => {
@@ -39,6 +41,7 @@ const PropertyForm = () => {
             price: '',
             price_weekend: '',
             rent_count: '0',
+            max_guests: '12',
             location: '',
             bedrooms: '',
             bathrooms: '',
@@ -87,6 +90,7 @@ const PropertyForm = () => {
                         price: data.price.toString(),
                         price_weekend: (data as any).price_weekend ? (data as any).price_weekend.toString() : '',
                         rent_count: (data as any).rent_count ? (data as any).rent_count.toString() : '0',
+                        max_guests: (data as any).max_guests ? (data as any).max_guests.toString() : '12',
                         location: data.location,
                         bedrooms: data.bedrooms.toString(),
                         bathrooms: data.bathrooms.toString(),
@@ -149,6 +153,7 @@ const PropertyForm = () => {
             price: parseFloat(formData.price),
             price_weekend: formData.price_weekend ? parseFloat(formData.price_weekend) : null,
             rent_count: parseInt(formData.rent_count) || 0,
+            max_guests: parseInt(formData.max_guests) || 12,
             location: formData.location,
             area: '',
             bedrooms: parseInt(formData.bedrooms) || 0,
@@ -349,6 +354,16 @@ const PropertyForm = () => {
                             min="0"
                         />
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="max_guests">الحد الأقصى لعدد الأفراد</Label>
+                        <Input
+                            id="max_guests"
+                            type="number"
+                            value={formData.max_guests}
+                            onChange={(e) => setFormData({ ...formData, max_guests: e.target.value })}
+                            min="1"
+                        />
+                    </div>
                 </div>
 
                 <div className="space-y-2">
@@ -419,30 +434,116 @@ const PropertyForm = () => {
                 </div>
 
                 <div className="space-y-3">
-                    <Label>المميزات والمرافق</Label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 bg-muted/30 rounded-lg border border-border">
-                        {Object.entries(featureLabels).map(([key, label]) => (
-                            <div key={key} className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    id={`feature-${key}`}
-                                    checked={formData.features.includes(key)}
-                                    onChange={(e) => {
-                                        const checked = e.target.checked;
-                                        setFormData((prev: any) => ({
-                                            ...prev,
-                                            features: checked
-                                                ? [...prev.features, key]
-                                                : prev.features.filter((f: string) => f !== key),
-                                        }));
-                                    }}
-                                    className="h-4 w-4 accent-primary rounded border-primary focus:ring-primary"
-                                />
-                                <Label htmlFor={`feature-${key}`} className="cursor-pointer text-sm font-normal">
-                                    {label}
-                                </Label>
-                            </div>
-                        ))}
+                    <div className="flex items-center justify-between">
+                        <Label>المميزات والمرافق</Label>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button type="button" variant="outline" size="sm" className="gap-2">
+                                    <Settings className="h-4 w-4" />
+                                    إدارة المميزات
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" dir="rtl">
+                                <DialogHeader>
+                                    <DialogTitle>إدارة المميزات والمرافق</DialogTitle>
+                                </DialogHeader>
+                                
+                                {/* Custom Feature Input */}
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Input
+                                        placeholder="إضافة ميزة مخصصة (مثال: ملعب بادل)"
+                                        value={customFeature}
+                                        onChange={(e) => setCustomFeature(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (customFeature.trim() && !formData.features.includes(customFeature.trim())) {
+                                                    setFormData((prev: any) => ({
+                                                        ...prev,
+                                                        features: [...prev.features, customFeature.trim()]
+                                                    }));
+                                                    setCustomFeature('');
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <Button
+                                        type="button"
+                                        onClick={() => {
+                                            if (customFeature.trim() && !formData.features.includes(customFeature.trim())) {
+                                                setFormData((prev: any) => ({
+                                                    ...prev,
+                                                    features: [...prev.features, customFeature.trim()]
+                                                }));
+                                                setCustomFeature('');
+                                            }
+                                        }}
+                                    >
+                                        <Plus className="h-4 w-4 ml-2" />
+                                        إضافة
+                                    </Button>
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 bg-muted/30 rounded-lg border border-border">
+                                    {/* Standard Features */}
+                                    {Object.entries(featureLabels).map(([key, label]) => (
+                                        <div key={key} className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id={`feature-${key}`}
+                                                checked={formData.features.includes(key)}
+                                                onChange={(e) => {
+                                                    const checked = e.target.checked;
+                                                    setFormData((prev: any) => ({
+                                                        ...prev,
+                                                        features: checked
+                                                            ? [...prev.features, key]
+                                                            : prev.features.filter((f: string) => f !== key),
+                                                    }));
+                                                }}
+                                                className="h-4 w-4 accent-primary rounded border-primary focus:ring-primary"
+                                            />
+                                            <Label htmlFor={`feature-${key}`} className="cursor-pointer text-sm font-normal">
+                                                {label}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                    
+                                    {/* Custom added features */}
+                                    {formData.features.filter((f: string) => !featureLabels[f]).map((customKey: string) => (
+                                        <div key={customKey} className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id={`feature-${customKey}`}
+                                                checked={true}
+                                                onChange={() => {
+                                                    setFormData((prev: any) => ({
+                                                        ...prev,
+                                                        features: prev.features.filter((f: string) => f !== customKey),
+                                                    }));
+                                                }}
+                                                className="h-4 w-4 accent-primary rounded border-primary focus:ring-primary"
+                                            />
+                                            <Label htmlFor={`feature-${customKey}`} className="cursor-pointer text-sm font-normal text-primary">
+                                                {customKey}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 p-4 bg-muted/30 rounded-lg border border-border min-h-[60px]">
+                        {formData.features.length > 0 ? (
+                            formData.features.map((f: string) => (
+                                <span key={f} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                    {featureLabels[f] || f}
+                                </span>
+                            ))
+                        ) : (
+                            <span className="text-sm text-muted-foreground">لم يتم تحديد مميزات</span>
+                        )}
                     </div>
                 </div>
 
