@@ -17,44 +17,23 @@ const isVideo = (url: string) => /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
 function MediaRenderer({ url, alt, poster }: { url: string; alt: string; poster?: string }) {
   if (isVideo(url)) {
     return (
-      <div className="relative h-full w-full bg-black/10 overflow-hidden">
-        {/* Blurred backdrop to fill space */}
-        <video
-          src={url}
-          className="absolute inset-0 h-full w-full object-cover blur-xl scale-125 opacity-50 transition-transform duration-700 ease-out group-hover:scale-150 group-hover:opacity-70"
-          muted
-          playsInline
-          autoPlay
-          loop
-        />
-        {/* Unclipped main video */}
-        <video
-          src={url}
-          poster={poster}
-          className="relative h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105 drop-shadow-xl"
-          muted
-          playsInline
-          autoPlay
-          loop
-        />
-      </div>
+      <video
+        src={url}
+        poster={poster}
+        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        muted
+        playsInline
+        autoPlay
+        loop
+      />
     );
   }
   return (
-    <div className="relative h-full w-full bg-black/10 overflow-hidden">
-      {/* Blurred backdrop to fill space */}
-      <img
-        src={url}
-        alt={alt}
-        className="absolute inset-0 h-full w-full object-cover blur-xl scale-125 opacity-50 transition-transform duration-700 ease-out group-hover:scale-150 group-hover:opacity-70"
-      />
-      {/* Unclipped main image */}
-      <img
-        src={url}
-        alt={alt}
-        className="relative h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105 drop-shadow-xl"
-      />
-    </div>
+    <img
+      src={url}
+      alt={alt}
+      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+    />
   );
 }
 
@@ -78,40 +57,54 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
       to={buildLocalizedPath.propertyDetails(property.id)}
       className={cn("group shima-card block", className)}
     >
-      <div className="relative aspect-[5/4] overflow-hidden">
+      <div className="relative overflow-hidden">
         {(() => {
           const count = Math.min(mediaList.length, 3);
           const sliced = mediaList.slice(0, 3);
           const poster = property.images?.find(img => !isVideo(img)) || property.image;
+          const extraCount = mediaList.length - 3;
 
-          const renderMedia = (url: string, idx: number, isLast: boolean = false) => (
+          const renderMedia = (url: string, idx: number) => (
             <div key={idx} className="relative h-full w-full overflow-hidden bg-muted">
               <MediaRenderer url={url} alt={`${property.title} - ${idx + 1}`} poster={poster} />
-              {isLast && mediaList.length > 3 && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
-                  <span className="text-white font-display font-semibold text-xl">+{mediaList.length - 3}</span>
-                </div>
-              )}
             </div>
           );
 
           if (count === 1) {
-            return renderMedia(sliced[0], 0);
-          }
-          if (count === 2) {
             return (
-              <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
+              <div className="aspect-[16/10]">
                 {renderMedia(sliced[0], 0)}
-                {renderMedia(sliced[1], 1, true)}
               </div>
             );
           }
-          return (
-            <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
-              {renderMedia(sliced[0], 0)}
-              <div className="grid grid-rows-2 gap-1 h-full w-full">
+          if (count === 2) {
+            return (
+              <div className="grid grid-cols-2 gap-0.5 aspect-[16/10] bg-white">
+                {renderMedia(sliced[0], 0)}
                 {renderMedia(sliced[1], 1)}
-                {renderMedia(sliced[2], 2, true)}
+              </div>
+            );
+          }
+          /* 3 images: hero on top full-width, 2 thumbs in bottom row */
+          return (
+            <div className="flex flex-col gap-0.5 bg-white">
+              {/* Hero — full-width landscape */}
+              <div className="aspect-[16/8] overflow-hidden">
+                {renderMedia(sliced[0], 0)}
+              </div>
+              {/* Bottom row — two landscape cells */}
+              <div className="grid grid-cols-2 gap-0.5">
+                <div className="aspect-[16/10] overflow-hidden">
+                  {renderMedia(sliced[1], 1)}
+                </div>
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  {renderMedia(sliced[2], 2)}
+                  {extraCount > 0 && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+                      <span className="text-white font-display font-semibold text-lg">+{extraCount}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           );
