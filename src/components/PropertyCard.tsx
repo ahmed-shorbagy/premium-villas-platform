@@ -59,12 +59,48 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
     >
       <div className="relative aspect-[5/4] overflow-hidden">
         {(() => {
+          const count = Math.min(mediaList.length, 4);
+          const sliced = mediaList.slice(0, 4);
           const poster = property.images?.find(img => !isVideo(img)) || property.image;
-          const firstMedia = mediaList[0];
 
+          const renderMedia = (url: string, idx: number) => (
+            <div key={idx} className="relative h-full w-full overflow-hidden bg-muted">
+              <MediaRenderer url={url} alt={`${property.title} - ${idx + 1}`} poster={poster} />
+            </div>
+          );
+
+          if (count === 1) {
+            return renderMedia(sliced[0], 0);
+          }
+          if (count === 2) {
+            return (
+              <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
+                {renderMedia(sliced[0], 0)}
+                {renderMedia(sliced[1], 1)}
+              </div>
+            );
+          }
+          if (count === 3) {
+            return (
+              <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
+                {renderMedia(sliced[0], 0)}
+                <div className="grid grid-rows-2 gap-1 h-full w-full">
+                  {renderMedia(sliced[1], 1)}
+                  {renderMedia(sliced[2], 2)}
+                </div>
+              </div>
+            );
+          }
           return (
-            <div className="relative h-full w-full overflow-hidden bg-muted">
-              <MediaRenderer url={firstMedia} alt={property.title} poster={poster} />
+            <div className="grid grid-cols-2 h-full w-full gap-1 bg-white">
+              {renderMedia(sliced[0], 0)}
+              <div className="grid grid-rows-2 gap-1 h-full w-full">
+                {renderMedia(sliced[1], 1)}
+                <div className="grid grid-cols-2 gap-1 h-full w-full">
+                  {renderMedia(sliced[2], 2)}
+                  {renderMedia(sliced[3], 3)}
+                </div>
+              </div>
             </div>
           );
         })()}
