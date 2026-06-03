@@ -5,6 +5,7 @@ export const groupTypes = [
   { id: "family", labelAr: "إيجار للعائلات" },
   { id: "youth_male", labelAr: "شباب فقط" },
   { id: "women_only", labelAr: "نساء فقط" },
+  { id: "all", labelAr: "الكل (عائلات - شباب - بنات)" },
 ] as const;
 
 export type GroupTypeId = (typeof groupTypes)[number]["id"];

@@ -51,13 +51,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/%D8%B9%D9%82%D8%A7%D8%B1/fbef738c-2561-4799-bb9b-9b730aa931e3</loc>
+    <loc>http://localhost:5173/%D8%B9%D9%82%D8%A7%D8%B1/ffac3b59-3108-49d5-9e62-57cc75c04567</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/%D8%B9%D9%82%D8%A7%D8%B1/997e0c62-015e-4ea0-92fa-619e3f31809f</loc>
+    <loc>http://localhost:5173/%D8%B9%D9%82%D8%A7%D8%B1/10a5bce8-fe62-4fb1-a11a-ca7e6f56d710</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>http://localhost:5173/%D8%B9%D9%82%D8%A7%D8%B1/3c1232dc-a64e-4ff4-8a1f-e63684855083</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

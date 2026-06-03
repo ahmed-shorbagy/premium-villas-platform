@@ -36,26 +36,26 @@ const Index = () => {
   const handleSearch = (filters: HeroSearchFilters) => {
     setSearchFilters(filters);
     const params = new URLSearchParams();
-    if (filters.groupType && filters.groupType !== "all") params.set("groupType", filters.groupType);
+    if (filters.groupType && filters.groupType !== "any") params.set("groupType", filters.groupType);
     else params.delete("groupType");
 
-    if (filters.maxPrice && filters.maxPrice !== "all") params.set("maxPrice", filters.maxPrice);
+    if (filters.maxPrice && filters.maxPrice !== "any") params.set("maxPrice", filters.maxPrice);
     else params.delete("maxPrice");
 
-    if (filters.bedrooms && filters.bedrooms !== "all") params.set("bedrooms", filters.bedrooms);
+    if (filters.bedrooms && filters.bedrooms !== "any") params.set("bedrooms", filters.bedrooms);
     else params.delete("bedrooms");
     setSearchParams(params);
   };
 
   const filteredProperties = useMemo(() => {
     let filtered = [...properties];
-    if (searchFilters.groupType && searchFilters.groupType !== "all") {
-      filtered = filtered.filter((p) => p.groupType === searchFilters.groupType);
+    if (searchFilters.groupType && searchFilters.groupType !== "any") {
+      filtered = filtered.filter((p) => p.groupType === searchFilters.groupType || p.groupType === "all");
     }
-    if (searchFilters.maxPrice && searchFilters.maxPrice !== "all") {
+    if (searchFilters.maxPrice && searchFilters.maxPrice !== "any") {
       filtered = filtered.filter((p) => p.price <= parseInt(searchFilters.maxPrice));
     }
-    if (searchFilters.bedrooms && searchFilters.bedrooms !== "all") {
+    if (searchFilters.bedrooms && searchFilters.bedrooms !== "any") {
       filtered = filtered.filter((p) => p.bedrooms >= parseInt(searchFilters.bedrooms));
     }
     switch (sortBy) {

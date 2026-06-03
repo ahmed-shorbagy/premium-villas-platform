@@ -1,7 +1,7 @@
 -- Shima AK — fresh Supabase project bootstrap
 -- Project: idnehwkrufbgfmlkexvi
 -- Run once on an EMPTY database (SQL Editor → New query → Run)
--- Generated: 2026-06-02T05:15:35.843Z
+-- Generated: 2026-06-03T05:41:15.993Z
 
 
 -- ═══════════════════════════════════════
@@ -633,4 +633,23 @@ ALTER TABLE public.properties
 -- Add rent_count column to public.properties table
 ALTER TABLE public.properties 
   ADD COLUMN IF NOT EXISTS rent_count integer DEFAULT 0;
+
+
+-- ═══════════════════════════════════════
+-- 20260602140000_make_reservation_dates_optional.sql
+-- ═══════════════════════════════════════
+
+-- Make dates and price optional in reservations since the UI form will no longer require them
+ALTER TABLE public.reservations ALTER COLUMN check_in DROP NOT NULL;
+ALTER TABLE public.reservations ALTER COLUMN check_out DROP NOT NULL;
+ALTER TABLE public.reservations ALTER COLUMN total_price DROP NOT NULL;
+
+
+-- ═══════════════════════════════════════
+-- 20260603090000_update_group_type_check.sql
+-- ═══════════════════════════════════════
+
+-- Update group_type constraint to allow 'all'
+ALTER TABLE public.properties DROP CONSTRAINT IF EXISTS properties_group_type_check;
+ALTER TABLE public.properties ADD CONSTRAINT properties_group_type_check CHECK (group_type IN ('family', 'youth_male', 'women_only', 'all'));
 

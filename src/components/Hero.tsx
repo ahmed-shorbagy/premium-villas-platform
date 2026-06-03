@@ -111,7 +111,7 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
                       <SelectValue placeholder="نوع الإيجار" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">جميع الأنواع</SelectItem>
+                      <SelectItem value="any">جميع الأنواع</SelectItem>
                       {groupTypes.map((type) => (
                         <SelectItem key={type.id} value={type.id}>
                           {type.labelAr}
@@ -132,7 +132,7 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
                         <SelectValue placeholder="الميزانية / الليلة" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">أي ميزانية</SelectItem>
+                        <SelectItem value="any">أي ميزانية</SelectItem>
                         <SelectItem value="3000">حتى 3,000</SelectItem>
                         <SelectItem value="5000">حتى 5,000</SelectItem>
                         <SelectItem value="10000">حتى 10,000</SelectItem>
@@ -151,7 +151,7 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
                         <SelectValue placeholder="غرف النوم" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">أي عدد غرف</SelectItem>
+                        <SelectItem value="any">أي عدد غرف</SelectItem>
                         <SelectItem value="2">2+ غرف</SelectItem>
                         <SelectItem value="3">3+ غرف</SelectItem>
                         <SelectItem value="4">4+ غرف</SelectItem>
