@@ -17,23 +17,44 @@ const isVideo = (url: string) => /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
 function MediaRenderer({ url, alt, poster }: { url: string; alt: string; poster?: string }) {
   if (isVideo(url)) {
     return (
-      <video
-        src={url}
-        poster={poster}
-        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        muted
-        playsInline
-        autoPlay
-        loop
-      />
+      <div className="relative h-full w-full bg-black/10 overflow-hidden">
+        {/* Blurred backdrop to fill space */}
+        <video
+          src={url}
+          className="absolute inset-0 h-full w-full object-cover blur-xl scale-125 opacity-50 transition-transform duration-700 ease-out group-hover:scale-150 group-hover:opacity-70"
+          muted
+          playsInline
+          autoPlay
+          loop
+        />
+        {/* Unclipped main video */}
+        <video
+          src={url}
+          poster={poster}
+          className="relative h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105 drop-shadow-xl"
+          muted
+          playsInline
+          autoPlay
+          loop
+        />
+      </div>
     );
   }
   return (
-    <img
-      src={url}
-      alt={alt}
-      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-    />
+    <div className="relative h-full w-full bg-black/10 overflow-hidden">
+      {/* Blurred backdrop to fill space */}
+      <img
+        src={url}
+        alt={alt}
+        className="absolute inset-0 h-full w-full object-cover blur-xl scale-125 opacity-50 transition-transform duration-700 ease-out group-hover:scale-150 group-hover:opacity-70"
+      />
+      {/* Unclipped main image */}
+      <img
+        src={url}
+        alt={alt}
+        className="relative h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105 drop-shadow-xl"
+      />
+    </div>
   );
 }
 
