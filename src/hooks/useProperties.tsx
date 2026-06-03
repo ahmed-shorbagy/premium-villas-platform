@@ -38,6 +38,7 @@ export const useProperties = () => {
           createdAt: new Date(d.created_at),
           description: d.description,
           features: d.features,
+          is_negotiable: d.is_negotiable || false,
         }));
 
         setProperties(mapped);

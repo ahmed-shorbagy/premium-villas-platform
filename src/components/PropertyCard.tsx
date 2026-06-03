@@ -55,9 +55,9 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
   return (
     <Link
       to={buildLocalizedPath.propertyDetails(property.id)}
-      className={cn("group shima-card block", className)}
+      className={cn("group shima-card flex flex-col h-full", className)}
     >
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden w-full aspect-[4/3] bg-muted">
         {(() => {
           const count = Math.min(mediaList.length, 3);
           const sliced = mediaList.slice(0, 3);
@@ -72,32 +72,32 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
 
           if (count === 1) {
             return (
-              <div className="aspect-[16/10]">
+              <div className="h-full w-full">
                 {renderMedia(sliced[0], 0)}
               </div>
             );
           }
           if (count === 2) {
             return (
-              <div className="grid grid-cols-2 gap-0.5 aspect-[16/10] bg-white">
+              <div className="grid grid-cols-2 gap-0.5 h-full w-full bg-white">
                 {renderMedia(sliced[0], 0)}
                 {renderMedia(sliced[1], 1)}
               </div>
             );
           }
-          /* 3 images: hero on top full-width, 2 thumbs in bottom row */
+          /* 3 images: hero on top, 2 thumbs in bottom row */
           return (
-            <div className="flex flex-col gap-0.5 bg-white">
-              {/* Hero — full-width landscape */}
-              <div className="aspect-[16/8] overflow-hidden">
+            <div className="flex flex-col gap-0.5 h-full w-full bg-white">
+              {/* Hero */}
+              <div className="h-[60%] w-full overflow-hidden">
                 {renderMedia(sliced[0], 0)}
               </div>
-              {/* Bottom row — two landscape cells */}
-              <div className="grid grid-cols-2 gap-0.5">
-                <div className="aspect-[16/10] overflow-hidden">
+              {/* Bottom row */}
+              <div className="grid grid-cols-2 gap-0.5 h-[40%] w-full">
+                <div className="h-full w-full overflow-hidden">
                   {renderMedia(sliced[1], 1)}
                 </div>
-                <div className="relative aspect-[16/10] overflow-hidden">
+                <div className="relative h-full w-full overflow-hidden">
                   {renderMedia(sliced[2], 2)}
                   {extraCount > 0 && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
@@ -155,17 +155,18 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
         </div>
       </div>
 
-      <div className="space-y-3 p-5">
-        <h3 className="font-display text-lg font-semibold leading-snug text-foreground line-clamp-2 transition-colors group-hover:text-brand">
+      <div className="p-5 flex-1 flex flex-col">
+        <h3 className="font-display text-lg font-semibold leading-snug text-foreground line-clamp-2 transition-colors group-hover:text-brand mb-3">
           {property.title}
         </h3>
 
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-brand" />
           <span className="line-clamp-1">{property.location}</span>
         </div>
 
-        <div className="shima-divider" />
+        <div className="mt-auto">
+          <div className="shima-divider mb-3" />
 
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <div className="flex items-center gap-5">
@@ -192,6 +193,7 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
               {property.rent_count} حجز سابق
             </span>
           ) : null}
+        </div>
         </div>
       </div>
     </Link>
