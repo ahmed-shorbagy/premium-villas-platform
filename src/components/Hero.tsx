@@ -133,10 +133,12 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="any">أي ميزانية</SelectItem>
+                        <SelectItem value="500">حتى 500</SelectItem>
+                        <SelectItem value="1000">حتى 1,000</SelectItem>
+                        <SelectItem value="2000">حتى 2,000</SelectItem>
                         <SelectItem value="3000">حتى 3,000</SelectItem>
                         <SelectItem value="5000">حتى 5,000</SelectItem>
-                        <SelectItem value="10000">حتى 10,000</SelectItem>
-                        <SelectItem value="20000">حتى 20,000+</SelectItem>
+                        <SelectItem value="10000">حتى 10,000+</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
