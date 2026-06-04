@@ -162,6 +162,44 @@ export type Database = {
           }
         ]
       }
+      villa_availability: {
+        Row: {
+          id: string
+          property_id: string
+          available_from: string
+          available_to: string
+          price_override: number | null
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          property_id: string
+          available_from: string
+          available_to: string
+          price_override?: number | null
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          property_id?: string
+          available_from?: string
+          available_to?: string
+          price_override?: number | null
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "villa_availability_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       site_settings: {
         Row: {
           id: string

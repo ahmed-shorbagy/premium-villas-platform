@@ -121,18 +121,7 @@ const PropertyForm = () => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
 
-        // Check limits
-        const currentCount = type === 'card' ? formData.card_images.length : formData.gallery_images.length;
-        const maxLimit = type === 'card' ? 3 : 4;
-        
-        if (currentCount + files.length > maxLimit) {
-            toast({
-                title: 'تنبيه',
-                description: `لقد تجاوزت الحد المسموح. يمكنك إضافة ${maxLimit - currentCount} ملفات إضافية فقط في هذا القسم.`,
-                variant: 'destructive',
-            });
-            return;
-        }
+        // No limits on number of images
 
         setUploading(true);
         const uploadedUrls: string[] = [];
@@ -411,9 +400,9 @@ const PropertyForm = () => {
                         <div className="flex justify-between items-center mb-2">
                             <div>
                                 <Label htmlFor="card_images" className="text-base font-semibold text-primary">الوسائط المعروضة في البطاقة الرئيسية</Label>
-                                <p className="text-sm text-muted-foreground">يمكنك إضافة حتى 3 صور أو فيديوهات تظهر في بطاقة الفيلا الرئيسية.</p>
+                                <p className="text-sm text-muted-foreground">أضف الصور أو الفيديوهات التي تظهر في بطاقة الفيلا الرئيسية.</p>
                             </div>
-                            <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.card_images?.length || 0} / 3</span>
+                            <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.card_images?.length || 0}</span>
                         </div>
                         <div className="flex flex-col gap-4">
                             <Input
@@ -422,7 +411,7 @@ const PropertyForm = () => {
                                 accept="image/*,video/*"
                                 multiple
                                 onChange={(e) => handleImageUpload(e, 'card')}
-                                disabled={uploading || formData.card_images?.length >= 3}
+                                disabled={uploading}
                                 className="cursor-pointer"
                             />
                             {formData.card_images?.length > 0 ? (
@@ -473,9 +462,9 @@ const PropertyForm = () => {
                         <div className="flex justify-between items-center mb-2">
                             <div>
                                 <Label htmlFor="gallery_images" className="text-base font-semibold">باقي صور الفيلا (معرض الصور)</Label>
-                                <p className="text-sm text-muted-foreground">يمكنك إضافة حتى 4 صور إضافية (الحد الأقصى الإجمالي 7).</p>
+                                <p className="text-sm text-muted-foreground">أضف باقي صور الفيلا لتظهر في معرض الصور.</p>
                             </div>
-                            <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.gallery_images?.length || 0} / 4</span>
+                            <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.gallery_images?.length || 0}</span>
                         </div>
                         <div className="flex flex-col gap-4">
                             <Input
@@ -484,7 +473,7 @@ const PropertyForm = () => {
                                 accept="image/*"
                                 multiple
                                 onChange={(e) => handleImageUpload(e, 'gallery')}
-                                disabled={uploading || formData.gallery_images?.length >= 4}
+                                disabled={uploading}
                                 className="cursor-pointer"
                             />
                             {formData.gallery_images?.length > 0 ? (
