@@ -133,10 +133,15 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="any">أي ميزانية</SelectItem>
-                        <SelectItem value="500">حتى 500</SelectItem>
+                        <SelectItem value="800">حتى 800</SelectItem>
                         <SelectItem value="1000">حتى 1,000</SelectItem>
+                        <SelectItem value="1500">حتى 1,500</SelectItem>
                         <SelectItem value="2000">حتى 2,000</SelectItem>
+                        <SelectItem value="2500">حتى 2,500</SelectItem>
                         <SelectItem value="3000">حتى 3,000</SelectItem>
+                        <SelectItem value="3500">حتى 3,500</SelectItem>
+                        <SelectItem value="4000">حتى 4,000</SelectItem>
+                        <SelectItem value="4500">حتى 4,500</SelectItem>
                         <SelectItem value="5000">حتى 5,000</SelectItem>
                         <SelectItem value="10000">حتى 10,000+</SelectItem>
                       </SelectContent>
@@ -154,10 +159,22 @@ const Hero = ({ onSearch, initialValues }: HeroProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="any">أي عدد غرف</SelectItem>
+                        <SelectItem value="1">1+ غرف</SelectItem>
                         <SelectItem value="2">2+ غرف</SelectItem>
                         <SelectItem value="3">3+ غرف</SelectItem>
                         <SelectItem value="4">4+ غرف</SelectItem>
                         <SelectItem value="5">5+ غرف</SelectItem>
+                        <SelectItem value="6">6+ غرف</SelectItem>
+                        <SelectItem value="7">7+ غرف</SelectItem>
+                        <SelectItem value="8">8+ غرف</SelectItem>
+                        <SelectItem value="9">9+ غرف</SelectItem>
+                        <SelectItem value="10">10+ غرف</SelectItem>
+                        <SelectItem value="11">11+ غرف</SelectItem>
+                        <SelectItem value="12">12+ غرف</SelectItem>
+                        <SelectItem value="13">13+ غرف</SelectItem>
+                        <SelectItem value="14">14+ غرف</SelectItem>
+                        <SelectItem value="15">15+ غرف</SelectItem>
+                        <SelectItem value="16">16+ غرف</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
