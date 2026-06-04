@@ -106,6 +106,62 @@ export type Database = {
         }
         Relationships: []
       }
+      reservations: {
+        Row: {
+          id: string
+          property_id: string
+          customer_name: string
+          customer_phone: string
+          customer_email: string | null
+          customer_notes: string | null
+          check_in: string | null
+          check_out: string | null
+          num_guests: number
+          pricing_type: string
+          price_per_night: number | null
+          total_price: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          property_id: string
+          customer_name: string
+          customer_phone: string
+          customer_email?: string | null
+          customer_notes?: string | null
+          check_in?: string | null
+          check_out?: string | null
+          num_guests?: number
+          pricing_type: string
+          price_per_night?: number | null
+          total_price?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          property_id?: string
+          customer_name?: string
+          customer_phone?: string
+          customer_email?: string | null
+          customer_notes?: string | null
+          check_in?: string | null
+          check_out?: string | null
+          num_guests?: number
+          pricing_type?: string
+          price_per_night?: number | null
+          total_price?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       site_settings: {
         Row: {
           id: string

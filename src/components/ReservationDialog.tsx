@@ -130,6 +130,9 @@ const ReservationDialog = ({
       const cleaned = formData.customer_phone.replace(/\D/g, '');
       if (cleaned.length < 9) errs.customer_phone = 'يرجى إدخال رقم هاتف صحيح';
     }
+    
+    if (!formData.check_in) errs.check_in = 'تاريخ الوصول مطلوب';
+    if (!formData.check_out) errs.check_out = 'تاريخ المغادرة مطلوب';
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -183,7 +186,7 @@ const ReservationDialog = ({
       datesText = `من ${formData.check_in}`;
     }
 
-    const message = `حجز جديد لفيلا
+    const message = `حجز جديد لفيلا: ${propertyTitle}
 الاسم: ${formData.customer_name}
 المدينة/المكان: ${formData.customer_location || 'غير محدد'}
 تاريخ الحجز: ${datesText}
@@ -283,6 +286,43 @@ const ReservationDialog = ({
                 {errors.customer_name && (
                   <p className="text-xs text-destructive">{errors.customer_name}</p>
                 )}
+              </div>
+
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="res-checkin" className="flex items-center gap-1.5">
+                    تاريخ الوصول *
+                  </Label>
+                  <Input
+                    id="res-checkin"
+                    type="date"
+                    value={formData.check_in}
+                    onChange={(e) => setFormData({ ...formData, check_in: e.target.value })}
+                    dir="ltr"
+                    className="text-left"
+                  />
+                  {errors.check_in && (
+                    <p className="text-xs text-destructive">{errors.check_in}</p>
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="res-checkout" className="flex items-center gap-1.5">
+                    تاريخ المغادرة *
+                  </Label>
+                  <Input
+                    id="res-checkout"
+                    type="date"
+                    value={formData.check_out}
+                    onChange={(e) => setFormData({ ...formData, check_out: e.target.value })}
+                    dir="ltr"
+                    className="text-left"
+                    min={formData.check_in || undefined}
+                  />
+                  {errors.check_out && (
+                    <p className="text-xs text-destructive">{errors.check_out}</p>
+                  )}
+                </div>
               </div>
 
               {/* Location */}
