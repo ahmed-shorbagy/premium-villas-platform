@@ -71,8 +71,23 @@ const ReservationDialog = ({
 
   // Sync pre-selected dates
   useEffect(() => {
-    if (preCheckIn) setFormData((f) => ({ ...f, check_in: preCheckIn }));
-    if (preCheckOut) setFormData((f) => ({ ...f, check_out: preCheckOut }));
+    if (open) {
+      setFormData((f) => ({ 
+        ...f, 
+        check_in: preCheckIn || f.check_in, 
+        check_out: preCheckOut || f.check_out 
+      }));
+    }
+  }, [open, preCheckIn, preCheckOut]);
+
+  useEffect(() => {
+    if (!open) return;
+    // ensure if preCheckIn changes while open it syncs
+    setFormData((f) => ({ 
+      ...f, 
+      check_in: preCheckIn || f.check_in, 
+      check_out: preCheckOut || f.check_out 
+    }));
   }, [preCheckIn, preCheckOut]);
 
   const numNights = useMemo(() => {
@@ -212,8 +227,8 @@ const ReservationDialog = ({
         customer_location: '',
         customer_email: '',
         customer_notes: '',
-        check_in: '',
-        check_out: '',
+        check_in: preCheckIn || '',
+        check_out: preCheckOut || '',
         num_guests: '1',
       });
       setErrors({});
