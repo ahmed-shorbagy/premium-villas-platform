@@ -97,7 +97,8 @@ const PreviewRequestDialog = ({
         const message = `طلب معاينة لفيلا: ${propertyTitle}
 السعر: ${propertyPrice}
 الموقع: ${propertyLocation}
-رقم العميل: \u202A${formatPhoneForDisplay(cleanedPhone)}\u202C`;
+رقم العميل: \u202A${formatPhoneForDisplay(cleanedPhone)}\u202C
+الرابط: ${window.location.href}`;
 
         const encodedMessage = encodeURIComponent(message);
         const targetNumber = whatsappNumber || DEFAULT_AGENT_NUMBER;

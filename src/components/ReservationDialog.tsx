@@ -206,7 +206,8 @@ const ReservationDialog = ({
 المدينة/المكان: ${formData.customer_location || 'غير محدد'}
 تاريخ الحجز: ${datesText}
 رقم العميل: \u202A${formData.customer_phone}\u202C
-الملاحظات: ${formData.customer_notes || 'لا يوجد'}`;
+الملاحظات: ${formData.customer_notes || 'لا يوجد'}
+الرابط: ${window.location.href}`;
 
     const encodedMessage = encodeURIComponent(message);
     const targetNumber = (ownerWhatsApp || siteConfig.contact.adminWhatsApp).replace(/\D/g, '');
