@@ -49,7 +49,8 @@ const PropertyForm = () => {
             listing_type: platformScope.listingType,
             featured: false,
             group_type: 'family',
-            images: [] as string[],
+            card_images: [] as string[],
+            gallery_images: [] as string[],
             features: [] as string[],
             pricing_type: 'per_night' as 'per_night' | 'per_stay',
             installments_available: false,
@@ -99,7 +100,8 @@ const PropertyForm = () => {
                         listing_type: platformScope.listingType,
                         featured: data.featured,
                         group_type: (data as { group_type?: string }).group_type || 'family',
-                        images: data.images || [],
+                        card_images: data.images ? data.images.slice(0, 3) : [],
+                        gallery_images: data.images ? data.images.slice(3, 7) : [],
                         features: data.features || [],
                         pricing_type: (data as any).pricing_type || 'per_night',
                         installments_available: (data as any).installments_available || false,
@@ -115,9 +117,22 @@ const PropertyForm = () => {
         }
     }, [id, navigate, toast]);
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'card' | 'gallery') => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
+
+        // Check limits
+        const currentCount = type === 'card' ? formData.card_images.length : formData.gallery_images.length;
+        const maxLimit = type === 'card' ? 3 : 4;
+        
+        if (currentCount + files.length > maxLimit) {
+            toast({
+                title: 'تنبيه',
+                description: `لقد تجاوزت الحد المسموح. يمكنك إضافة ${maxLimit - currentCount} ملفات إضافية فقط في هذا القسم.`,
+                variant: 'destructive',
+            });
+            return;
+        }
 
         setUploading(true);
         const uploadedUrls: string[] = [];
@@ -140,9 +155,14 @@ const PropertyForm = () => {
 
         setFormData((prev: any) => ({
             ...prev,
-            images: [...prev.images, ...uploadedUrls],
+            [type === 'card' ? 'card_images' : 'gallery_images']: [
+                ...(type === 'card' ? prev.card_images : prev.gallery_images),
+                ...uploadedUrls
+            ],
         }));
         setUploading(false);
+        // Reset file input
+        e.target.value = '';
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -165,7 +185,7 @@ const PropertyForm = () => {
             listing_type: platformScope.listingType,
             featured: formData.featured,
             group_type: formData.group_type,
-            images: formData.images,
+            images: [...formData.card_images, ...formData.gallery_images],
             features: formData.features,
             pricing_type: formData.pricing_type,
             installments_available: false,
@@ -380,59 +400,119 @@ const PropertyForm = () => {
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="images">صور الفيلا</Label>
-                    <div className="flex flex-col gap-4">
-                        <Input
-                            id="images"
-                            type="file"
-                            accept="image/*,video/*"
-                            multiple
-                            onChange={handleImageUpload}
-                            disabled={uploading}
-                            className="cursor-pointer"
-                        />
-                        {formData.images.length > 0 ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                {formData.images.map((url, idx) => {
-                                    const isVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
-                                    return (
-                                        <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
-                                            {isVideo ? (
-                                                <video
-                                                    src={url}
-                                                    className="h-full w-full object-cover"
-                                                    controls
-                                                    playsInline
-                                                />
-                                            ) : (
+                <div className="space-y-6">
+                    <div className="space-y-2 p-4 border border-border rounded-lg bg-muted/10">
+                        <div className="flex justify-between items-center mb-2">
+                            <div>
+                                <Label htmlFor="card_images" className="text-base font-semibold text-primary">الوسائط المعروضة في البطاقة الرئيسية</Label>
+                                <p className="text-sm text-muted-foreground">يمكنك إضافة حتى 3 صور أو فيديوهات تظهر في بطاقة الفيلا الرئيسية.</p>
+                            </div>
+                            <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.card_images?.length || 0} / 3</span>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <Input
+                                id="card_images"
+                                type="file"
+                                accept="image/*,video/*"
+                                multiple
+                                onChange={(e) => handleImageUpload(e, 'card')}
+                                disabled={uploading || formData.card_images?.length >= 3}
+                                className="cursor-pointer"
+                            />
+                            {formData.card_images?.length > 0 ? (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    {formData.card_images.map((url: string, idx: number) => {
+                                        const isVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
+                                        return (
+                                            <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
+                                                {isVideo ? (
+                                                    <video
+                                                        src={url}
+                                                        className="h-full w-full object-cover"
+                                                        controls
+                                                        playsInline
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        src={url}
+                                                        alt={`Card Media ${idx + 1}`}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    onClick={() =>
+                                                        setFormData((prev: any) => ({
+                                                            ...prev,
+                                                            card_images: prev.card_images.filter((_: any, i: number) => i !== idx),
+                                                        }))
+                                                    }
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="p-8 border-2 border-dashed border-border rounded-lg text-center text-muted-foreground">
+                                    لم يتم إضافة وسائط للبطاقة
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2 p-4 border border-border rounded-lg bg-muted/10">
+                        <div className="flex justify-between items-center mb-2">
+                            <div>
+                                <Label htmlFor="gallery_images" className="text-base font-semibold">باقي صور الفيلا (معرض الصور)</Label>
+                                <p className="text-sm text-muted-foreground">يمكنك إضافة حتى 4 صور إضافية (الحد الأقصى الإجمالي 7).</p>
+                            </div>
+                            <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.gallery_images?.length || 0} / 4</span>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <Input
+                                id="gallery_images"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => handleImageUpload(e, 'gallery')}
+                                disabled={uploading || formData.gallery_images?.length >= 4}
+                                className="cursor-pointer"
+                            />
+                            {formData.gallery_images?.length > 0 ? (
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                    {formData.gallery_images.map((url: string, idx: number) => {
+                                        return (
+                                            <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
                                                 <img
                                                     src={url}
-                                                    alt={`Property ${idx + 1}`}
+                                                    alt={`Gallery Image ${idx + 1}`}
                                                     className="h-full w-full object-cover"
                                                 />
-                                            )}
-                                            <button
-                                                type="button"
-                                                className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                                onClick={() =>
-                                                    setFormData((prev: any) => ({
-                                                        ...prev,
-                                                        images: prev.images.filter((_: any, i: number) => i !== idx),
-                                                    }))
-                                                }
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <div className="p-8 border-2 border-dashed border-border rounded-lg text-center text-muted-foreground">
-                                لا توجد صور مختارة
-                            </div>
-                        )}
+                                                <button
+                                                    type="button"
+                                                    className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    onClick={() =>
+                                                        setFormData((prev: any) => ({
+                                                            ...prev,
+                                                            gallery_images: prev.gallery_images.filter((_: any, i: number) => i !== idx),
+                                                        }))
+                                                    }
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="p-8 border-2 border-dashed border-border rounded-lg text-center text-muted-foreground">
+                                    لم يتم إضافة صور للمعرض
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
