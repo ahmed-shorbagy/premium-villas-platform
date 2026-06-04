@@ -109,11 +109,15 @@ export const useListingRequests = () => {
 
     const approveAndCreateProperty = async (request: ListingRequest) => {
         try {
+            const { generateSlug } = await import('@/utils/slug');
+            const slug = generateSlug(request.title);
+
             // Create the property
             const { error: propertyError } = await supabaseAny
                 .from('properties')
                 .insert([{
                     title: request.title,
+                    slug: slug,
                     description: request.description,
                     type: request.type,
                     listing_type: request.listing_type,

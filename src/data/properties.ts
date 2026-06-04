@@ -2,6 +2,7 @@ import type { GroupTypeId } from "@/config/filters";
 
 export interface Property {
   id: string;
+  slug?: string;
   title: string;
   type: 'apartment' | 'villa' | 'commercial' | 'duplex' | 'office' | 'land';
   price: number;

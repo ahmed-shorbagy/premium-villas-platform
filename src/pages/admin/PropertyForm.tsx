@@ -194,18 +194,22 @@ const PropertyForm = () => {
             is_negotiable: formData.is_negotiable,
         };
 
+        const { generateSlug } = await import('@/utils/slug');
+        const slug = generateSlug(formData.title);
+        const propertyDataWithSlug = { ...propertyData, slug };
+
         let error;
 
         if (id) {
             const { error: updateError } = await supabase
                 .from('properties')
-                .update(propertyData)
+                .update(propertyDataWithSlug)
                 .eq('id', id);
             error = updateError;
         } else {
             const { data: insertData, error: insertError } = await supabase
                 .from('properties')
-                .insert([propertyData])
+                .insert([propertyDataWithSlug])
                 .select()
                 .single();
             error = insertError;

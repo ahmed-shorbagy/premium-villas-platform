@@ -22,6 +22,7 @@ export const useProperties = () => {
 
         const mapped: Property[] = (data || []).map((d: any) => ({
           id: d.id,
+          slug: d.slug,
           title: d.title,
           type: d.type as any,
           price: d.price,
