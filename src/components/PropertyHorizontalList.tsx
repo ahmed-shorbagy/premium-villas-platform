@@ -48,7 +48,7 @@ const PropertyHorizontalList = ({ title, properties, loading }: PropertyHorizont
   if (properties.length === 0) return null;
 
   return (
-    <div className="mb-14">
+    <div>
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <p className="mb-1 text-xs font-semibold tracking-[0.2em] text-brand uppercase">Shima AK</p>
@@ -76,7 +76,7 @@ const PropertyHorizontalList = ({ title, properties, loading }: PropertyHorizont
 
       <div
         ref={scrollContainerRef}
-        className="flex gap-5 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory"
+        className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
       >
         {properties.map((property) => (
           <div key={property.id} className="min-w-[300px] w-[300px] shrink-0 snap-start sm:min-w-[340px] sm:w-[340px]">

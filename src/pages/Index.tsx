@@ -102,29 +102,31 @@ const Index = () => {
       <main className="flex-1">
         <Hero onSearch={handleSearch} initialValues={searchFilters} />
 
-        {/* Dynamic Banners */}
-        {!bannersLoading && banners && banners.filter(b => b.is_active).length > 0 && (
-          <div className="container -mt-6 mb-8 px-4 relative z-10 h-[200px] sm:h-[300px] md:h-[400px]">
-            <div className="w-full h-full rounded-2xl overflow-hidden shadow-lg border border-border">
-              <BannerCarousel banners={banners.filter(b => b.is_active)} />
-            </div>
-          </div>
-        )}
+        {/* Main Content Wrapper */}
+        <div className="relative z-20 -mt-12 lg:-mt-20 flex flex-col gap-12 md:gap-20 pb-24">
+          
+          {/* Dynamic Banners */}
+          {!bannersLoading && banners && banners.filter(b => b.is_active).length > 0 && (
+            <section className="container px-4">
+              <div className="w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-float border border-white/10">
+                <BannerCarousel banners={banners.filter(b => b.is_active)} />
+              </div>
+            </section>
+          )}
 
-        {topVillasThisWeek.length > 0 && (
-          <section className="relative -mt-6 scroll-mt-28 pb-10 pt-4 md:-mt-10">
-            <div className="container">
+          {/* Top Villas */}
+          {topVillasThisWeek.length > 0 && (
+            <section className="container scroll-mt-28">
               <PropertyHorizontalList 
                 title="أفضل الفلل هذا الأسبوع" 
                 properties={topVillasThisWeek} 
                 loading={loading} 
               />
-            </div>
-          </section>
-        )}
+            </section>
+          )}
 
-        <section id="villas" className="relative scroll-mt-28 pb-20 pt-4">
-          <div className="container">
+          {/* All Villas */}
+          <section id="villas" className="container scroll-mt-28">
             <div className="shima-section">
               <div className="mb-12 flex flex-col gap-4 text-center md:flex-row md:items-end md:justify-between md:text-start">
                 <div>
@@ -136,12 +138,12 @@ const Index = () => {
                   </h2>
                   <p className="mt-3 max-w-xl text-muted-foreground">{siteConfig.brand.taglineAr}</p>
                 </div>
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground bg-secondary/50 px-4 py-2 rounded-full">
                   {loading ? "..." : `${filteredProperties.length} فيلا متاحة`}
                 </p>
               </div>
 
-              <div className="mb-12">
+              <div className="mb-10">
                 <PropertyFilters 
                   sortBy={sortBy} 
                   onSortChange={setSortBy}
@@ -152,8 +154,8 @@ const Index = () => {
 
               <PropertyGrid properties={filteredProperties} loading={loading} emptyMessage={platformScope.listingsEmptyAr} />
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </main>
 
       <Footer />
