@@ -38,6 +38,10 @@ function MediaRenderer({ url, alt, poster }: { url: string; alt: string; poster?
 }
 
 function buildCardMedia(property: Property): string[] {
+  if (property.card_images && property.card_images.length > 0) {
+    return property.card_images;
+  }
+
   const photos =
     property.images?.filter((url) => !isVideo(url)) ??
     (isVideo(property.image) ? [] : [property.image]);

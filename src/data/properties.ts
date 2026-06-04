@@ -13,7 +13,8 @@ export interface Property {
   bedrooms: number;
   bathrooms: number;
   image: string;
-  images?: string[];
+  card_images?: string[];
+  gallery_images?: string[];
   /** Looping preview on listing cards — demo listings only (v1, v2) */
   demoVideo?: string;
   listingType: 'sale' | 'rent';
@@ -42,7 +43,7 @@ export const properties: Property[] = [
     bathrooms: 5,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
     demoVideo: '/demo/villa-demo-1.mp4',
-    images: [
+    card_images: [
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
       'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80',
     ],
@@ -63,7 +64,7 @@ export const properties: Property[] = [
     bathrooms: 6,
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
     demoVideo: '/demo/villa-demo-2.mp4',
-    images: [
+    card_images: [
       'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
     ],

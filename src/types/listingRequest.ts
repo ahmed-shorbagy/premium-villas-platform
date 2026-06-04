@@ -13,6 +13,8 @@ export interface ListingRequest {
     bathrooms: number;
     features: string[] | null;
     images: string[] | null;
+    card_images: string[] | null;
+    gallery_images: string[] | null;
     // User Contact Info
     contact_name: string;
     contact_phone: string;
@@ -42,6 +44,8 @@ export interface ListingRequestInput {
     bathrooms: number;
     features?: string[] | null;
     images?: string[] | null;
+    card_images?: string[] | null;
+    gallery_images?: string[] | null;
     // User Contact Info
     contact_name: string;
     contact_phone: string;

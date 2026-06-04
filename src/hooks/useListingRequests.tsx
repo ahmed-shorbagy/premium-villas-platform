@@ -128,7 +128,11 @@ export const useListingRequests = () => {
                     bedrooms: request.bedrooms,
                     bathrooms: request.bathrooms,
                     features: request.features,
-                    images: request.images || [],
+                    card_images: request.card_images || (request.images ? request.images.slice(0, 3) : []),
+                    gallery_images: request.gallery_images || (request.images ? request.images.slice(3) : []),
+                    images: (request.card_images || request.gallery_images) 
+                      ? [...(request.card_images || []), ...(request.gallery_images || [])] 
+                      : (request.images || []),
                     featured: false,
                     contact_name: request.contact_name,
                     contact_phone: request.contact_phone,
