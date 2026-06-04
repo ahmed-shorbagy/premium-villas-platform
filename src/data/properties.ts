@@ -339,4 +339,12 @@ export const featureLabels: Record<string, string> = {
   pool: 'حمام سباحة',
   gym: 'صالة ألعاب رياضية',
   garden: 'حديقة',
+  jacuzzi: 'جاكوزي',
+  billiards: 'بلياردو',
+  tennis: 'تنس',
+  sauna: 'ساونا',
+  kids_pool: 'بركة اطفال',
+  kids_games: 'العاب اطفال',
+  chalet: 'كوخ',
 };
+

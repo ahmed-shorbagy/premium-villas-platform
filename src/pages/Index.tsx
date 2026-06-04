@@ -19,10 +19,11 @@ const Index = () => {
   const { properties, loading } = useProperties();
   const { banners, loading: bannersLoading } = useBanners();
   const [sortBy, setSortBy] = useState("newest");
-  const [searchFilters, setSearchFilters] = useState<HeroSearchFilters>({
+  const [searchFilters, setSearchFilters] = useState<HeroSearchFilters & { features: string[] }>({
     groupType: (searchParams.get("groupType") as GroupTypeId) || "",
     maxPrice: searchParams.get("maxPrice") || "",
     bedrooms: searchParams.get("bedrooms") || "",
+    features: searchParams.get("features") ? searchParams.get("features")?.split(",") : [],
   });
 
   useEffect(() => {
@@ -30,12 +31,13 @@ const Index = () => {
       groupType: (searchParams.get("groupType") as GroupTypeId) || "",
       maxPrice: searchParams.get("maxPrice") || "",
       bedrooms: searchParams.get("bedrooms") || "",
+      features: searchParams.get("features") ? searchParams.get("features")?.split(",") : [],
     });
   }, [searchParams]);
 
   const handleSearch = (filters: HeroSearchFilters) => {
-    setSearchFilters(filters);
-    const params = new URLSearchParams();
+    setSearchFilters({ ...filters, features: searchFilters.features });
+    const params = new URLSearchParams(searchParams);
     if (filters.groupType && filters.groupType !== "any") params.set("groupType", filters.groupType);
     else params.delete("groupType");
 
@@ -44,6 +46,17 @@ const Index = () => {
 
     if (filters.bedrooms && filters.bedrooms !== "any") params.set("bedrooms", filters.bedrooms);
     else params.delete("bedrooms");
+    setSearchParams(params);
+  };
+
+  const handleFeaturesChange = (features: string[]) => {
+    setSearchFilters(prev => ({ ...prev, features }));
+    const params = new URLSearchParams(searchParams);
+    if (features.length > 0) {
+      params.set("features", features.join(","));
+    } else {
+      params.delete("features");
+    }
     setSearchParams(params);
   };
 
@@ -57,6 +70,12 @@ const Index = () => {
     }
     if (searchFilters.bedrooms && searchFilters.bedrooms !== "any") {
       filtered = filtered.filter((p) => p.bedrooms >= parseInt(searchFilters.bedrooms));
+    }
+    if (searchFilters.features && searchFilters.features.length > 0) {
+      filtered = filtered.filter((p) => {
+        if (!p.features) return false;
+        return searchFilters.features.every(f => p.features!.includes(f));
+      });
     }
     switch (sortBy) {
       case "price-asc":
@@ -123,7 +142,12 @@ const Index = () => {
               </div>
 
               <div className="mb-12">
-                <PropertyFilters sortBy={sortBy} onSortChange={setSortBy} />
+                <PropertyFilters 
+                  sortBy={sortBy} 
+                  onSortChange={setSortBy}
+                  selectedFeatures={searchFilters.features}
+                  onFeaturesChange={handleFeaturesChange}
+                />
               </div>
 
               <PropertyGrid properties={filteredProperties} loading={loading} emptyMessage={platformScope.listingsEmptyAr} />

@@ -132,16 +132,22 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
 
         <div className="absolute bottom-3 start-3 end-3 flex items-end justify-between gap-2">
           <div>
-            <p className="font-display text-2xl font-semibold text-white">
-              {formatPrice(
-                (new Date().getDay() === 4 || new Date().getDay() === 5)
-                  ? property.price_weekend ?? property.price
-                  : property.price
+            <div className="space-y-0.5">
+              <div className="flex items-end gap-1.5">
+                <span className="font-display text-xl font-semibold text-white">
+                  {formatPrice(property.price)}
+                </span>
+                <span className="text-[11px] text-white/80 pb-0.5">/ وسط الأسبوع</span>
+              </div>
+              {property.price_weekend && (
+                <div className="flex items-end gap-1.5">
+                  <span className="font-display text-xl font-semibold text-white">
+                    {formatPrice(property.price_weekend)}
+                  </span>
+                  <span className="text-[11px] text-white/80 pb-0.5">/ نهاية الأسبوع</span>
+                </div>
               )}
-            </p>
-            <p className="text-xs text-white/70">
-              / ليلة {property.price_weekend ? ((new Date().getDay() === 4 || new Date().getDay() === 5) ? "(نهاية الأسبوع)" : "(وسط الأسبوع)") : ""}
-            </p>
+            </div>
             {property.is_negotiable && (
               <div className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-[#fdf3d1] px-2 py-0.5 text-[11px] font-medium text-[#7a5c18]">
                 السعر قابل للتفاوض
