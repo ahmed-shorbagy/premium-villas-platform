@@ -193,26 +193,22 @@ const ReservationDialog = ({
       // non-critical
     }
 
-    // Build WhatsApp message
-    let datesText = 'لم يتم التحديد';
-    if (formData.check_in && formData.check_out) {
-      datesText = `من ${formData.check_in} إلى ${formData.check_out}`;
-    } else if (formData.check_in) {
-      datesText = `من ${formData.check_in}`;
+    // Send automated WhatsApp message via Edge Function
+    try {
+      await supabase.functions.invoke('send-whatsapp', {
+        body: {
+          propertyTitle,
+          customer_name: formData.customer_name,
+          customer_phone: formData.customer_phone,
+          customer_location: formData.customer_location,
+          check_in: formData.check_in,
+          check_out: formData.check_out,
+          customer_notes: formData.customer_notes
+        }
+      });
+    } catch (err) {
+      console.error('Failed to send WhatsApp notification:', err);
     }
-
-    const message = `حجز جديد لفيلا: ${propertyTitle}
-الاسم: ${formData.customer_name}
-المدينة/المكان: ${formData.customer_location || 'غير محدد'}
-تاريخ الحجز: ${datesText}
-رقم العميل: \u202A${formData.customer_phone}\u202C
-الملاحظات: ${formData.customer_notes || 'لا يوجد'}
-الرابط: ${window.location.href}`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const targetNumber = (ownerWhatsApp || siteConfig.contact.adminWhatsApp).replace(/\D/g, '');
-    const whatsappUrl = `https://wa.me/${targetNumber}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
     setSubmitted(true);
   };

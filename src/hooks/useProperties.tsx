@@ -15,8 +15,7 @@ export const useProperties = () => {
         const { data, error } = await supabase
           .from('properties')
           .select('*')
-          .eq('type', platformScope.propertyType)
-          .eq('listing_type', platformScope.listingType);
+          .eq('type', platformScope.propertyType);
 
         if (error) throw error;
 

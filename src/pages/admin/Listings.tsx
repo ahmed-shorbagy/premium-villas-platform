@@ -45,7 +45,6 @@ const Listings = () => {
       .from('properties')
       .select('*')
       .eq('type', platformScope.propertyType)
-      .eq('listing_type', platformScope.listingType)
       .order('created_at', { ascending: false });
 
     if (!error && data) {

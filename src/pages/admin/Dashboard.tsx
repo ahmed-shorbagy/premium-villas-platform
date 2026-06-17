@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Building2, MousePointer, Users, Activity } from 'lucide-react';
+import { Building2, MousePointer, Users, Activity, Eye } from 'lucide-react';
 import { platformScope } from '@/config/platform';
 
 const Dashboard = () => {
@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [whatsappClicks, setWhatsappClicks] = useState(0);
   const [userCount, setUserCount] = useState(0);
   const [pageViews, setPageViews] = useState(0);
+  const [uniqueVisitors, setUniqueVisitors] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,9 +18,8 @@ const Dashboard = () => {
       // Fetch property count
       const { count: propCount } = await supabase
         .from('properties')
-        .select('*', { count: 'exact', head: true })
-        .eq('type', platformScope.propertyType)
-        .eq('listing_type', platformScope.listingType);
+        .select('id', { count: 'exact', head: true })
+        .eq('type', platformScope.propertyType);
 
       // Fetch WhatsApp clicks
       const { count: clickCount } = await supabase
@@ -32,20 +32,24 @@ const Dashboard = () => {
         .from('user_roles')
         .select('*', { count: 'exact', head: true });
 
-      // Fetch page views (unique visitors)
+      // Fetch page views (total views & unique visitors)
       const { data: pageViewsData } = await supabase
         .from('analytics')
         .select('metadata')
         .eq('event_type', 'page_view');
 
-      const uniqueVisitors = new Set(
-        pageViewsData?.map((event: any) => event.metadata?.visitor_id).filter(Boolean)
+      const uniqueVisitorsCount = new Set(
+        pageViewsData?.map((event) => {
+          const meta = event.metadata as Record<string, string | undefined> | null;
+          return meta?.visitor_id;
+        }).filter(Boolean)
       ).size;
 
       setPropertyCount(propCount || 0);
       setWhatsappClicks(clickCount || 0);
       setUserCount(uCount || 0);
-      setPageViews(uniqueVisitors || 0);
+      setPageViews(pageViewsData?.length || 0);
+      setUniqueVisitors(uniqueVisitorsCount || 0);
       setLoading(false);
     };
 
@@ -62,7 +66,7 @@ const Dashboard = () => {
 
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -83,16 +87,33 @@ const Dashboard = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              إجمالي الزيارات
+              الزيارات الفريدة
             </CardTitle>
-            <Activity className="h-5 w-5 text-purple-500" />
+            <Users className="h-5 w-5 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {loading ? '...' : uniqueVisitors}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              عدد الزوار الفريدين للموقع
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              مشاهدات الصفحات
+            </CardTitle>
+            <Eye className="h-5 w-5 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
               {loading ? '...' : pageViews}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              عدد مشاهدات الصفحات
+              إجمالي عدد مشاهدات الصفحات
             </p>
           </CardContent>
         </Card>
@@ -102,7 +123,7 @@ const Dashboard = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               إجمالي المستخدمين
             </CardTitle>
-            <Users className="h-5 w-5 text-blue-500" />
+            <Activity className="h-5 w-5 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
@@ -126,7 +147,7 @@ const Dashboard = () => {
               {loading ? '...' : whatsappClicks}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              عدد طلبات المعاينة المرسلة عبر واتساب
+              عدد طلبات المعاينة المرسلة
             </p>
           </CardContent>
         </Card>
