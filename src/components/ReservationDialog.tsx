@@ -164,12 +164,12 @@ const ReservationDialog = ({
       customer_phone: formData.customer_phone.trim(),
       customer_email: formData.customer_email.trim() || null,
       customer_notes: formData.customer_notes.trim() || null,
-      check_in: null,
-      check_out: null,
+      check_in: formData.check_in || null,
+      check_out: formData.check_out || null,
       num_guests: parseInt(formData.num_guests) || 1,
       pricing_type: pricingType,
       price_per_night: pricingType === 'per_night' ? propertyPrice : null,
-      total_price: null,
+      total_price: priceDetails.total || null,
     });
 
     setIsSubmitting(false);
