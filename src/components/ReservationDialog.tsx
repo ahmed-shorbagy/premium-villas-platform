@@ -193,9 +193,9 @@ const ReservationDialog = ({
       // non-critical
     }
 
-    // Send automated WhatsApp message via Edge Function
+    // Send automated Telegram message via Edge Function
     try {
-      await supabase.functions.invoke('send-whatsapp', {
+      await supabase.functions.invoke('send-telegram', {
         body: {
           propertyTitle,
           customer_name: formData.customer_name,
@@ -207,7 +207,7 @@ const ReservationDialog = ({
         }
       });
     } catch (err) {
-      console.error('Failed to send WhatsApp notification:', err);
+      console.error('Failed to send Telegram notification:', err);
     }
 
     setSubmitted(true);
