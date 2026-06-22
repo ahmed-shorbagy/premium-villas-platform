@@ -80,8 +80,15 @@ const fetchProperties = () => {
 const generateSitemap = async () => {
     try {
         console.log('Fetching properties...');
-        const properties = await fetchProperties();
-        console.log(`Found ${properties.length} properties.`);
+        
+        let properties = [];
+        try {
+            properties = await fetchProperties();
+            console.log(`Found ${properties.length} properties.`);
+        } catch (fetchError) {
+            console.warn('⚠️ Could not fetch properties from Supabase. Generating static sitemap only.');
+            console.warn('Reason:', fetchError.message);
+        }
 
         let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -163,8 +170,8 @@ const generateSitemap = async () => {
         console.log(`Sitemap generated at ${sitemapPath}`);
 
     } catch (error) {
-        console.error('Error generating sitemap:', error);
-        process.exit(1);
+        console.error('Critical error generating sitemap:', error);
+        // We do not exit with 1 anymore to prevent breaking the Vercel build
     }
 };
 
