@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Banner, BannerInput } from '@/types/banners';
 import { toast } from 'sonner';
+import { compressImage } from '@/utils/imageCompression';
 
 export const useBanners = () => {
     const [banners, setBanners] = useState<Banner[]>([]);
@@ -33,13 +34,16 @@ export const useBanners = () => {
 
     const createBanner = async (banner: BannerInput, file: File) => {
         try {
-            const fileExt = file.name.split('.').pop();
+            // Compress image before upload
+            const compressedFile = await compressImage(file);
+
+            const fileExt = compressedFile.name.split('.').pop();
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('banners')
-                .upload(filePath, file);
+                .upload(filePath, compressedFile);
 
             if (uploadError) throw uploadError;
 
@@ -70,13 +74,16 @@ export const useBanners = () => {
             let imageUrl = updates.image_url;
 
             if (file) {
-                const fileExt = file.name.split('.').pop();
+                // Compress image before upload
+                const compressedFile = await compressImage(file);
+
+                const fileExt = compressedFile.name.split('.').pop();
                 const fileName = `${Math.random()}.${fileExt}`;
                 const filePath = `${fileName}`;
 
                 const { error: uploadError } = await supabase.storage
                     .from('banners')
-                    .upload(filePath, file);
+                    .upload(filePath, compressedFile);
 
                 if (uploadError) throw uploadError;
 

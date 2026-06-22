@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ListingRequest, ListingRequestInput, ListingRequestStatus } from '@/types/listingRequest';
 import { toast } from 'sonner';
+import { compressImage } from '@/utils/imageCompression';
 
 export const useListingRequests = () => {
     const [requests, setRequests] = useState<ListingRequest[]>([]);
@@ -33,7 +34,10 @@ export const useListingRequests = () => {
             // Upload images
             const imageUrls: string[] = [];
 
-            for (const file of files) {
+            for (let file of files) {
+                // Compress image before upload
+                file = await compressImage(file);
+
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${Math.random()}.${fileExt}`;
                 const filePath = `listing-requests/${fileName}`;

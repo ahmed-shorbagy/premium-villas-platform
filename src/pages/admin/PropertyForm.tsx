@@ -20,6 +20,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { compressImage } from '@/utils/imageCompression';
 
 const PropertyForm = () => {
     const { id } = useParams();
@@ -124,7 +125,10 @@ const PropertyForm = () => {
         setUploading(true);
         const uploadedUrls: string[] = [];
 
-        for (const file of Array.from(files)) {
+        for (let file of Array.from(files)) {
+            // Compress image before upload
+            file = await compressImage(file);
+
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
