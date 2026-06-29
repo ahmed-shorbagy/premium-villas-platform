@@ -19,7 +19,7 @@ const Footer = () => {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
           {/* Brand column */}
           <div>
-            <Link to={buildLocalizedPath.home()} className="mb-6 inline-block" aria-label="Shima AK — الرئيسية">
+            <Link to={buildLocalizedPath.home()} className="mb-6 inline-block" aria-label="نُزُل — الرئيسية">
               <ShimaLogo surface="dark" size="lg" framed />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-white/55">
@@ -67,7 +67,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-3 text-sm text-white/55">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                حجز فلل — Shima AK
+                حجز فلل — نُزُل
               </li>
             </ul>
           </div>

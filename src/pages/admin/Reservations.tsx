@@ -118,7 +118,7 @@ const Reservations = () => {
     const cleanPhone = reservation.customer_phone.replace(/\D/g, '');
     // Add country code if needed (assuming Israeli numbers)
     const fullPhone = cleanPhone.startsWith('972') ? cleanPhone : `972${cleanPhone.replace(/^0+/, '')}`;
-    const message = `مرحباً ${reservation.customer_name},\nنحن من Shima AK بخصوص حجزك للفيلا "${reservation.property?.title}".\nتواريخ الإقامة: ${reservation.check_in} إلى ${reservation.check_out}.\nنودّ تأكيد الحجز معك.`;
+    const message = `مرحباً ${reservation.customer_name},\nنحن من نُزُل بخصوص حجزك للفيلا "${reservation.property?.title}".\nتواريخ الإقامة: ${reservation.check_in} إلى ${reservation.check_out}.\nنودّ تأكيد الحجز معك.`;
     window.open(
       `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`,
       '_blank',
@@ -135,7 +135,7 @@ const Reservations = () => {
     }
 
     // CRITICAL: Message does NOT include customer_phone
-    const message = `🏡 حجز جديد — Shima AK
+    const message = `🏡 حجز جديد — نُزُل
 
 الفيلا: ${reservation.property?.title || '—'}
 الموقع: ${reservation.property?.location || '—'}

@@ -3,28 +3,28 @@
  */
 export const siteConfig = {
   brand: {
-    name: "Shima AK",
-    nameAr: "شيما AK",
-    nameEn: "Shima AK",
-    monogram: "SA",
+    name: "Nuzuul",
+    nameAr: "نُزُل",
+    nameEn: "Nuzuul",
+    monogram: "NZ",
     taglineAr: "إيجار فلل فاخرة في أرقى الوجهات",
     taglineEn: "Luxury villa rentals only",
     defaultLocale: "ar" as const,
     direction: "rtl" as const,
   },
   seo: {
-    defaultTitleAr: "Shima AK — إيجار فلل فاخرة",
+    defaultTitleAr: "نُزُل — إيجار فلل فاخرة",
     defaultDescriptionAr:
-      "Shima AK — حجز فلل فاخرة للإيجار. تصفية ذكية، أسعار واضحة، وتواصل مباشر لتأكيد إقامتك.",
+      "نُزُل — حجز فلل فاخرة للإيجار. تصفية ذكية، أسعار واضحة، وتواصل مباشر لتأكيد إقامتك.",
     homeDescriptionAr:
-      "اكتشف فللاً فاخرة للإيجار — منصة Shima AK مخصصة حصرياً لإيجار الفلل.",
-    keywordsAr: "Shima AK, إيجار فلل, فلل فاخرة, حجز فيلا, إقامة فاخرة",
+      "اكتشف فللاً فاخرة للإيجار — منصة نُزُل مخصصة حصرياً لإيجار الفلل.",
+    keywordsAr: "نُزُل, Nuzuul, إيجار فلل, فلل فاخرة, حجز فيلا, إقامة فاخرة",
   },
   assets: {
-    logoOnLight: "/brand/shima-ak-logo-light.png",
-    logoOnDark: "/brand/shima-ak-logo-dark.png",
-    favicon: "/brand/shima-ak-logo-light.png",
-    ogImage: "/brand/shima-ak-logo-light.png",
+    logoOnLight: "/brand/nuzuul-logo.png",
+    logoOnDark: "/brand/nuzuul-logo.png",
+    favicon: "/brand/nuzuul-logo.png",
+    ogImage: "/brand/nuzuul-logo.png",
     ambientBg: "/brand/shima-ambient-loop.svg",
     /** Set after adding public/hero/hero-loop.mp4 (and optional .webm) — ~3s seamless loop */
     heroVideoMp4: "",

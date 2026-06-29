@@ -30,7 +30,7 @@ const Settings = () => {
       alert('يرجى إدخال رقم واتساب أولاً');
       return;
     }
-    const message = '🔔 رسالة تجريبية من Shima AK — هذه رسالة اختبارية للتأكد من أن الرقم يعمل بشكل صحيح.';
+    const message = '🔔 رسالة تجريبية من نُزُل — هذه رسالة اختبارية للتأكد من أن الرقم يعمل بشكل صحيح.';
     window.open(
       `https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`,
       '_blank',

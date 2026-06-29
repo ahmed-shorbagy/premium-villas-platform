@@ -15,7 +15,7 @@ const Header = () => {
         <Link
           to={buildLocalizedPath.home()}
           className="group transition-opacity hover:opacity-90"
-          aria-label="Shima AK — الرئيسية"
+          aria-label="نُزُل — الرئيسية"
         >
           <ShimaLogo
             surface="auto"

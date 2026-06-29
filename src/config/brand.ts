@@ -3,8 +3,8 @@
  * Pick by **page background**: light UI → onLight, dark footer → onDark. No CSS cropping.
  */
 export const brandLogos = {
-  onLight: "/brand/shima-ak-logo-light.png",
-  onDark: "/brand/shima-ak-logo-dark.png",
+  onLight: "/brand/nuzuul-logo.png",
+  onDark: "/brand/nuzuul-logo.png",
 } as const;
 
 export function getBrandLogoSrc(surface: "light" | "dark"): string {

@@ -249,7 +249,7 @@ const ReservationDialog = ({
               سيتم التواصل معك قريباً لتأكيد الحجز
             </p>
             <p className="text-xs text-muted-foreground mb-6">
-              شكراً لاختيارك Shima AK
+              شكراً لاختيارك نُزُل
             </p>
             <Button variant="gold" onClick={handleClose}>
               إغلاق

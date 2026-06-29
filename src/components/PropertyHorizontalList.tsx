@@ -51,7 +51,7 @@ const PropertyHorizontalList = ({ title, properties, loading }: PropertyHorizont
     <div>
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="mb-1 text-xs font-semibold tracking-[0.2em] text-brand uppercase">Shima AK</p>
+          <p className="mb-1 text-xs font-semibold tracking-[0.2em] text-brand uppercase">NUZUUL</p>
           <h3 className="font-display text-2xl font-semibold text-foreground md:text-3xl">{title}</h3>
         </div>
         <div className="hidden gap-2 sm:flex">
