@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { compressImage } from '@/utils/imageCompression';
+import { uploadMediaToCloudinary } from '@/utils/cloudinary';
 
 const PropertyForm = () => {
     const { id } = useParams();
@@ -129,18 +130,16 @@ const PropertyForm = () => {
             // Compress image before upload
             file = await compressImage(file);
 
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('property-images')
-                .upload(fileName, file);
-
-            if (!uploadError) {
-                const { data } = supabase.storage
-                    .from('property-images')
-                    .getPublicUrl(fileName);
-                uploadedUrls.push(data.publicUrl);
+            try {
+                const secureUrl = await uploadMediaToCloudinary(file);
+                uploadedUrls.push(secureUrl);
+            } catch (error) {
+                console.error('Failed to upload image to Cloudinary:', error);
+                toast({
+                    title: 'خطأ في الرفع',
+                    description: 'فشل رفع إحدى الصور، يرجى المحاولة مرة أخرى',
+                    variant: 'destructive',
+                });
             }
         }
 

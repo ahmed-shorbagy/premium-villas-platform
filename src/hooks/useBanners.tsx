@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Banner, BannerInput } from '@/types/banners';
 import { toast } from 'sonner';
 import { compressImage } from '@/utils/imageCompression';
+import { uploadMediaToCloudinary } from '@/utils/cloudinary';
 
 export const useBanners = () => {
     const [banners, setBanners] = useState<Banner[]>([]);
@@ -37,19 +38,7 @@ export const useBanners = () => {
             // Compress image before upload
             const compressedFile = await compressImage(file);
 
-            const fileExt = compressedFile.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('banners')
-                .upload(filePath, compressedFile);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('banners')
-                .getPublicUrl(filePath);
+            const publicUrl = await uploadMediaToCloudinary(compressedFile);
 
             const { data, error } = await supabaseAny
                 .from('banners')
@@ -77,20 +66,7 @@ export const useBanners = () => {
                 // Compress image before upload
                 const compressedFile = await compressImage(file);
 
-                const fileExt = compressedFile.name.split('.').pop();
-                const fileName = `${Math.random()}.${fileExt}`;
-                const filePath = `${fileName}`;
-
-                const { error: uploadError } = await supabase.storage
-                    .from('banners')
-                    .upload(filePath, compressedFile);
-
-                if (uploadError) throw uploadError;
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('banners')
-                    .getPublicUrl(filePath);
-
+                const publicUrl = await uploadMediaToCloudinary(compressedFile);
                 imageUrl = publicUrl;
             }
 

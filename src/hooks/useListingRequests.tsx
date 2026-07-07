@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ListingRequest, ListingRequestInput, ListingRequestStatus } from '@/types/listingRequest';
 import { toast } from 'sonner';
 import { compressImage } from '@/utils/imageCompression';
+import { uploadMediaToCloudinary } from '@/utils/cloudinary';
 
 export const useListingRequests = () => {
     const [requests, setRequests] = useState<ListingRequest[]>([]);
@@ -38,20 +39,7 @@ export const useListingRequests = () => {
                 // Compress image before upload
                 file = await compressImage(file);
 
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Math.random()}.${fileExt}`;
-                const filePath = `listing-requests/${fileName}`;
-
-                const { error: uploadError } = await supabase.storage
-                    .from('properties')
-                    .upload(filePath, file);
-
-                if (uploadError) throw uploadError;
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('properties')
-                    .getPublicUrl(filePath);
-
+                const publicUrl = await uploadMediaToCloudinary(file);
                 imageUrls.push(publicUrl);
             }
 
