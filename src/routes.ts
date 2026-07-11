@@ -21,7 +21,7 @@ export const DEFAULT_LOCALE: SupportedLocale = "ar";
 const LOCALIZED_ROUTES: Record<SupportedLocale, LocaleRoutes> = {
   ar: {
     home: "/",
-    propertyDetails: "/عقار/:id",
+    propertyDetails: "/v/:id",
     submitListing: "/أضف-إعلانك",
     adminLogin: "/لوحة-التحكم/تسجيل-الدخول",
     adminDashboard: "/لوحة-التحكم",
