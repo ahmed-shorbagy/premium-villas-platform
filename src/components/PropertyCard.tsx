@@ -58,7 +58,7 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
 
   return (
     <Link
-      to={buildLocalizedPath.propertyDetails(property.id)}
+      to={buildLocalizedPath.propertyDetails(property.slug || property.id)}
       className={cn("group shima-card flex flex-col h-full", className)}
     >
       <div className="relative overflow-hidden w-full aspect-[4/3] bg-muted">
