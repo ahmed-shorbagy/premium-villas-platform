@@ -73,6 +73,7 @@ const App = () => (
 
                 <Route path={localizedRoutes.propertyDetails} element={<PropertyDetails />} />
                 <Route path={englishRoutes.propertyDetails} element={<PropertyDetails />} />
+                <Route path="/عقار/:id" element={<PropertyDetails />} />
 
                 <Route path={localizedRoutes.submitListing} element={<Navigate to={localizedRoutes.home} replace />} />
                 <Route path={englishRoutes.submitListing} element={<Navigate to={englishRoutes.home} replace />} />

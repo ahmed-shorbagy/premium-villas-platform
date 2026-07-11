@@ -21,7 +21,7 @@ export const DEFAULT_LOCALE: SupportedLocale = "ar";
 const LOCALIZED_ROUTES: Record<SupportedLocale, LocaleRoutes> = {
   ar: {
     home: "/",
-    propertyDetails: "/عقار/:id",
+    propertyDetails: "/p/:id",
     submitListing: "/أضف-إعلانك",
     adminLogin: "/لوحة-التحكم/تسجيل-الدخول",
     adminDashboard: "/لوحة-التحكم",
@@ -50,7 +50,7 @@ const LOCALIZED_ROUTES: Record<SupportedLocale, LocaleRoutes> = {
 };
 
 const LEGACY_ALIASES: Partial<Record<RouteKey, string[]>> = {
-  propertyDetails: [LOCALIZED_ROUTES.en.propertyDetails],
+  propertyDetails: [LOCALIZED_ROUTES.en.propertyDetails, "/عقار/:id"],
   submitListing: [LOCALIZED_ROUTES.en.submitListing],
   adminLogin: [LOCALIZED_ROUTES.en.adminLogin],
   adminDashboard: [LOCALIZED_ROUTES.en.adminDashboard],

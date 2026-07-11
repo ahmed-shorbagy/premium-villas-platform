@@ -84,13 +84,35 @@ const PropertyDetails = () => {
       }
 
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('properties')
         .select('*')
         .eq(isUUID ? 'id' : 'slug', id)
         .maybeSingle();
 
+      // Fallback: If not found, and it's an old messy slug like "فيلا-الأمير-vip-3-o4o1"
+      if (!data && !isUUID && id && id.includes('-')) {
+        const parts = id.split('-');
+        const possibleShortId = parts[parts.length - 1];
+        if (possibleShortId) {
+          const fallbackRes = await supabase
+            .from('properties')
+            .select('*')
+            .eq('slug', possibleShortId)
+            .maybeSingle();
+          if (fallbackRes.data) {
+            data = fallbackRes.data;
+          }
+        }
+      }
+
       if (data) {
+        // Enforce clean URLs (redirect from old messy URL to new clean URL)
+        const cleanPath = buildLocalizedPath.propertyDetails(data.slug || data.id);
+        const currentPath = window.location.pathname;
+        if (decodeURIComponent(currentPath) !== decodeURIComponent(cleanPath)) {
+          window.history.replaceState(null, '', cleanPath);
+        }
         setProperty({
           id: data.id,
           title: data.title,
