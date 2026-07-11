@@ -32,19 +32,11 @@ const Dashboard = () => {
         .from('user_roles')
         .select('*', { count: 'exact', head: true });
 
-      // Fetch page views (total views)
-      const { count: viewsCount } = await supabase
-        .from('analytics')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_type', 'page_view');
-
-      // Fetch metadata to approximate unique visitors (limited by default 1000 rows unless we paginate)
+      // Fetch page views (total views & unique visitors)
       const { data: pageViewsData } = await supabase
         .from('analytics')
         .select('metadata')
-        .eq('event_type', 'page_view')
-        .order('created_at', { ascending: false })
-        .limit(10000); // increase limit for unique visitors approximation
+        .eq('event_type', 'page_view');
 
       const uniqueVisitorsCount = new Set(
         pageViewsData?.map((event) => {
@@ -56,7 +48,7 @@ const Dashboard = () => {
       setPropertyCount(propCount || 0);
       setWhatsappClicks(clickCount || 0);
       setUserCount(uCount || 0);
-      setPageViews(viewsCount || 0);
+      setPageViews(pageViewsData?.length || 0);
       setUniqueVisitors(uniqueVisitorsCount || 0);
       setLoading(false);
     };
