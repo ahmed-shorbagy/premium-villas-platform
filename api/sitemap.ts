@@ -34,11 +34,6 @@ export default async function handler(req, res) {
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>${SITE_URL}/${encodeURI('عقار')}</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>${SITE_URL}/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -56,7 +51,7 @@ export default async function handler(req, res) {
 
       xml += `
   <url>
-    <loc>${SITE_URL}/${encodeURI('عقار')}/${property.id}</loc>
+    <loc>${SITE_URL}/p/${property.slug || property.id}</loc>
     <lastmod>${lastMod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

@@ -149,8 +149,8 @@ const generateSitemap = async () => {
                 property.created_at ? new Date(property.created_at).toISOString().split('T')[0] :
                     new Date().toISOString().split('T')[0];
 
-            // /عقار/:id -> encodeURI('/عقار/') + id
-            const path = encodeURI('/عقار/') + property.id;
+            // /p/:id
+            const path = '/p/' + (property.slug || property.id);
 
             sitemap += `  <url>
     <loc>${DOMAIN}${path}</loc>
