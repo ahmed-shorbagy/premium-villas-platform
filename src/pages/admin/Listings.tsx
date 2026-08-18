@@ -15,6 +15,8 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { buildLocalizedPath } from '@/routes';
 import { platformScope } from '@/config/platform';
+import { deleteMediaFromR2 } from '@/utils/r2';
+import { uniqueMediaUrls } from '@/utils/media';
 
 interface Property {
   id: string;
@@ -43,7 +45,7 @@ const Listings = () => {
   const fetchProperties = async () => {
     const { data, error } = await supabase
       .from('properties')
-      .select('*')
+      .select('id, title, type, price, price_weekend, location, bedrooms, bathrooms, featured, listing_type, created_at, is_negotiable, images, card_images, gallery_images')
       .eq('type', platformScope.propertyType)
       .order('created_at', { ascending: false });
 
@@ -60,6 +62,12 @@ const Listings = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('هل أنت متأكد أنك تريد حذف هذه الفيلا؟')) return;
 
+    const { data } = await supabase
+      .from('properties')
+      .select('images, card_images, gallery_images')
+      .eq('id', id)
+      .maybeSingle();
+
     const { error } = await supabase.from('properties').delete().eq('id', id);
 
     if (error) {
@@ -69,6 +77,12 @@ const Listings = () => {
         variant: 'destructive',
       });
     } else {
+      const urls = uniqueMediaUrls(
+        (data as any)?.images,
+        (data as any)?.card_images,
+        (data as any)?.gallery_images,
+      );
+      if (urls.length > 0) void deleteMediaFromR2(urls);
       toast({ title: 'تم بنجاح', description: 'تم حذف الفيلا بنجاح' });
       fetchProperties();
     }

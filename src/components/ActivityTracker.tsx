@@ -31,7 +31,7 @@ export const ActivityTracker = () => {
         };
 
         trackPageView();
-    }, [location.pathname, location.search]);
+    }, [location.pathname]);
 
     return null;
 };

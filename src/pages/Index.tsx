@@ -17,7 +17,7 @@ import type { HeroSearchFilters } from "@/components/Hero";
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { properties, loading } = useProperties();
-  const { banners, loading: bannersLoading } = useBanners();
+  const { banners, loading: bannersLoading } = useBanners(true);
   const [sortBy, setSortBy] = useState("newest");
   const [searchFilters, setSearchFilters] = useState<HeroSearchFilters & { features: string[] }>({
     groupType: (searchParams.get("groupType") as GroupTypeId) || "",
@@ -106,10 +106,10 @@ const Index = () => {
         <div className="relative z-20 -mt-12 lg:-mt-20 flex flex-col gap-12 md:gap-20 pb-24">
           
           {/* Dynamic Banners */}
-          {!bannersLoading && banners && banners.filter(b => b.is_active).length > 0 && (
+          {!bannersLoading && banners && banners.length > 0 && (
             <section className="container px-4">
               <div className="w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-float border border-white/10">
-                <BannerCarousel banners={banners.filter(b => b.is_active)} />
+                <BannerCarousel banners={banners} />
               </div>
             </section>
           )}

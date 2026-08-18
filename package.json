@@ -10,12 +10,14 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:sitemap": "node scripts/generate-sitemap.js",
-    "supabase:link": "supabase link --project-ref idnehwkrufbgfmlkexvi",
+    "supabase:link": "supabase link --project-ref pumuujvmjpcbipjnckoe",
     "supabase:push": "supabase db push",
-    "supabase:types": "supabase gen types typescript --project-id idnehwkrufbgfmlkexvi --schema public > src/integrations/supabase/types.ts",
+    "supabase:types": "supabase gen types typescript --project-id pumuujvmjpcbipjnckoe --schema public > src/integrations/supabase/types.ts",
     "supabase:bootstrap-sql": "node scripts/apply-migrations-bundle.js",
     "supabase:fresh-bootstrap": "node scripts/apply-migrations-bundle.js",
-    "admin:create": "node scripts/create-admin-user.js"
+    "admin:create": "node scripts/create-admin-user.js",
+    "r2:cors": "node scripts/configure-r2-cors.mjs",
+    "supabase:deploy-r2": "npx supabase functions deploy r2-presign && npx supabase functions deploy r2-delete"
   },
   "dependencies": {
     "@cloudinary/react": "^1.14.4",
@@ -77,6 +79,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1112.0",
     "@eslint/js": "^9.32.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",

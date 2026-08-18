@@ -52,7 +52,7 @@ export function useReservations() {
       .from('reservations')
       .select(`
         *,
-        property:properties (title, location, price, images)
+        property:properties (title, location, price)
       `)
       .order('created_at', { ascending: false });
 

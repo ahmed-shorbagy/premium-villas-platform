@@ -32,24 +32,22 @@ const Dashboard = () => {
         .from('user_roles')
         .select('*', { count: 'exact', head: true });
 
-      // Fetch page views (total views & unique visitors)
-      const { data: pageViewsData } = await supabase
+      const { count: pageViewCount } = await supabase
         .from('analytics')
-        .select('metadata')
+        .select('id', { count: 'exact', head: true })
         .eq('event_type', 'page_view');
 
-      const uniqueVisitorsCount = new Set(
-        pageViewsData?.map((event) => {
-          const meta = event.metadata as Record<string, string | undefined> | null;
-          return meta?.visitor_id;
-        }).filter(Boolean)
-      ).size;
+      let uniqueVisitorsCount = 0;
+      const { data: uniqueData, error: uniqueError } = await supabase.rpc('count_unique_visitors');
+      if (!uniqueError && uniqueData != null) {
+        uniqueVisitorsCount = Number(uniqueData) || 0;
+      }
 
       setPropertyCount(propCount || 0);
       setWhatsappClicks(clickCount || 0);
       setUserCount(uCount || 0);
-      setPageViews(pageViewsData?.length || 0);
-      setUniqueVisitors(uniqueVisitorsCount || 0);
+      setPageViews(pageViewCount || 0);
+      setUniqueVisitors(uniqueVisitorsCount);
       setLoading(false);
     };
 

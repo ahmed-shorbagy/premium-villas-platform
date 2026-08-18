@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { compressImage } from '@/utils/imageCompression';
-import { uploadMediaToCloudinary } from '@/utils/cloudinary';
+import { uploadMediaToR2, deleteMediaFromR2, MAX_CARD_MEDIA, MAX_GALLERY_IMAGES } from '@/utils/r2';
+import OptimizedImage from '@/components/OptimizedImage';
 
 const PropertyForm = () => {
     const { id } = useParams();
@@ -30,6 +30,8 @@ const PropertyForm = () => {
     const [loading, setLoading] = useState(!!id);
     const [uploading, setUploading] = useState(false);
     const [customFeature, setCustomFeature] = useState('');
+    const persistedUrls = useRef<string[]>([]);
+    const pendingDeletes = useRef<string[]>([]);
 
     // Initialize form data from localStorage if new property, or defaults
     const [formData, setFormData] = useState(() => {
@@ -101,7 +103,7 @@ const PropertyForm = () => {
                         featured: data.featured,
                         group_type: (data as { group_type?: string }).group_type || 'family',
                         card_images: (data as any).card_images || (data.images ? data.images.slice(0, 3) : []),
-                        gallery_images: (data as any).gallery_images || (data.images ? data.images.slice(3, 7) : []),
+                        gallery_images: (data as any).gallery_images || (data.images ? data.images.slice(3) : []),
                         features: data.features || [],
                         pricing_type: (data as any).pricing_type || 'per_night',
                         installments_available: (data as any).installments_available || false,
@@ -109,6 +111,10 @@ const PropertyForm = () => {
                         installment_value: (data as any).installment_value ? (data as any).installment_value.toString() : '',
                         is_negotiable: (data as any).is_negotiable || false,
                     });
+                    persistedUrls.current = [
+                        ...(((data as any).card_images as string[]) || (data.images ? data.images.slice(0, 3) : [])),
+                        ...(((data as any).gallery_images as string[]) || (data.images ? data.images.slice(3) : [])),
+                    ];
                 }
                 setLoading(false);
             };
@@ -121,38 +127,77 @@ const PropertyForm = () => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
 
-        // No limits on number of images
+        const current = type === 'card' ? formData.card_images : formData.gallery_images;
+        const limit = type === 'card' ? MAX_CARD_MEDIA : MAX_GALLERY_IMAGES;
+        const remaining = limit - current.length;
+        if (remaining <= 0) {
+            toast({
+                title: 'تم الوصول للحد الأقصى',
+                description: type === 'card' ? `يمكن إضافة ${MAX_CARD_MEDIA} ملفات كحد أقصى للبطاقة` : `يمكن إضافة ${MAX_GALLERY_IMAGES} صورة للمعرض`,
+                variant: 'destructive',
+            });
+            e.target.value = '';
+            return;
+        }
 
         setUploading(true);
         const uploadedUrls: string[] = [];
+        const selected = Array.from(files).slice(0, remaining);
+        let failures = 0;
 
-        for (let file of Array.from(files)) {
-            // Compress image before upload
-            file = await compressImage(file);
-
-            try {
-                const secureUrl = await uploadMediaToCloudinary(file);
-                uploadedUrls.push(secureUrl);
-            } catch (error) {
-                console.error('Failed to upload image to Cloudinary:', error);
-                toast({
-                    title: 'خطأ في الرفع',
-                    description: 'فشل رفع إحدى الصور، يرجى المحاولة مرة أخرى',
-                    variant: 'destructive',
-                });
+        for (const file of selected) {
+            if (type === 'gallery' && !file.type.startsWith('image/')) {
+                failures += 1;
+                continue;
             }
+            try {
+                uploadedUrls.push(await uploadMediaToR2(file));
+            } catch (error) {
+                console.error('Failed to upload media to R2:', error);
+                failures += 1;
+            }
+        }
+
+        if (uploadedUrls.length > 0) {
+            setFormData((prev: any) => ({
+                ...prev,
+                [type === 'card' ? 'card_images' : 'gallery_images']: [
+                    ...(type === 'card' ? prev.card_images : prev.gallery_images),
+                    ...uploadedUrls,
+                ],
+            }));
+        }
+
+        if (failures > 0) {
+            toast({
+                title: 'خطأ في الرفع',
+                description: failures === selected.length
+                    ? 'فشل رفع الملفات. تحقق من النوع والحجم ثم أعد المحاولة'
+                    : `فشل رفع ${failures} من الملفات`,
+                variant: 'destructive',
+            });
+        }
+
+        setUploading(false);
+        e.target.value = '';
+    };
+
+    const removeMedia = (type: 'card' | 'gallery', index: number) => {
+        const list = type === 'card' ? formData.card_images : formData.gallery_images;
+        const url = list[index];
+        if (!url) return;
+
+        if (persistedUrls.current.includes(url)) {
+            pendingDeletes.current.push(url);
+        } else {
+            void deleteMediaFromR2([url]);
         }
 
         setFormData((prev: any) => ({
             ...prev,
-            [type === 'card' ? 'card_images' : 'gallery_images']: [
-                ...(type === 'card' ? prev.card_images : prev.gallery_images),
-                ...uploadedUrls
-            ],
+            [type === 'card' ? 'card_images' : 'gallery_images']:
+                (type === 'card' ? prev.card_images : prev.gallery_images).filter((_: string, i: number) => i !== index),
         }));
-        setUploading(false);
-        // Reset file input
-        e.target.value = '';
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -227,6 +272,15 @@ const PropertyForm = () => {
                 title: 'تم بنجاح',
                 description: id ? 'تم تحديث الفيلا بنجاح' : 'تم إضافة الفيلا بنجاح',
             });
+            const kept = [...formData.card_images, ...formData.gallery_images];
+            const removed = [
+                ...pendingDeletes.current,
+                ...persistedUrls.current.filter((url) => !kept.includes(url)),
+            ];
+            if (removed.length > 0) {
+                void deleteMediaFromR2(removed);
+            }
+            pendingDeletes.current = [];
             // Clear draft
             if (!id) localStorage.removeItem('property-form-draft');
             navigate(buildLocalizedPath.adminListings());
@@ -400,7 +454,7 @@ const PropertyForm = () => {
                         <div className="flex justify-between items-center mb-2">
                             <div>
                                 <Label htmlFor="card_images" className="text-base font-semibold text-primary">الوسائط المعروضة في البطاقة الرئيسية</Label>
-                                <p className="text-sm text-muted-foreground">أضف الصور أو الفيديوهات التي تظهر في بطاقة الفيلا الرئيسية.</p>
+                                <p className="text-sm text-muted-foreground">الصورة الأولى تظهر في البطاقة. الفيديو لا يُشغَّل تلقائياً في القائمة. الحد {MAX_CARD_MEDIA} ملفات، والصورة حتى 12MB والفيديو حتى 25MB.</p>
                             </div>
                             <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.card_images?.length || 0}</span>
                         </div>
@@ -426,23 +480,20 @@ const PropertyForm = () => {
                                                         className="h-full w-full object-cover"
                                                         controls
                                                         playsInline
+                                                        preload="metadata"
                                                     />
                                                 ) : (
-                                                    <img
+                                                    <OptimizedImage
                                                         src={url}
                                                         alt={`Card Media ${idx + 1}`}
+                                                        size="sm"
                                                         className="h-full w-full object-cover"
                                                     />
                                                 )}
                                                 <button
                                                     type="button"
                                                     className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    onClick={() =>
-                                                        setFormData((prev: any) => ({
-                                                            ...prev,
-                                                            card_images: prev.card_images.filter((_: any, i: number) => i !== idx),
-                                                        }))
-                                                    }
+                                                    onClick={() => removeMedia('card', idx)}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>
@@ -462,7 +513,7 @@ const PropertyForm = () => {
                         <div className="flex justify-between items-center mb-2">
                             <div>
                                 <Label htmlFor="gallery_images" className="text-base font-semibold">باقي صور الفيلا (معرض الصور)</Label>
-                                <p className="text-sm text-muted-foreground">أضف باقي صور الفيلا لتظهر في معرض الصور.</p>
+                                <p className="text-sm text-muted-foreground">أضف باقي صور الفيلا لتظهر في معرض الصور. الحد {MAX_GALLERY_IMAGES} صور.</p>
                             </div>
                             <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.gallery_images?.length || 0}</span>
                         </div>
@@ -481,20 +532,16 @@ const PropertyForm = () => {
                                     {formData.gallery_images.map((url: string, idx: number) => {
                                         return (
                                             <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
-                                                <img
+                                                <OptimizedImage
                                                     src={url}
                                                     alt={`Gallery Image ${idx + 1}`}
+                                                    size="sm"
                                                     className="h-full w-full object-cover"
                                                 />
                                                 <button
                                                     type="button"
                                                     className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    onClick={() =>
-                                                        setFormData((prev: any) => ({
-                                                            ...prev,
-                                                            gallery_images: prev.gallery_images.filter((_: any, i: number) => i !== idx),
-                                                        }))
-                                                    }
+                                                    onClick={() => removeMedia('gallery', idx)}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>

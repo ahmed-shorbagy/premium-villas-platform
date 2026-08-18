@@ -5,23 +5,38 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { HypeControllerProvider } from "@/context/HypeController";
+import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
-import PropertyDetails from "./pages/PropertyDetails";
-import AdminLogin from "./pages/AdminLogin";
-import AdminLayout from "./components/admin/AdminLayout";
-import Dashboard from "./pages/admin/Dashboard";
-import Listings from "./pages/admin/Listings";
-import Settings from "./pages/admin/Settings";
-import PropertyForm from "./pages/admin/PropertyForm";
-import Banners from "./pages/admin/Banners";
-import Reservations from "./pages/admin/Reservations";
-import PropertyTypePage from "./pages/PropertyTypePage";
-import NotFound from "./pages/NotFound";
 import { getLocalizedRoutes, buildLocalizedPath } from "./routes";
 import { ActivityTracker } from "./components/ActivityTracker";
 import { SiteShell } from "./components/layout/SiteShell";
 
-const queryClient = new QueryClient();
+const PropertyDetails = lazy(() => import("./pages/PropertyDetails"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const Listings = lazy(() => import("./pages/admin/Listings"));
+const Settings = lazy(() => import("./pages/admin/Settings"));
+const PropertyForm = lazy(() => import("./pages/admin/PropertyForm"));
+const Banners = lazy(() => import("./pages/admin/Banners"));
+const Reservations = lazy(() => import("./pages/admin/Reservations"));
+const PropertyTypePage = lazy(() => import("./pages/PropertyTypePage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+const RouteFallback = () => (
+  <div className="flex min-h-[40vh] items-center justify-center">
+    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  </div>
+);
 
 const localizedRoutes = getLocalizedRoutes();
 const englishRoutes = getLocalizedRoutes("en");
@@ -68,6 +83,7 @@ const App = () => (
           <BrowserRouter>
             <SiteShell>
               <ActivityTracker />
+              <Suspense fallback={<RouteFallback />}>
               <Routes>
                 <Route path={localizedRoutes.home} element={<Index />} />
 
@@ -107,6 +123,7 @@ const App = () => (
 
                 <Route path={localizedRoutes.notFound} element={<NotFound />} />
               </Routes>
+              </Suspense>
             </SiteShell>
           </BrowserRouter>
         </TooltipProvider>

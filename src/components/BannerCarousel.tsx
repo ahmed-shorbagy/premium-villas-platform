@@ -8,6 +8,7 @@ import {
     CarouselPrevious,
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import OptimizedImage from '@/components/OptimizedImage';
 
 interface BannerCarouselProps {
     banners: Banner[];
@@ -36,9 +37,12 @@ const BannerCarousel = ({ banners }: BannerCarouselProps) => {
                         <CarouselItem key={banner.id} className="relative h-full pl-0 overflow-hidden">
                             {banner.link ? (
                                 <a href={banner.link} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative group">
-                                    <div
-                                        className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                                        style={{ backgroundImage: `url(${banner.image_url})` }}
+                                    <OptimizedImage
+                                        src={banner.image_url}
+                                        alt={banner.title || 'بانر'}
+                                        size="full"
+                                        priority
+                                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
                                     {(banner.title || banner.description) && (
@@ -50,9 +54,11 @@ const BannerCarousel = ({ banners }: BannerCarouselProps) => {
                                 </a>
                             ) : (
                                 <div className="w-full h-full relative group">
-                                    <div
-                                        className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                                        style={{ backgroundImage: `url(${banner.image_url})` }}
+                                    <OptimizedImage
+                                        src={banner.image_url}
+                                        alt={banner.title || 'بانر'}
+                                        size="full"
+                                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
                                     {(banner.title || banner.description) && (

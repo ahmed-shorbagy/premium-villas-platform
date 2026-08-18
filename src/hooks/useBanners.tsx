@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { compressImage } from '@/utils/imageCompression';
 import { uploadMediaToCloudinary } from '@/utils/cloudinary';
 
-export const useBanners = () => {
+export const useBanners = (activeOnly = false) => {
     const [banners, setBanners] = useState<Banner[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -16,22 +16,29 @@ export const useBanners = () => {
     const fetchBanners = useCallback(async () => {
         try {
             setLoading(true);
-            const { data, error } = await supabaseAny
+            let query = supabaseAny
                 .from('banners')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .select(activeOnly
+                    ? 'id, title, description, image_url, link, is_active, display_order'
+                    : '*')
+                .order('display_order', { ascending: true });
+
+            if (activeOnly) {
+                query = query.eq('is_active', true);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
-            // Randomize banners on client side
-            const shuffled = (data as Banner[]).sort(() => Math.random() - 0.5);
-            setBanners(shuffled);
+            const rows = (data as Banner[]) || [];
+            setBanners(activeOnly ? rows : [...rows].sort(() => Math.random() - 0.5));
         } catch (error) {
             console.error('Error fetching banners:', error);
             toast.error('حدث خطأ أثناء تحميل البنرات');
         } finally {
             setLoading(false);
         }
-    }, [supabaseAny]);
+    }, [supabaseAny, activeOnly]);
 
     const createBanner = async (banner: BannerInput, file: File) => {
         try {
@@ -124,7 +131,7 @@ export const useBanners = () => {
 
     useEffect(() => {
         fetchBanners();
-    }, []);
+    }, [fetchBanners]);
 
     return {
         banners,

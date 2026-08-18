@@ -37,6 +37,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { buildLocalizedPath } from '@/routes';
 import ReservationDialog from '@/components/ReservationDialog';
 import AvailabilityCalendar from '@/components/AvailabilityCalendar';
+import OptimizedImage from '@/components/OptimizedImage';
+import { firstImageUrl, isVideoUrl, uniqueMediaUrls } from '@/utils/media';
 
 interface PropertyDetailsType {
   id: string;
@@ -84,9 +86,10 @@ const PropertyDetails = () => {
       }
 
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+      const columns = 'id, slug, title, type, price, price_weekend, rent_count, max_guests, location, bedrooms, bathrooms, images, card_images, gallery_images, listing_type, featured, created_at, description, features, contact_name, contact_phone, contact_email, contact_location, installments_available, installment_period, installment_value, pricing_type, is_negotiable';
       let { data, error } = await supabase
         .from('properties')
-        .select('*')
+        .select(columns)
         .eq(isUUID ? 'id' : 'slug', id)
         .maybeSingle();
 
@@ -97,7 +100,7 @@ const PropertyDetails = () => {
         if (possibleShortId) {
           const fallbackRes = await supabase
             .from('properties')
-            .select('*')
+            .select(columns)
             .eq('slug', possibleShortId)
             .maybeSingle();
           if (fallbackRes.data) {
@@ -124,7 +127,11 @@ const PropertyDetails = () => {
           location: data.location,
           bedrooms: data.bedrooms,
           bathrooms: data.bathrooms,
-          images: data.images || [],
+          images: uniqueMediaUrls(
+            (data as any).card_images,
+            (data as any).gallery_images,
+            data.images,
+          ),
           listingType: (data as any).listing_type as 'sale' | 'rent',
           featured: data.featured,
           createdAt: new Date(data.created_at),
@@ -149,9 +156,7 @@ const PropertyDetails = () => {
     fetchProperty();
   }, [id]);
 
-  const isVideo = (url: string) => {
-    return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
-  };
+  const isVideo = isVideoUrl;
 
   if (loading) {
     return (
@@ -205,7 +210,7 @@ const PropertyDetails = () => {
       <SEO
         title={property.title}
         description={property.description}
-        image={property.images[0]}
+        image={firstImageUrl(property.images.filter((url) => !isVideo(url))) || property.images[0]}
         price={property.price}
         location={property.location}
         type="product"
@@ -233,13 +238,16 @@ const PropertyDetails = () => {
                         src={url}
                         controls
                         playsInline
-                        poster={property.images.find(img => !isVideo(img))}
+                        preload={index === 0 ? 'metadata' : 'none'}
+                        poster={firstImageUrl(property.images.filter((img) => !isVideo(img)))}
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <img
+                      <OptimizedImage
                         src={url}
                         alt={`${property.title} - ${index + 1}`}
+                        size="full"
+                        priority={index === 0}
                         className="h-full w-full object-cover"
                       />
                     )}

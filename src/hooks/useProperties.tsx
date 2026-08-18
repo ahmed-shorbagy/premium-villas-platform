@@ -1,58 +1,78 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Property } from "@/data/properties";
 import { platformScope } from "@/config/platform";
 import { supabase } from "@/integrations/supabase/client";
 
-export const useProperties = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+const LISTING_COLUMNS =
+  "id, slug, title, type, price, price_weekend, rent_count, max_guests, location, bedrooms, bathrooms, card_images, images, featured, group_type, features, created_at, is_negotiable, listing_type";
 
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('properties')
-          .select('*')
-          .eq('type', platformScope.propertyType);
+async function fetchProperties(): Promise<Property[]> {
+  const { data, error } = await supabase
+    .from("properties")
+    .select(LISTING_COLUMNS)
+    .eq("type", platformScope.propertyType)
+    .order("created_at", { ascending: false });
 
-        if (error) throw error;
+  if (error) throw error;
 
-        const mapped: Property[] = (data || []).map((d: any) => ({
-          id: d.id,
-          slug: d.slug,
-          title: d.title,
-          type: d.type as any,
-          price: d.price,
-          price_weekend: d.price_weekend,
-          rent_count: d.rent_count,
-          location: d.location,
-          bedrooms: d.bedrooms,
-          bathrooms: d.bathrooms,
-          image: d.image || (d.card_images && d.card_images.length > 0 ? d.card_images[0] : (d.images && d.images.length > 0 ? d.images[0] : '')),
-          card_images: d.card_images || (d.images ? d.images.slice(0, 3) : []),
-          gallery_images: d.gallery_images || (d.images ? d.images.slice(3) : []),
-          listingType: d.listing_type as any,
-          featured: d.featured,
-          groupType: d.group_type as any,
-          createdAt: new Date(d.created_at),
-          description: d.description,
-          features: d.features,
-          is_negotiable: d.is_negotiable || false,
-        }));
-
-        setProperties(mapped);
-      } catch (err) {
-        console.error("Failed to fetch live properties:", err);
-        setError(err as Error);
-      } finally {
-        setLoading(false);
-      }
+  return (data || []).map((d) => {
+    const row = d as Record<string, unknown> & {
+      id: string;
+      slug?: string;
+      title: string;
+      type: Property['type'];
+      price: number;
+      price_weekend?: number | null;
+      rent_count?: number | null;
+      max_guests?: number | null;
+      location: string;
+      bedrooms: number;
+      bathrooms: number;
+      card_images?: string[] | null;
+      images?: string[] | null;
+      listing_type?: Property['listingType'];
+      featured?: boolean;
+      group_type?: Property['groupType'];
+      created_at: string;
+      features?: string[] | null;
+      is_negotiable?: boolean;
     };
 
-    fetchProperties();
-  }, []);
+    return {
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      type: row.type,
+      price: row.price,
+      price_weekend: row.price_weekend,
+      rent_count: row.rent_count,
+      max_guests: row.max_guests,
+      location: row.location,
+      bedrooms: row.bedrooms,
+      bathrooms: row.bathrooms,
+      image: row.card_images?.[0] || row.images?.[0] || "",
+      card_images: row.card_images || (row.images ? row.images.slice(0, 3) : []),
+      gallery_images: [],
+      listingType: row.listing_type,
+      featured: row.featured,
+      groupType: row.group_type,
+      createdAt: new Date(row.created_at),
+      features: row.features,
+      is_negotiable: row.is_negotiable || false,
+    };
+  });
+}
 
-  return { properties, loading, error };
+export const useProperties = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["properties", platformScope.propertyType],
+    queryFn: fetchProperties,
+    staleTime: 60_000,
+  });
+
+  return {
+    properties: data ?? [],
+    loading: isLoading,
+    error: (error as Error) || null,
+  };
 };

@@ -1,12 +1,16 @@
 import PropertyCard from "./PropertyCard";
 import { Property } from "@/data/properties";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface PropertyGridProps {
   properties: Property[];
   loading?: boolean;
   emptyMessage?: string;
 }
+
+const PAGE_SIZE = 12;
 
 const PropertyCardSkeleton = () => (
   <div className="shima-card h-[420px] overflow-hidden">
@@ -20,6 +24,12 @@ const PropertyCardSkeleton = () => (
 );
 
 const PropertyGrid = ({ properties, loading, emptyMessage }: PropertyGridProps) => {
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const visible = useMemo(
+    () => properties.slice(0, visibleCount),
+    [properties, visibleCount],
+  );
+
   if (loading) {
     return (
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
@@ -40,16 +50,29 @@ const PropertyGrid = ({ properties, loading, emptyMessage }: PropertyGridProps) 
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {properties.map((property, index) => (
-        <div
-          key={property.id}
-          className="animate-fade-in-up"
-          style={{ animationDelay: `${(index % 6) * 0.06}s` }}
-        >
-          <PropertyCard property={property} />
+    <div className="space-y-8">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {visible.map((property, index) => (
+          <div
+            key={property.id}
+            className="animate-fade-in-up"
+            style={{ animationDelay: `${(index % 6) * 0.06}s` }}
+          >
+            <PropertyCard property={property} />
+          </div>
+        ))}
+      </div>
+      {visibleCount < properties.length && (
+        <div className="flex justify-center">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+          >
+            عرض المزيد
+          </Button>
         </div>
-      ))}
+      )}
     </div>
   );
 };
