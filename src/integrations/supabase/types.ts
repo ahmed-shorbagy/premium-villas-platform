@@ -114,6 +114,8 @@ export type Database = {
           customer_phone: string
           customer_email: string | null
           customer_notes: string | null
+          customer_location: string | null
+          booking_group_type: string | null
           check_in: string | null
           check_out: string | null
           num_guests: number
@@ -129,6 +131,8 @@ export type Database = {
           customer_phone: string
           customer_email?: string | null
           customer_notes?: string | null
+          customer_location?: string | null
+          booking_group_type?: string | null
           check_in?: string | null
           check_out?: string | null
           num_guests?: number
@@ -144,6 +148,8 @@ export type Database = {
           customer_phone?: string
           customer_email?: string | null
           customer_notes?: string | null
+          customer_location?: string | null
+          booking_group_type?: string | null
           check_in?: string | null
           check_out?: string | null
           num_guests?: number
@@ -247,6 +253,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      count_public_page_views: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      count_unique_visitors: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      get_booked_ranges: {
+        Args: { p_property_ids: string[] }
+        Returns: {
+          property_id: string
+          check_in: string
+          check_out: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

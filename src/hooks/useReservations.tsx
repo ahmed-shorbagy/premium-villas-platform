@@ -9,6 +9,8 @@ export interface Reservation {
   customer_phone: string;
   customer_email: string | null;
   customer_notes: string | null;
+  customer_location?: string | null;
+  booking_group_type?: string | null;
   check_in: string;
   check_out: string;
   num_guests: number;
@@ -289,4 +291,63 @@ export function useVillaOwnerWhatsApp() {
   };
 
   return { ownerWhatsApp, loading, saveOwnerWhatsApp };
+}
+
+export function useBookingRules() {
+  const [bookingRules, setBookingRules] = useState('');
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'booking_rules')
+        .maybeSingle();
+
+      if (data?.value) {
+        setBookingRules(String(data.value));
+      }
+      setLoading(false);
+    };
+    fetch();
+  }, []);
+
+  const saveBookingRules = async (rules: string) => {
+    const { data: existing } = await supabase
+      .from('site_settings')
+      .select('id')
+      .eq('key', 'booking_rules')
+      .maybeSingle();
+
+    let error;
+    if (existing) {
+      const { error: updateErr } = await supabase
+        .from('site_settings')
+        .update({ value: rules as any, updated_at: new Date().toISOString() })
+        .eq('key', 'booking_rules');
+      error = updateErr;
+    } else {
+      const { error: insertErr } = await supabase
+        .from('site_settings')
+        .insert({ key: 'booking_rules', value: rules as any });
+      error = insertErr;
+    }
+
+    if (error) {
+      toast({
+        title: 'خطأ',
+        description: 'فشل حفظ قوانين الحجز',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    setBookingRules(rules);
+    toast({ title: 'تم بنجاح', description: 'تم حفظ قوانين الحجز' });
+    return true;
+  };
+
+  return { bookingRules, loading, saveBookingRules };
 }

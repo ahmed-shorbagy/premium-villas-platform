@@ -2,20 +2,34 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useVillaOwnerWhatsApp } from '@/hooks/useReservations';
-import { Phone, Save, Loader2, MessageCircle } from 'lucide-react';
+import { useVillaOwnerWhatsApp, useBookingRules } from '@/hooks/useReservations';
+import { Phone, Save, Loader2, MessageCircle, ScrollText } from 'lucide-react';
 
 const Settings = () => {
   const { ownerWhatsApp, loading, saveOwnerWhatsApp } = useVillaOwnerWhatsApp();
-  const [editNumber, setEditNumber] = useState('');
-  const [initialized, setInitialized] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const {
+    bookingRules,
+    loading: rulesLoading,
+    saveBookingRules,
+  } = useBookingRules();
 
-  // Initialize the edit field once the value is loaded
+  const [editNumber, setEditNumber] = useState('');
+  const [editRules, setEditRules] = useState('');
+  const [initialized, setInitialized] = useState(false);
+  const [rulesInitialized, setRulesInitialized] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savingRules, setSavingRules] = useState(false);
+
   if (!loading && !initialized) {
     setEditNumber(ownerWhatsApp);
     setInitialized(true);
+  }
+
+  if (!rulesLoading && !rulesInitialized) {
+    setEditRules(bookingRules);
+    setRulesInitialized(true);
   }
 
   const handleSave = async () => {
@@ -24,13 +38,20 @@ const Settings = () => {
     setSaving(false);
   };
 
+  const handleSaveRules = async () => {
+    setSavingRules(true);
+    await saveBookingRules(editRules.trim());
+    setSavingRules(false);
+  };
+
   const handleTestWhatsApp = () => {
     const cleaned = editNumber.replace(/\D/g, '');
     if (!cleaned) {
       alert('يرجى إدخال رقم واتساب أولاً');
       return;
     }
-    const message = '🔔 رسالة تجريبية من نُزُل — هذه رسالة اختبارية للتأكد من أن الرقم يعمل بشكل صحيح.';
+    const message =
+      '🔔 رسالة تجريبية من نُزُل — هذه رسالة اختبارية للتأكد من أن الرقم يعمل بشكل صحيح.';
     window.open(
       `https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`,
       '_blank',
@@ -45,7 +66,6 @@ const Settings = () => {
         <p className="text-muted-foreground">إدارة إعدادات النظام العامة</p>
       </div>
 
-      {/* Villa Owner WhatsApp Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -53,7 +73,8 @@ const Settings = () => {
             رقم واتساب صاحبة الفلل
           </CardTitle>
           <CardDescription>
-            رقم الواتساب الذي سيتم إرسال إشعارات الحجوزات إليه، وهو أيضاً الرقم الذي سيظهر للعملاء في الموقع للتواصل. يجب إدخال الرقم مع رمز الدولة (مثال: +972597470912)
+            رقم الواتساب الذي سيتم إرسال إشعارات الحجوزات إليه، وهو أيضاً الرقم الذي سيظهر
+            للعملاء في الموقع للتواصل. يجب إدخال الرقم مع رمز الدولة (مثال: +972597470912)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -72,13 +93,16 @@ const Settings = () => {
                     type="tel"
                     placeholder="+972597470912"
                     value={editNumber}
-                    onChange={(e) => setEditNumber(e.target.value.replace(/[^\d+\-\s]/g, ''))}
+                    onChange={(e) =>
+                      setEditNumber(e.target.value.replace(/[^\d+\-\s]/g, ''))
+                    }
                     className="ps-10"
                     dir="ltr"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  هذا الرقم سيظهر في أسفل الموقع للعملاء، وسيستقبل تفاصيل كل حجز جديد. يمكنك تغييره في أي وقت.
+                  هذا الرقم سيظهر في أسفل الموقع للعملاء، وسيستقبل تفاصيل كل حجز جديد. يمكنك
+                  تغييره في أي وقت.
                 </p>
               </div>
 
@@ -106,7 +130,46 @@ const Settings = () => {
         </CardContent>
       </Card>
 
-      {/* Info Card */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ScrollText className="h-5 w-5 text-gold" />
+            قوانين الحجز
+          </CardTitle>
+          <CardDescription>
+            الرسالة التي تظهر للعميل قبل تأكيد الحجز. الصق نص القوانين هنا عندما يرسله العميل.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {rulesLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="booking-rules">نص القوانين</Label>
+                <Textarea
+                  id="booking-rules"
+                  rows={8}
+                  placeholder="اكتب أو الصق قوانين الإقامة هنا..."
+                  value={editRules}
+                  onChange={(e) => setEditRules(e.target.value)}
+                />
+              </div>
+              <Button onClick={handleSaveRules} disabled={savingRules} className="gap-2">
+                {savingRules ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                حفظ القوانين
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
       <Card className="mt-6 border-blue-200 dark:border-blue-800">
         <CardContent className="pt-6">
           <div className="flex gap-3">
@@ -117,8 +180,12 @@ const Settings = () => {
               <p className="font-medium text-foreground mb-1">كيف يعمل نظام الحجز؟</p>
               <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
                 <li>العميل يحجز الفيلا عبر الموقع</li>
+                <li>يوافق على قوانين الإقامة قبل التأكيد</li>
                 <li>تظهر الحجوزات في لوحة التحكم → الحجوزات</li>
-                <li>اضغط "إبلاغ صاحبة الفلل" — تُرسل رسالة واتساب تلقائياً <strong>بدون رقم العميل</strong></li>
+                <li>
+                  اضغط &quot;إبلاغ صاحبة الفلل&quot; — تُرسل رسالة واتساب تلقائياً{' '}
+                  <strong>بدون رقم العميل</strong>
+                </li>
                 <li>تواصل مع العميل مباشرة من لوحة الحجوزات</li>
                 <li>حدّث حالة الحجز (مؤكد / ملغي / مكتمل)</li>
               </ol>
