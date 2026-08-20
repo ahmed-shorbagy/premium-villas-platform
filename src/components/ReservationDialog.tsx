@@ -33,7 +33,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { differenceInDays, addDays, isBefore, startOfDay } from 'date-fns';
+import { differenceInDays, addDays, isBefore } from 'date-fns';
 import { bookingPolicies } from '@/config/booking';
 import { groupTypeLabels, type GroupTypeId } from '@/config/filters';
 import { useBookingRules, useAvailability } from '@/hooks/useReservations';
@@ -42,7 +42,7 @@ import {
   isDateInAvailabilityPeriods,
   useBookedRanges,
 } from '@/hooks/useBookedRanges';
-import { addDays, isBefore, startOfDay } from 'date-fns';
+import { parseDateOnly } from '@/utils/dateOnly';
 
 const BOOKING_TYPE_OPTIONS: { id: Exclude<GroupTypeId, 'all'>; labelAr: string }[] = [
   { id: 'family', labelAr: 'عائلة' },
@@ -62,6 +62,8 @@ interface ReservationDialogProps {
   /** Pre-selected dates from the availability calendar */
   checkIn?: string;
   checkOut?: string;
+  /** Called when chosen dates are unavailable — parent can show similar villas */
+  onDatesUnavailable?: (date: string) => void;
 }
 
 const ReservationDialog = ({
@@ -75,10 +77,11 @@ const ReservationDialog = ({
   children,
   checkIn: preCheckIn,
   checkOut: preCheckOut,
+  onDatesUnavailable,
 }: ReservationDialogProps) => {
   const { bookingRules } = useBookingRules();
-  const { periods } = useAvailability(propertyId);
-  const { ranges: bookedRanges } = useBookedRanges(propertyId);
+  const { periods, loading: availabilityLoading } = useAvailability(propertyId);
+  const { ranges: bookedRanges, loading: bookedLoading } = useBookedRanges(propertyId);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'form' | 'rules'>('form');
   const [submitted, setSubmitted] = useState(false);
@@ -121,8 +124,10 @@ const ReservationDialog = ({
   }, [preCheckIn, preCheckOut, open]);
 
   const numNights = useMemo(() => {
-    if (!formData.check_in || !formData.check_out) return 0;
-    const d = differenceInDays(new Date(formData.check_out), new Date(formData.check_in));
+    const start = parseDateOnly(formData.check_in);
+    const end = parseDateOnly(formData.check_out);
+    if (!start || !end) return 0;
+    const d = differenceInDays(end, start);
     return d > 0 ? d : 0;
   }, [formData.check_in, formData.check_out]);
 
@@ -139,10 +144,11 @@ const ReservationDialog = ({
     let weekdayNights = 0;
     let weekendNights = 0;
 
-    const start = new Date(formData.check_in);
+    const start = parseDateOnly(formData.check_in);
+    if (!start) return { total: 0, weekdayNights: 0, weekendNights: 0 };
+
     for (let i = 0; i < numNights; i++) {
-      const currentDate = new Date(start);
-      currentDate.setDate(start.getDate() + i);
+      const currentDate = addDays(start, i);
       const day = currentDate.getDay();
       const isWeekend = day === 4 || day === 5;
 
@@ -184,17 +190,38 @@ const ReservationDialog = ({
       errs.check_out = 'تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول';
     }
 
-    if (formData.check_in && formData.check_out && numNights > 0) {
-      let cursor = startOfDay(new Date(formData.check_in));
-      const end = startOfDay(new Date(formData.check_out));
-      while (isBefore(cursor, end)) {
-        const inWindow = isDateInAvailabilityPeriods(cursor, periods);
-        const booked = isDateBookedByRanges(cursor, bookedRanges);
-        if (!inWindow || booked) {
-          errs.check_in = 'التواريخ المختارة غير متاحة أو محجوزة';
-          break;
+    // Wait for availability data — never false-reject while still loading
+    if (
+      formData.check_in &&
+      formData.check_out &&
+      numNights > 0 &&
+      !availabilityLoading &&
+      !bookedLoading
+    ) {
+      const start = parseDateOnly(formData.check_in);
+      const end = parseDateOnly(formData.check_out);
+      if (start && end) {
+        if (periods.length === 0) {
+          errs.check_in = 'لا توجد فترات توفر محددة لهذه الفيلا حالياً';
+        } else {
+          let cursor = start;
+          let unavailable = false;
+          while (isBefore(cursor, end)) {
+            const inWindow = isDateInAvailabilityPeriods(cursor, periods);
+            const booked = isDateBookedByRanges(cursor, bookedRanges);
+            if (!inWindow || booked) {
+              unavailable = true;
+              break;
+            }
+            cursor = addDays(cursor, 1);
+          }
+          if (unavailable) {
+            errs.check_in = 'التواريخ المختارة غير متاحة أو محجوزة';
+            onDatesUnavailable?.(formData.check_in);
+            // Close dialog so the similar-villas section on the page is visible
+            setTimeout(() => setOpen(false), 600);
+          }
         }
-        cursor = addDays(cursor, 1);
       }
     }
 
@@ -207,6 +234,10 @@ const ReservationDialog = ({
   };
 
   const handleContinueToRules = () => {
+    if (availabilityLoading || bookedLoading) {
+      setErrors({ check_in: 'جاري التحقق من التوفر، حاول مرة أخرى بعد لحظة' });
+      return;
+    }
     if (!validate()) return;
     setStep('rules');
     setAcceptedRules(false);

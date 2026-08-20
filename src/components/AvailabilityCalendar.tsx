@@ -15,8 +15,11 @@ import {
   isBefore,
   startOfDay,
   getDay,
+  addDays,
 } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import { parseDateOnly, formatDateOnly } from '@/utils/dateOnly';
+import { isDateInAvailabilityPeriods } from '@/hooks/useBookedRanges';
 
 interface AvailabilityCalendarProps {
   propertyId: string;
@@ -41,14 +44,8 @@ const AvailabilityCalendar = ({
   const loading = availabilityLoading || bookedLoading;
   const today = startOfDay(new Date());
 
-  const isDateInWhitelist = (date: Date): boolean => {
-    return periods.some((p) =>
-      isWithinInterval(date, {
-        start: startOfDay(new Date(p.available_from)),
-        end: startOfDay(new Date(p.available_to)),
-      })
-    );
-  };
+  const isDateInWhitelist = (date: Date): boolean =>
+    isDateInAvailabilityPeriods(date, periods);
 
   /** Bookable = in whitelist AND not overlapping pending/confirmed reservation */
   const isDateBookable = (date: Date): boolean => {
@@ -67,14 +64,12 @@ const AvailabilityCalendar = ({
     const bookable = isDateBookable(day);
 
     if (!bookable) {
-      // Clear booking selection; request similar villas for this date
       setSelectedCheckIn(null);
       setSelectedCheckOut(null);
-      onUnavailableDateSelect?.(format(day, 'yyyy-MM-dd'));
+      onUnavailableDateSelect?.(formatDateOnly(day));
       return;
     }
 
-    // Clearing alternatives when picking available dates is caller's concern via onDateSelect
     if (!selectedCheckIn || (selectedCheckIn && selectedCheckOut)) {
       setSelectedCheckIn(day);
       setSelectedCheckOut(null);
@@ -83,7 +78,6 @@ const AvailabilityCalendar = ({
         setSelectedCheckIn(day);
         setSelectedCheckOut(null);
       } else {
-        // Ensure every night in range is bookable
         let cursor = startOfDay(selectedCheckIn);
         const end = startOfDay(day);
         let ok = true;
@@ -92,18 +86,14 @@ const AvailabilityCalendar = ({
             ok = false;
             break;
           }
-          cursor = new Date(cursor);
-          cursor.setDate(cursor.getDate() + 1);
+          cursor = addDays(cursor, 1);
         }
         if (!ok) {
-          onUnavailableDateSelect?.(format(day, 'yyyy-MM-dd'));
+          onUnavailableDateSelect?.(formatDateOnly(day));
           return;
         }
         setSelectedCheckOut(day);
-        onDateSelect?.(
-          format(selectedCheckIn, 'yyyy-MM-dd'),
-          format(day, 'yyyy-MM-dd')
-        );
+        onDateSelect?.(formatDateOnly(selectedCheckIn), formatDateOnly(day));
       }
     }
   };
@@ -251,7 +241,10 @@ const AvailabilityCalendar = ({
             </p>
           )}
 
-          {periods.filter((p) => !isBefore(new Date(p.available_to), today)).length > 0 && (
+          {periods.filter((p) => {
+            const to = parseDateOnly(p.available_to);
+            return to && !isBefore(to, today);
+          }).length > 0 && (
             <div className="mt-5 border-t border-border pt-4">
               <h4 className="text-xs font-semibold text-foreground mb-3 flex items-center gap-1.5">
                 <CalendarDays className="h-3.5 w-3.5 text-brand" />
@@ -259,45 +252,52 @@ const AvailabilityCalendar = ({
               </h4>
               <div className="space-y-2 max-h-36 overflow-y-auto pe-1 custom-scrollbar">
                 {periods
-                  .filter((p) => !isBefore(new Date(p.available_to), today))
-                  .sort(
-                    (a, b) =>
-                      new Date(a.available_from).getTime() -
-                      new Date(b.available_from).getTime()
-                  )
-                  .map((period, i) => (
-                    <div
-                      key={i}
-                      className="flex justify-between items-center text-xs bg-secondary/30 p-2.5 rounded-lg border border-border/50"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="text-muted-foreground font-medium">
-                          من:{' '}
-                          <span className="text-foreground">
-                            {format(new Date(period.available_from), 'd MMM yyyy', {
-                              locale: ar,
-                            })}
+                  .filter((p) => {
+                    const to = parseDateOnly(p.available_to);
+                    return to && !isBefore(to, today);
+                  })
+                  .sort((a, b) => {
+                    const aFrom = parseDateOnly(a.available_from)?.getTime() || 0;
+                    const bFrom = parseDateOnly(b.available_from)?.getTime() || 0;
+                    return aFrom - bFrom;
+                  })
+                  .map((period, i) => {
+                    const from = parseDateOnly(period.available_from);
+                    const to = parseDateOnly(period.available_to);
+                    return (
+                      <div
+                        key={i}
+                        className="flex justify-between items-center text-xs bg-secondary/30 p-2.5 rounded-lg border border-border/50"
+                      >
+                        <div className="flex flex-col gap-1">
+                          <span className="text-muted-foreground font-medium">
+                            من:{' '}
+                            <span className="text-foreground">
+                              {from
+                                ? format(from, 'd MMM yyyy', { locale: ar })
+                                : period.available_from}
+                            </span>
                           </span>
-                        </span>
-                        <span className="text-muted-foreground font-medium">
-                          إلى:{' '}
-                          <span className="text-foreground">
-                            {format(new Date(period.available_to), 'd MMM yyyy', {
-                              locale: ar,
-                            })}
-                          </span>
-                        </span>
-                      </div>
-                      {period.price_override && (
-                        <div className="flex flex-col items-end">
-                          <span className="text-[10px] text-muted-foreground">سعر خاص</span>
-                          <span className="text-gold font-bold">
-                            {period.price_override} ₪/ليلة
+                          <span className="text-muted-foreground font-medium">
+                            إلى:{' '}
+                            <span className="text-foreground">
+                              {to
+                                ? format(to, 'd MMM yyyy', { locale: ar })
+                                : period.available_to}
+                            </span>
                           </span>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {period.price_override && (
+                          <div className="flex flex-col items-end">
+                            <span className="text-[10px] text-muted-foreground">سعر خاص</span>
+                            <span className="text-gold font-bold">
+                              {period.price_override} ₪/ليلة
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           )}

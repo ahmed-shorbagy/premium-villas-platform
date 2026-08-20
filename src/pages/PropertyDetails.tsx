@@ -78,10 +78,22 @@ const PropertyDetails = () => {
   const [selectedCheckIn, setSelectedCheckIn] = useState('');
   const [selectedCheckOut, setSelectedCheckOut] = useState('');
   const [unavailableDate, setUnavailableDate] = useState<string | null>(null);
+  const similarSectionRef = useRef<HTMLDivElement>(null);
   const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: true }));
 
-  const similarGroupType: GroupTypeId | null =
-    property?.groupType || null;
+  const similarGroupType: GroupTypeId | null = property?.groupType || null;
+
+  const showSimilarForDate = (date: string) => {
+    setUnavailableDate(date);
+    setSelectedCheckIn('');
+    setSelectedCheckOut('');
+    // Scroll after paint so the section is mounted
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        similarSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    });
+  };
 
   const { properties: similarVillas, loading: similarLoading } =
     useSimilarAvailableVillas({
@@ -328,6 +340,7 @@ const PropertyDetails = () => {
         groupType={property.groupType}
         checkIn={selectedCheckIn}
         checkOut={selectedCheckOut}
+        onDatesUnavailable={showSimilarForDate}
       >
         <Button variant="gold" size="lg" className="w-full gap-2">
           <CalendarDays className="h-5 w-5" />
@@ -347,9 +360,7 @@ const PropertyDetails = () => {
         setUnavailableDate(null);
       }}
       onUnavailableDateSelect={(date) => {
-        setUnavailableDate(date);
-        setSelectedCheckIn('');
-        setSelectedCheckOut('');
+        showSimilarForDate(date);
       }}
     />
   );
@@ -548,10 +559,10 @@ const PropertyDetails = () => {
                 <div className="mb-8">{calendarBlock}</div>
 
                 {unavailableDate && (
-                  <div className="mb-8">
+                  <div ref={similarSectionRef} id="similar-villas" className="mb-8 scroll-mt-24">
                     <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 p-4">
                       <p className="text-sm font-medium text-foreground">
-                        هذه الفيلا محجوزة في هذا التاريخ — خيارات مشابهة متاحة:
+                        هذه الفيلا غير متاحة في هذا التاريخ — خيارات مشابهة متاحة:
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         التاريخ المطلوب: {unavailableDate}
@@ -564,7 +575,7 @@ const PropertyDetails = () => {
                     />
                     {!similarLoading && similarVillas.length === 0 && (
                       <p className="text-sm text-muted-foreground text-center py-4">
-                        لا توجد فلل مشابهة متاحة في هذا التاريخ حالياً.
+                        لا توجد فلل مشابهة متاحة في هذا التاريخ حالياً. جرّب تاريخاً آخر أو تواصل معنا.
                       </p>
                     )}
                   </div>
@@ -600,6 +611,7 @@ const PropertyDetails = () => {
             groupType={property.groupType}
             checkIn={selectedCheckIn}
             checkOut={selectedCheckOut}
+            onDatesUnavailable={showSimilarForDate}
           >
             <Button variant="gold" size="lg" className="gap-2 shrink-0">
               <CalendarDays className="h-5 w-5" />
