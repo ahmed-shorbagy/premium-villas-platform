@@ -104,7 +104,7 @@ const PropertyDetails = () => {
           id
         );
       const columns =
-        'id, slug, title, type, price, price_weekend, rent_count, max_guests, location, bedrooms, bathrooms, images, card_images, gallery_images, listing_type, featured, created_at, description, features, contact_name, contact_phone, contact_email, contact_location, installments_available, installment_period, installment_value, pricing_type, is_negotiable, group_type';
+        'id, slug, title, type, price, price_weekend, rent_count, max_guests, location, bedrooms, bathrooms, images, card_images, gallery_images, listing_type, featured, created_at, description, features, contact_name, contact_phone, contact_email, contact_location, installments_available, installment_period, installment_value, pricing_type, is_negotiable, group_type, is_hidden';
       let { data } = await supabase
         .from('properties')
         .select(columns)
@@ -124,6 +124,10 @@ const PropertyDetails = () => {
             data = fallbackRes.data;
           }
         }
+      }
+
+      if (data && (data as any).is_hidden) {
+        data = null;
       }
 
       if (data) {

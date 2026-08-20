@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -11,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { buildLocalizedPath } from '@/routes';
 import { platformScope } from '@/config/platform';
@@ -33,11 +34,13 @@ interface Property {
   listing_type: 'sale' | 'rent';
   created_at: string;
   is_negotiable?: boolean;
+  is_hidden?: boolean;
 }
 
 const Listings = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
@@ -45,7 +48,9 @@ const Listings = () => {
   const fetchProperties = async () => {
     const { data, error } = await supabase
       .from('properties')
-      .select('id, title, type, price, price_weekend, location, bedrooms, bathrooms, featured, listing_type, created_at, is_negotiable, images, card_images, gallery_images')
+      .select(
+        'id, title, type, price, price_weekend, location, bedrooms, bathrooms, featured, listing_type, created_at, is_negotiable, is_hidden, images, card_images, gallery_images'
+      )
       .eq('type', platformScope.propertyType)
       .order('created_at', { ascending: false });
 
@@ -58,6 +63,37 @@ const Listings = () => {
   useEffect(() => {
     fetchProperties();
   }, []);
+
+  const handleToggleHidden = async (property: Property) => {
+    const nextHidden = !property.is_hidden;
+    setTogglingId(property.id);
+
+    const { error } = await supabase
+      .from('properties')
+      .update({ is_hidden: nextHidden } as any)
+      .eq('id', property.id);
+
+    setTogglingId(null);
+
+    if (error) {
+      toast({
+        title: 'خطأ',
+        description: nextHidden ? 'فشل إخفاء الفيلا' : 'فشل إظهار الفيلا',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setProperties((prev) =>
+      prev.map((p) => (p.id === property.id ? { ...p, is_hidden: nextHidden } : p))
+    );
+    toast({
+      title: 'تم بنجاح',
+      description: nextHidden
+        ? 'تم إخفاء الفيلا عن الموقع'
+        : 'أصبحت الفيلا ظاهرة في الموقع',
+    });
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm('هل أنت متأكد أنك تريد حذف هذه الفيلا؟')) return;
@@ -80,7 +116,7 @@ const Listings = () => {
       const urls = uniqueMediaUrls(
         (data as any)?.images,
         (data as any)?.card_images,
-        (data as any)?.gallery_images,
+        (data as any)?.gallery_images
       );
       if (urls.length > 0) void deleteMediaFromR2(urls);
       toast({ title: 'تم بنجاح', description: 'تم حذف الفيلا بنجاح' });
@@ -96,8 +132,10 @@ const Listings = () => {
     <div className="p-4 md:p-8">
       <div className="mb-8 flex flex-col gap-4 items-start sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">إدارة الفلل للإيجار</h1>
-          <p className="text-muted-foreground">إضافة، تعديل أو حذف فلل الإيجار</p>
+          <h1 className="text-3xl font-display font-bold text-foreground">
+            إدارة الفلل للإيجار
+          </h1>
+          <p className="text-muted-foreground">إضافة، إخفاء، تعديل أو حذف فلل الإيجار</p>
         </div>
         <div className="flex w-full sm:w-auto gap-2">
           <Input
@@ -140,19 +178,38 @@ const Listings = () => {
                 </TableRow>
               ) : (
                 properties
-                  .filter(property =>
-                    property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    property.location.toLowerCase().includes(searchQuery.toLowerCase())
+                  .filter(
+                    (property) =>
+                      property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      property.location.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   .map((property) => (
-                    <TableRow key={property.id}>
-                      <TableCell className="font-medium whitespace-nowrap">{property.title}</TableCell>
+                    <TableRow
+                      key={property.id}
+                      className={property.is_hidden ? 'opacity-60 bg-muted/30' : undefined}
+                    >
+                      <TableCell className="font-medium whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span>{property.title}</span>
+                          {property.is_hidden && (
+                            <Badge variant="outline" className="text-xs">
+                              مخفية
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div className="flex flex-col">
-                          <span>{formatPrice(property.price)} <span className="text-xs text-muted-foreground">(وسط الأسبوع)</span></span>
+                          <span>
+                            {formatPrice(property.price)}{' '}
+                            <span className="text-xs text-muted-foreground">(وسط الأسبوع)</span>
+                          </span>
                           {property.price_weekend && (
                             <span className="text-xs text-gold font-medium">
-                              {formatPrice(property.price_weekend)} <span className="text-muted-foreground font-normal">(نهاية الأسبوع)</span>
+                              {formatPrice(property.price_weekend)}{' '}
+                              <span className="text-muted-foreground font-normal">
+                                (نهاية الأسبوع)
+                              </span>
                             </span>
                           )}
                         </div>
@@ -162,7 +219,22 @@ const Listings = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => navigate(`${buildLocalizedPath.adminListings()}/${property.id}`)}
+                          title={property.is_hidden ? 'إظهار الفيلا' : 'إخفاء الفيلا'}
+                          disabled={togglingId === property.id}
+                          onClick={() => handleToggleHidden(property)}
+                        >
+                          {property.is_hidden ? (
+                            <EyeOff className="h-4 w-4 text-amber-600" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            navigate(`${buildLocalizedPath.adminListings()}/${property.id}`)
+                          }
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>

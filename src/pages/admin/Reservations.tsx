@@ -243,6 +243,7 @@ const Reservations = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="whitespace-nowrap">العميل</TableHead>
+                <TableHead className="whitespace-nowrap">موقع الزبون</TableHead>
                 <TableHead className="whitespace-nowrap">الفيلا</TableHead>
                 <TableHead className="whitespace-nowrap">تسجيل الدخول</TableHead>
                 <TableHead className="whitespace-nowrap">تسجيل الخروج</TableHead>
@@ -255,13 +256,13 @@ const Reservations = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
                   </TableCell>
                 </TableRow>
               ) : filteredReservations.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                     لا توجد حجوزات
                   </TableCell>
                 </TableRow>
@@ -275,6 +276,11 @@ const Reservations = () => {
                           {r.customer_phone}
                         </p>
                       </div>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap max-w-[140px]">
+                      <span className="text-sm">
+                        {r.customer_location?.trim() || '—'}
+                      </span>
                     </TableCell>
                     <TableCell className="whitespace-nowrap max-w-[160px] truncate">
                       {r.property?.title || '—'}
@@ -372,6 +378,12 @@ const Reservations = () => {
                   <span className="text-sm text-muted-foreground">هاتف العميل:</span>
                   <span className="font-medium" dir="ltr">
                     {selectedReservation.customer_phone}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-sm text-muted-foreground shrink-0">موقع الزبون:</span>
+                  <span className="font-medium text-left">
+                    {selectedReservation.customer_location?.trim() || '—'}
                   </span>
                 </div>
                 {selectedReservation.customer_email && (

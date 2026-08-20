@@ -6,7 +6,8 @@ export const generateSitemap = async () => {
   try {
     const { data: properties } = await supabase
       .from("properties")
-      .select("id, updated_at");
+      .select("id, updated_at")
+      .eq("is_hidden", false);
 
     if (!properties) return null;
 

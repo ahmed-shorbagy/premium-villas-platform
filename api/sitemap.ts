@@ -19,7 +19,8 @@ export default async function handler(req, res) {
   try {
     const { data: properties, error } = await supabase
       .from('properties')
-      .select('id, updated_at, created_at');
+      .select('id, updated_at, created_at')
+      .eq('is_hidden', false);
 
     if (error) throw error;
 

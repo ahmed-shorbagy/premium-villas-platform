@@ -11,6 +11,7 @@ async function fetchProperties(): Promise<Property[]> {
     .from("properties")
     .select(LISTING_COLUMNS)
     .eq("type", platformScope.propertyType)
+    .eq("is_hidden", false)
     .order("created_at", { ascending: false });
 
   if (error) throw error;

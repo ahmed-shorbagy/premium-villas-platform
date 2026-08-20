@@ -58,6 +58,7 @@ export type Database = {
           features: string[] | null
           id: string
           images: string[] | null
+          is_hidden: boolean
           location: string
           price: number
           price_weekend: number | null
@@ -77,6 +78,7 @@ export type Database = {
           features?: string[] | null
           id?: string
           images?: string[] | null
+          is_hidden?: boolean
           location: string
           price: number
           price_weekend?: number | null
@@ -96,6 +98,7 @@ export type Database = {
           features?: string[] | null
           id?: string
           images?: string[] | null
+          is_hidden?: boolean
           location?: string
           price?: number
           price_weekend?: number | null

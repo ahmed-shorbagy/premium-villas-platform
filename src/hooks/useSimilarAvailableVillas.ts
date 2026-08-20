@@ -47,6 +47,7 @@ export function useSimilarAvailableVillas({
           )
           .eq('type', platformScope.propertyType)
           .eq('group_type', groupType)
+          .eq('is_hidden', false)
           .neq('id', propertyId);
 
         if (error) throw error;
