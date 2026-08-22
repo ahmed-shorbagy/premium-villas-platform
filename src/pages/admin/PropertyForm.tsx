@@ -454,7 +454,7 @@ const PropertyForm = () => {
                         <div className="flex justify-between items-center mb-2">
                             <div>
                                 <Label htmlFor="card_images" className="text-base font-semibold text-primary">الوسائط المعروضة في البطاقة الرئيسية</Label>
-                                <p className="text-sm text-muted-foreground">الصورة الأولى تظهر في البطاقة. الفيديو لا يُشغَّل تلقائياً في القائمة. الحد {MAX_CARD_MEDIA} ملفات، والصورة حتى 12MB والفيديو حتى 25MB.</p>
+                                <p className="text-sm text-muted-foreground">أضف حتى 3 وسائط تظهر في بطاقة الفيلا (صور أو فيديو). الحد {MAX_CARD_MEDIA} ملفات، والصورة حتى 12MB والفيديو حتى 25MB.</p>
                             </div>
                             <span className="text-sm font-medium bg-secondary px-2 py-1 rounded">{formData.card_images?.length || 0}</span>
                         </div>

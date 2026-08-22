@@ -7,26 +7,55 @@ import { groupTypeLabels } from "@/config";
 import { buildLocalizedPath } from "@/routes";
 import { cn } from "@/lib/utils";
 import OptimizedImage from "@/components/OptimizedImage";
-import { firstImageUrl, isVideoUrl } from "@/utils/media";
+import { isVideoUrl } from "@/utils/media";
 
 interface PropertyCardProps {
   property: Property;
   className?: string;
 }
 
-function cardCover(property: Property): { src?: string; extra: number } {
-  const media =
-    property.card_images?.length
-      ? property.card_images
-      : property.images?.length
-        ? property.images
-        : [property.image, property.demoVideo].filter(Boolean) as string[];
-  const src = firstImageUrl(media.filter((url) => !isVideoUrl(url))) || firstImageUrl(media);
-  return { src, extra: Math.max(0, media.length - 1) };
+function MediaRenderer({ url, alt, poster }: { url: string; alt: string; poster?: string }) {
+  if (isVideoUrl(url)) {
+    return (
+      <video
+        src={url}
+        poster={poster}
+        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        muted
+        playsInline
+        autoPlay
+        loop
+      />
+    );
+  }
+  return (
+    <OptimizedImage
+      src={url}
+      alt={alt}
+      size="sm"
+      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+    />
+  );
+}
+
+function buildCardMedia(property: Property): string[] {
+  if (property.card_images && property.card_images.length > 0) {
+    return property.card_images;
+  }
+
+  const photos =
+    property.images?.filter((url) => !isVideoUrl(url)) ??
+    (isVideoUrl(property.image) ? [] : [property.image]);
+  const gallery = photos.length > 0 ? photos : [property.image].filter(Boolean);
+  if (property.demoVideo) {
+    return [property.demoVideo, ...gallery.filter((url) => url !== property.demoVideo)];
+  }
+  if (property.images?.length) return property.images;
+  return property.image ? [property.image] : [];
 }
 
 const PropertyCard = ({ property, className }: PropertyCardProps) => {
-  const { src, extra } = cardCover(property);
+  const mediaList = buildCardMedia(property);
 
   return (
     <Link
@@ -34,23 +63,57 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
       className={cn("group shima-card flex flex-col h-full", className)}
     >
       <div className="relative overflow-hidden w-full aspect-[4/3] bg-muted">
-        {src ? (
-          <OptimizedImage
-            src={src}
-            alt={property.title}
-            size="sm"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-            لا توجد صورة
-          </div>
-        )}
-        {extra > 0 && (
-          <div className="absolute bottom-16 end-3 z-10 rounded-full bg-black/50 px-2.5 py-1 text-xs font-medium text-white">
-            +{extra}
-          </div>
-        )}
+        {(() => {
+          const count = Math.min(mediaList.length, 3);
+          const sliced = mediaList.slice(0, 3);
+          const poster = mediaList.find((url) => !isVideoUrl(url)) || property.image;
+          const extraCount = mediaList.length - 3;
+
+          const renderMedia = (url: string, idx: number) => (
+            <div key={idx} className="relative h-full w-full overflow-hidden bg-muted">
+              <MediaRenderer url={url} alt={`${property.title} - ${idx + 1}`} poster={poster} />
+            </div>
+          );
+
+          if (count === 0) {
+            return (
+              <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                لا توجد صورة
+              </div>
+            );
+          }
+          if (count === 1) {
+            return <div className="h-full w-full">{renderMedia(sliced[0], 0)}</div>;
+          }
+          if (count === 2) {
+            return (
+              <div className="grid grid-cols-2 gap-0.5 h-full w-full bg-white">
+                {renderMedia(sliced[0], 0)}
+                {renderMedia(sliced[1], 1)}
+              </div>
+            );
+          }
+          return (
+            <div className="flex flex-col gap-0.5 h-full w-full bg-white">
+              <div className="h-[60%] w-full overflow-hidden">
+                {renderMedia(sliced[0], 0)}
+              </div>
+              <div className="grid grid-cols-2 gap-0.5 h-[40%] w-full">
+                <div className="h-full w-full overflow-hidden">
+                  {renderMedia(sliced[1], 1)}
+                </div>
+                <div className="relative h-full w-full overflow-hidden">
+                  {renderMedia(sliced[2], 2)}
+                  {extraCount > 0 && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+                      <span className="text-white font-display font-semibold text-lg">+{extraCount}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />
 
