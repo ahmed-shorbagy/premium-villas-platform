@@ -1,4 +1,8 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import {
+  createClient,
+  type SupabaseClient,
+  type User,
+} from "@supabase/supabase-js";
 import { AwsClient } from "aws4fetch";
 
 export const corsHeaders = {
@@ -32,7 +36,7 @@ export function jsonResponse(body: unknown, status = 200) {
 
 export async function requireAdmin(
   req: Request,
-): Promise<{ supabase: SupabaseClient } | Response> {
+): Promise<{ supabase: SupabaseClient; user: User } | Response> {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) {
     return jsonResponse({ error: "Missing authorization header" }, 401);
@@ -68,7 +72,7 @@ export async function requireAdmin(
     return jsonResponse({ error: "Admin role required" }, 403);
   }
 
-  return { supabase };
+  return { supabase, user };
 }
 
 export function getR2Config() {

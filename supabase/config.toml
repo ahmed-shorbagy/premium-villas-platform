@@ -32,3 +32,15 @@ enabled = true
 verify_jwt = true
 import_map = "./functions/r2-delete/deno.json"
 entrypoint = "./functions/r2-delete/index.ts"
+
+[functions.owner-access-admin]
+enabled = true
+verify_jwt = true
+import_map = "./functions/owner-access-admin/deno.json"
+entrypoint = "./functions/owner-access-admin/index.ts"
+
+[functions.owner-portal]
+enabled = true
+verify_jwt = false
+import_map = "./functions/owner-portal/deno.json"
+entrypoint = "./functions/owner-portal/index.ts"

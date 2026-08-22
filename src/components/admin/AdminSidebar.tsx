@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, Home, LogOut, Menu, Image as ImageIcon, CalendarDays, Settings } from "lucide-react";
+import { LayoutDashboard, Home, LogOut, Menu, Image as ImageIcon, CalendarDays, Settings, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { buildLocalizedPath } from "@/routes";
@@ -14,6 +14,7 @@ const navRoutes = {
   listings: buildLocalizedPath.adminListings(),
   adminBanners: buildLocalizedPath.adminBanners(),
   adminReservations: buildLocalizedPath.adminReservations(),
+  adminOwners: buildLocalizedPath.adminOwners(),
   adminSettings: buildLocalizedPath.adminSettings(),
   login: buildLocalizedPath.adminLogin(),
 };
@@ -22,6 +23,7 @@ export const navItems = [
   { title: "لوحة التحكم", icon: LayoutDashboard, path: navRoutes.dashboard },
   { title: "الفلل للإيجار", icon: Home, path: navRoutes.listings },
   { title: "الحجوزات", icon: CalendarDays, path: navRoutes.adminReservations },
+  { title: "ملاك الفلل", icon: UsersRound, path: navRoutes.adminOwners },
   { title: "البنرات", icon: ImageIcon, path: navRoutes.adminBanners },
   { title: "الإعدادات", icon: Settings, path: navRoutes.adminSettings },
 ];

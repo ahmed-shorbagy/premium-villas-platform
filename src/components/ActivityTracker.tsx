@@ -38,7 +38,7 @@ export const ActivityTracker = () => {
         const path = location.pathname;
 
         // Skip admin routes and staff browsing public pages
-        if (path.startsWith('/admin') || isAdmin) return;
+        if (path.startsWith('/admin') || path.startsWith('/owner') || isAdmin) return;
 
         let visitorId = localStorage.getItem('visitor_id');
         if (!visitorId) {

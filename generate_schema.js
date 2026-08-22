@@ -1,8 +1,10 @@
 import pkg from 'pg';
 const { Client } = pkg;
 
-// Using the stable IPv4 Pooler connection string for your old database
-const OLD_DB_URL = "postgresql://postgres.idnehwkrufbgfmlkexvi:0vLw4AsC7xrmZEJE@aws-0-eu-west-1.pooler.supabase.com:5432/postgres";
+const OLD_DB_URL = process.env.SOURCE_DATABASE_URL;
+if (!OLD_DB_URL) {
+    throw new Error('Missing SOURCE_DATABASE_URL environment variable');
+}
 
 async function generateSQLSchema() {
     const client = new Client({ connectionString: OLD_DB_URL });

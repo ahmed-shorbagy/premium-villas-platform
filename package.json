@@ -12,7 +12,7 @@
     "build:sitemap": "node scripts/generate-sitemap.js",
     "supabase:link": "supabase link --project-ref pumuujvmjpcbipjnckoe",
     "supabase:push": "supabase db push",
-    "supabase:types": "supabase gen types typescript --project-id pumuujvmjpcbipjnckoe --schema public > src/integrations/supabase/types.ts",
+    "supabase:types": "npx supabase gen types typescript --project-id pumuujvmjpcbipjnckoe --schema public > src/integrations/supabase/types.ts",
     "supabase:bootstrap-sql": "node scripts/apply-migrations-bundle.js",
     "supabase:fresh-bootstrap": "node scripts/apply-migrations-bundle.js",
     "admin:create": "node scripts/create-admin-user.js",

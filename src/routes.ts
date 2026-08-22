@@ -11,6 +11,8 @@ type RouteKey =
   | "adminBanners"
   | "adminListingRequests"
   | "adminReservations"
+  | "adminOwners"
+  | "ownerPortal"
   | "propertyType"
   | "notFound";
 
@@ -30,6 +32,8 @@ const LOCALIZED_ROUTES: Record<SupportedLocale, LocaleRoutes> = {
     adminBanners: "/admin/banners",
     adminListingRequests: "/admin/requests",
     adminReservations: "/admin/reservations",
+    adminOwners: "/admin/owners",
+    ownerPortal: "/owner",
     propertyType: "/type/:typeSlug",
     notFound: "*",
   },
@@ -44,6 +48,8 @@ const LOCALIZED_ROUTES: Record<SupportedLocale, LocaleRoutes> = {
     adminBanners: "/admin/banners",
     adminListingRequests: "/admin/listing-requests",
     adminReservations: "/admin/reservations",
+    adminOwners: "/admin/owners",
+    ownerPortal: "/owner",
     propertyType: "/type/:typeSlug",
     notFound: "*",
   },
@@ -59,6 +65,8 @@ const LEGACY_ALIASES: Partial<Record<RouteKey, string[]>> = {
   adminBanners: [LOCALIZED_ROUTES.en.adminBanners],
   adminListingRequests: [LOCALIZED_ROUTES.en.adminListingRequests],
   adminReservations: [LOCALIZED_ROUTES.en.adminReservations],
+  adminOwners: [LOCALIZED_ROUTES.en.adminOwners],
+  ownerPortal: [LOCALIZED_ROUTES.en.ownerPortal],
 };
 
 export const getLocalizedRoutes = (locale: SupportedLocale = DEFAULT_LOCALE) =>
@@ -87,6 +95,10 @@ export const buildLocalizedPath = {
     LOCALIZED_ROUTES[locale].adminListingRequests,
   adminReservations: (locale: SupportedLocale = DEFAULT_LOCALE) =>
     LOCALIZED_ROUTES[locale].adminReservations,
+  adminOwners: (locale: SupportedLocale = DEFAULT_LOCALE) =>
+    LOCALIZED_ROUTES[locale].adminOwners,
+  ownerPortal: (locale: SupportedLocale = DEFAULT_LOCALE) =>
+    LOCALIZED_ROUTES[locale].ownerPortal,
   propertyType: (typeSlug: string, locale: SupportedLocale = DEFAULT_LOCALE) =>
     LOCALIZED_ROUTES[locale].propertyType.replace(":typeSlug", typeSlug),
 };

@@ -32,10 +32,15 @@ const MIGRATION_ORDER = [
   "20260602140000_make_reservation_dates_optional.sql",
   "20260603090000_update_group_type_check.sql",
   "20260603100000_add_max_guests.sql",
+  "20260603110000_add_is_negotiable.sql",
+  "20260818153000_count_unique_visitors.sql",
+  "20260820140000_booking_fields_and_visit_rpc.sql",
+  "20260820150000_add_property_is_hidden.sql",
+  "20260822093000_owner_access.sql",
 ];
 
 let sql = `-- Shima AK — fresh Supabase project bootstrap
--- Project: idnehwkrufbgfmlkexvi
+-- Project: pumuujvmjpcbipjnckoe
 -- Run once on an EMPTY database (SQL Editor → New query → Run)
 -- Generated: ${new Date().toISOString()}
 

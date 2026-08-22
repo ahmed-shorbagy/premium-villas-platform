@@ -2,8 +2,11 @@ import pkg from 'pg';
 const { Client } = pkg;
 import fs from 'fs';
 
-// Your old, locked database connection string
-const OLD_DB_URL = "postgresql://postgres.idnehwkrufbgfmlkexvi:0vLw4AsC7xrmZEJE@aws-0-eu-west-1.pooler.supabase.com:5432/postgres";
+const OLD_DB_URL = process.env.OLD_DATABASE_URL;
+if (!OLD_DB_URL) {
+    throw new Error('Missing OLD_DATABASE_URL environment variable');
+}
+
 async function backupAllData() {
     const client = new Client({ connectionString: OLD_DB_URL });
 

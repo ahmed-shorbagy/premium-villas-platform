@@ -20,6 +20,8 @@ const Settings = lazy(() => import("./pages/admin/Settings"));
 const PropertyForm = lazy(() => import("./pages/admin/PropertyForm"));
 const Banners = lazy(() => import("./pages/admin/Banners"));
 const Reservations = lazy(() => import("./pages/admin/Reservations"));
+const Owners = lazy(() => import("./pages/admin/Owners"));
+const OwnerPortal = lazy(() => import("./pages/OwnerPortal"));
 const PropertyTypePage = lazy(() => import("./pages/PropertyTypePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -72,6 +74,14 @@ const legacyAdminReservationsPath = englishRoutes.adminReservations
   .replace(`${englishRoutes.adminDashboard}/`, "")
   .replace(`${englishRoutes.adminDashboard}`, "")
   .replace(/^\//, "");
+const adminOwnersPath = localizedRoutes.adminOwners
+  .replace(`${localizedRoutes.adminDashboard}/`, "")
+  .replace(`${localizedRoutes.adminDashboard}`, "")
+  .replace(/^\//, "");
+const legacyAdminOwnersPath = englishRoutes.adminOwners
+  .replace(`${englishRoutes.adminDashboard}/`, "")
+  .replace(`${englishRoutes.adminDashboard}`, "")
+  .replace(/^\//, "");
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -97,6 +107,7 @@ const App = () => (
 
                 <Route path={localizedRoutes.adminLogin} element={<AdminLogin />} />
                 <Route path={englishRoutes.adminLogin} element={<AdminLogin />} />
+                <Route path={localizedRoutes.ownerPortal} element={<OwnerPortal />} />
 
                 <Route path={localizedRoutes.propertyType} element={<PropertyTypePage />} />
                 <Route path={englishRoutes.propertyType} element={<PropertyTypePage />} />
@@ -108,6 +119,7 @@ const App = () => (
                   <Route path={`${adminListingsPath}/:id`} element={<PropertyForm />} />
                   <Route path={adminBannersPath} element={<Banners />} />
                   <Route path={adminReservationsPath} element={<Reservations />} />
+                  <Route path={adminOwnersPath} element={<Owners />} />
                   <Route path={adminSettingsPath} element={<Settings />} />
                 </Route>
 
@@ -118,6 +130,7 @@ const App = () => (
                   <Route path={`${legacyAdminListingsPath}/:id`} element={<PropertyForm />} />
                   <Route path={legacyAdminBannersPath} element={<Banners />} />
                   <Route path={legacyAdminReservationsPath} element={<Reservations />} />
+                  <Route path={legacyAdminOwnersPath} element={<Owners />} />
                   <Route path={legacyAdminSettingsPath} element={<Settings />} />
                 </Route>
 

@@ -2,9 +2,11 @@ import pkg from 'pg';
 const { Client } = pkg;
 import fs from 'fs';
 
-// PASTE YOUR NEW PROJECT'S IPv4 CONNECTION STRING HERE
-// It will look like: postgresql://postgres.[NEW-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
-const NEW_DB_URL = "postgresql://postgres.pumuujvmjpcbipjnckoe:0vLw4AsC7xrmZEJE@aws-0-eu-west-1.pooler.supabase.com:5432/postgres";
+const NEW_DB_URL = process.env.DATABASE_URL;
+if (!NEW_DB_URL) {
+    throw new Error('Missing DATABASE_URL environment variable');
+}
+
 async function restoreAllData() {
     // Read the master backup file
     const rawData = fs.readFileSync('shima_full_backup.json');
