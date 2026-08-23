@@ -37,9 +37,10 @@ import { differenceInDays, addDays, isBefore } from 'date-fns';
 import { bookingPolicies } from '@/config/booking';
 import { groupTypeLabels, type GroupTypeId } from '@/config/filters';
 import { useBookingRules, useAvailability } from '@/hooks/useReservations';
+import SimilarVillasPanel from '@/components/SimilarVillasPanel';
 import {
   isDateBookedByRanges,
-  isDateInAvailabilityPeriods,
+  isDateBlocked,
   useBookedRanges,
 } from '@/hooks/useBookedRanges';
 import { parseDateOnly } from '@/utils/dateOnly';
@@ -88,6 +89,7 @@ const ReservationDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [acceptedRules, setAcceptedRules] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [datesUnavailable, setDatesUnavailable] = useState(false);
 
   const fixedGroupType =
     groupType && groupType !== 'all' ? (groupType as Exclude<GroupTypeId, 'all'>) : null;
@@ -122,6 +124,10 @@ const ReservationDialog = ({
       check_out: preCheckOut || f.check_out,
     }));
   }, [preCheckIn, preCheckOut, open]);
+
+  useEffect(() => {
+    setDatesUnavailable(false);
+  }, [formData.check_in, formData.check_out]);
 
   const numNights = useMemo(() => {
     const start = parseDateOnly(formData.check_in);
@@ -201,26 +207,21 @@ const ReservationDialog = ({
       const start = parseDateOnly(formData.check_in);
       const end = parseDateOnly(formData.check_out);
       if (start && end) {
-        if (periods.length === 0) {
-          errs.check_in = 'لا توجد فترات توفر محددة لهذه الفيلا حالياً';
-        } else {
-          let cursor = start;
-          let unavailable = false;
-          while (isBefore(cursor, end)) {
-            const inWindow = isDateInAvailabilityPeriods(cursor, periods);
-            const booked = isDateBookedByRanges(cursor, bookedRanges);
-            if (!inWindow || booked) {
-              unavailable = true;
-              break;
-            }
-            cursor = addDays(cursor, 1);
+        let cursor = start;
+        let unavailable = false;
+        while (isBefore(cursor, end)) {
+          const blocked = isDateBlocked(cursor, periods);
+          const booked = isDateBookedByRanges(cursor, bookedRanges);
+          if (blocked || booked) {
+            unavailable = true;
+            break;
           }
-          if (unavailable) {
-            errs.check_in = 'التواريخ المختارة غير متاحة أو محجوزة';
-            onDatesUnavailable?.(formData.check_in);
-            // Close dialog so the similar-villas section on the page is visible
-            setTimeout(() => setOpen(false), 600);
-          }
+          cursor = addDays(cursor, 1);
+        }
+        if (unavailable) {
+          errs.check_in = 'التواريخ المختارة غير متاحة أو محجوزة — اختر تاريخاً آخر أو فيلا مشابهة بالأسفل';
+          setDatesUnavailable(true);
+          onDatesUnavailable?.(formData.check_in);
         }
       }
     }
@@ -312,6 +313,7 @@ const ReservationDialog = ({
       setSubmitted(false);
       setStep('form');
       setAcceptedRules(false);
+      setDatesUnavailable(false);
       setFormData({
         customer_name: '',
         customer_phone: '',
@@ -331,7 +333,7 @@ const ReservationDialog = ({
   return (
     <Dialog open={open} onOpenChange={(v) => (v ? setOpen(true) : handleClose())}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg" dir="rtl">
         {submitted ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
@@ -604,6 +606,19 @@ const ReservationDialog = ({
                   )}
                 </div>
               </div>
+
+              {formData.check_in ? (
+                <SimilarVillasPanel
+                  variant="dialog"
+                  propertyId={propertyId}
+                  groupType={groupType}
+                  currentPrice={propertyPrice}
+                  checkIn={formData.check_in}
+                  checkOut={formData.check_out || null}
+                  unavailable={datesUnavailable}
+                  enabled={open && step === 'form'}
+                />
+              ) : null}
 
               {/* وقت الدخول / الخروج */}
               <div className="flex items-start gap-2 rounded-lg bg-secondary/50 p-3 text-sm">

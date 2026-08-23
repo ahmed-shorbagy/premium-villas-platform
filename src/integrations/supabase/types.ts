@@ -553,7 +553,7 @@ export type Database = {
       count_public_page_views: { Args: never; Returns: number }
       count_unique_visitors: { Args: never; Returns: number }
       get_booked_ranges: {
-        Args: { p_property_ids: string[] }
+        Args: { p_property_ids: string[]; p_from?: string; p_to?: string }
         Returns: {
           check_in: string
           check_out: string

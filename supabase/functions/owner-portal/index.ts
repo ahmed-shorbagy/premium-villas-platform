@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
         throw { code: "22023", message: "Invalid villa identifier" };
       }
 
-      if (!Array.isArray(payload.periods) || payload.periods.length > 100) {
+      if (!Array.isArray(payload.periods) || payload.periods.length > 400) {
         throw { code: "22023", message: "Invalid availability periods" };
       }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   MapPin,
@@ -35,12 +35,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { buildLocalizedPath } from '@/routes';
 import ReservationDialog from '@/components/ReservationDialog';
 import AvailabilityCalendar from '@/components/AvailabilityCalendar';
-import PropertyHorizontalList from '@/components/PropertyHorizontalList';
+import SimilarVillasPanel from '@/components/SimilarVillasPanel';
 import OptimizedImage from '@/components/OptimizedImage';
 import { firstImageUrl, isVideoUrl, uniqueMediaUrls } from '@/utils/media';
 import { bookingPolicies } from '@/config/booking';
 import { groupTypeLabels, type GroupTypeId } from '@/config/filters';
-import { useSimilarAvailableVillas } from '@/hooks/useSimilarAvailableVillas';
 
 interface PropertyDetailsType {
   id: string;
@@ -73,6 +72,7 @@ interface PropertyDetailsType {
 
 const PropertyDetails = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const [property, setProperty] = useState<PropertyDetailsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCheckIn, setSelectedCheckIn] = useState('');
@@ -82,12 +82,14 @@ const PropertyDetails = () => {
   const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: true }));
 
   const similarGroupType: GroupTypeId | null = property?.groupType || null;
+  const similarCheckIn = unavailableDate || selectedCheckIn || null;
 
-  const showSimilarForDate = (date: string) => {
+  const revealSimilarOnPage = (date: string, fromCalendar: boolean) => {
     setUnavailableDate(date);
-    setSelectedCheckIn('');
-    setSelectedCheckOut('');
-    // Scroll after paint so the section is mounted
+    if (fromCalendar) {
+      setSelectedCheckIn('');
+      setSelectedCheckOut('');
+    }
     requestAnimationFrame(() => {
       setTimeout(() => {
         similarSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -95,14 +97,12 @@ const PropertyDetails = () => {
     });
   };
 
-  const { properties: similarVillas, loading: similarLoading } =
-    useSimilarAvailableVillas({
-      propertyId: property?.id || '',
-      groupType: similarGroupType,
-      requestedDate: unavailableDate,
-      currentPrice: property?.price || 0,
-      enabled: !!unavailableDate && !!property,
-    });
+  useEffect(() => {
+    const checkIn = searchParams.get('checkIn');
+    const checkOut = searchParams.get('checkOut');
+    if (checkIn) setSelectedCheckIn(checkIn);
+    if (checkOut) setSelectedCheckOut(checkOut);
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -340,7 +340,7 @@ const PropertyDetails = () => {
         groupType={property.groupType}
         checkIn={selectedCheckIn}
         checkOut={selectedCheckOut}
-        onDatesUnavailable={showSimilarForDate}
+        onDatesUnavailable={(date) => revealSimilarOnPage(date, false)}
       >
         <Button variant="gold" size="lg" className="w-full gap-2">
           <CalendarDays className="h-5 w-5" />
@@ -360,7 +360,7 @@ const PropertyDetails = () => {
         setUnavailableDate(null);
       }}
       onUnavailableDateSelect={(date) => {
-        showSimilarForDate(date);
+        revealSimilarOnPage(date, true);
       }}
     />
   );
@@ -558,26 +558,17 @@ const PropertyDetails = () => {
                 {/* Calendar on all breakpoints (was desktop-only before) */}
                 <div className="mb-8">{calendarBlock}</div>
 
-                {unavailableDate && (
+                {similarCheckIn && (
                   <div ref={similarSectionRef} id="similar-villas" className="mb-8 scroll-mt-24">
-                    <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 p-4">
-                      <p className="text-sm font-medium text-foreground">
-                        هذه الفيلا غير متاحة في هذا التاريخ — خيارات مشابهة متاحة:
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        التاريخ المطلوب: {unavailableDate}
-                      </p>
-                    </div>
-                    <PropertyHorizontalList
-                      title="فلل مشابهة متاحة"
-                      properties={similarVillas}
-                      loading={similarLoading}
+                    <SimilarVillasPanel
+                      variant="page"
+                      propertyId={property.id}
+                      groupType={similarGroupType}
+                      currentPrice={property.price}
+                      checkIn={similarCheckIn}
+                      checkOut={unavailableDate ? null : selectedCheckOut || null}
+                      unavailable={!!unavailableDate}
                     />
-                    {!similarLoading && similarVillas.length === 0 && (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        لا توجد فلل مشابهة متاحة في هذا التاريخ حالياً. جرّب تاريخاً آخر أو تواصل معنا.
-                      </p>
-                    )}
                   </div>
                 )}
               </div>
@@ -611,7 +602,7 @@ const PropertyDetails = () => {
             groupType={property.groupType}
             checkIn={selectedCheckIn}
             checkOut={selectedCheckOut}
-            onDatesUnavailable={showSimilarForDate}
+            onDatesUnavailable={(date) => revealSimilarOnPage(date, false)}
           >
             <Button variant="gold" size="lg" className="gap-2 shrink-0">
               <CalendarDays className="h-5 w-5" />

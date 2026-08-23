@@ -5,16 +5,12 @@ import {
   CheckCircle2,
   Clock3,
   LogOut,
-  Plus,
-  Trash2,
 } from "lucide-react";
 import { ShimaLogo } from "@/components/brand/ShimaLogo";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   clearOwnerToken,
@@ -23,25 +19,19 @@ import {
   saveOwnerAvailability,
 } from "@/lib/ownerPortalApi";
 import { parseDateOnly } from "@/utils/dateOnly";
+import {
+  expandRangesToDates,
+  mergeDatesToRanges,
+  serializeDateSet,
+} from "@/utils/blockedDates";
+import BlockedDatesEditor from "@/components/BlockedDatesEditor";
 import type {
   OwnerPortalSnapshot,
   OwnerVilla,
 } from "@/types/ownerAccess";
 
-interface DraftPeriod {
-  key: string;
-  id?: string;
-  available_from: string;
-  available_to: string;
-}
-
-function draftPeriods(villa: OwnerVilla | undefined): DraftPeriod[] {
-  return (villa?.availability || []).map((period) => ({
-    key: period.id,
-    id: period.id,
-    available_from: period.available_from,
-    available_to: period.available_to,
-  }));
+function villaBlockedDates(villa: OwnerVilla | undefined): Set<string> {
+  return expandRangesToDates(villa?.availability || []);
 }
 
 function formatDate(value: string): string {
@@ -51,32 +41,12 @@ function formatDate(value: string): string {
     : value;
 }
 
-function validatePeriods(periods: DraftPeriod[]): string | null {
-  for (const period of periods) {
-    if (!period.available_from || !period.available_to) {
-      return "أكمل تاريخ البداية والنهاية لكل فترة";
-    }
-    if (period.available_to < period.available_from) {
-      return "تاريخ نهاية الفترة يجب أن يكون بعد تاريخ بدايتها";
-    }
-  }
-  const sorted = [...periods].sort((a, b) =>
-    a.available_from.localeCompare(b.available_from),
-  );
-  for (let index = 1; index < sorted.length; index += 1) {
-    if (sorted[index].available_from <= sorted[index - 1].available_to) {
-      return "فترات التوفر لا يمكن أن تتداخل";
-    }
-  }
-  return null;
-}
-
 export default function OwnerPortal() {
   const { toast } = useToast();
   const [token, setToken] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<OwnerPortalSnapshot | null>(null);
   const [selectedVillaId, setSelectedVillaId] = useState("");
-  const [periods, setPeriods] = useState<DraftPeriod[]>([]);
+  const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,7 +71,7 @@ export default function OwnerPortal() {
         const firstVilla = data.villas[0];
         if (firstVilla) {
           setSelectedVillaId(firstVilla.id);
-          setPeriods(draftPeriods(firstVilla));
+          setBlockedDates(villaBlockedDates(firstVilla));
         }
         setError(null);
       })
@@ -118,58 +88,25 @@ export default function OwnerPortal() {
   const selectVilla = (villa: OwnerVilla) => {
     if (saving) return;
     setSelectedVillaId(villa.id);
-    setPeriods(draftPeriods(villa));
+    setBlockedDates(villaBlockedDates(villa));
   };
 
-  const addPeriod = () => {
-    setPeriods((current) => [
-      ...current,
-      {
-        key: crypto.randomUUID(),
-        available_from: "",
-        available_to: "",
-      },
-    ]);
-  };
-
-  const updatePeriod = (
-    key: string,
-    field: "available_from" | "available_to",
-    value: string,
-  ) => {
-    setPeriods((current) =>
-      current.map((period) =>
-        period.key === key ? { ...period, [field]: value } : period,
-      ),
-    );
-  };
-
-  const removePeriod = (key: string) => {
-    setPeriods((current) => current.filter((period) => period.key !== key));
-  };
+  const savedBlockedDates = useMemo(
+    () => villaBlockedDates(selectedVilla),
+    [selectedVilla],
+  );
+  const dirty =
+    serializeDateSet(blockedDates) !== serializeDateSet(savedBlockedDates);
 
   const submitAvailability = async () => {
     if (!token || !selectedVilla) return;
-    const validationError = validatePeriods(periods);
-    if (validationError) {
-      toast({
-        title: "راجع التواريخ",
-        description: validationError,
-        variant: "destructive",
-      });
-      return;
-    }
 
     setSaving(true);
     try {
       const availability = await saveOwnerAvailability(
         token,
         selectedVilla.id,
-        periods.map(({ id, available_from, available_to }) => ({
-          ...(id ? { id } : {}),
-          available_from,
-          available_to,
-        })),
+        mergeDatesToRanges(blockedDates),
       );
       setSnapshot((current) =>
         current
@@ -190,16 +127,9 @@ export default function OwnerPortal() {
             }
           : current,
       );
-      setPeriods(
-        availability.map((period) => ({
-          key: period.id,
-          id: period.id,
-          available_from: period.available_from,
-          available_to: period.available_to,
-        })),
-      );
+      setBlockedDates(expandRangesToDates(availability));
       toast({
-        title: "تم حفظ التوفر",
+        title: "تم حفظ الأيام المحجوزة",
         description: "تم تحديث تواريخ الفيلا بنجاح",
       });
     } catch (requestError) {
@@ -347,11 +277,11 @@ export default function OwnerPortal() {
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm">فترات التوفر</CardTitle>
+                  <CardTitle className="text-sm">أيام محجوزة</CardTitle>
                   <CalendarDays className="h-4 w-4 text-blue-600" />
                 </CardHeader>
                 <CardContent className="text-3xl font-bold">
-                  {selectedVilla.stats.availability_ranges}
+                  {blockedDates.size}
                 </CardContent>
               </Card>
             </section>
@@ -361,83 +291,26 @@ export default function OwnerPortal() {
                 <CardHeader>
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <CardTitle>تواريخ توفر {selectedVilla.title}</CardTitle>
+                      <CardTitle>الأيام المحجوزة — {selectedVilla.title}</CardTitle>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        عدّل الفترات ثم اضغط حفظ التغييرات
+                        كل التواريخ مفتوحة افتراضياً. حدّد فقط الأيام غير المتاحة ثم احفظ.
                       </p>
                     </div>
-                    <Button variant="outline" className="gap-2" onClick={addPeriod}>
-                      <Plus className="h-4 w-4" />
-                      إضافة فترة
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {periods.length === 0 ? (
-                    <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-                      لا توجد فترات توفر. الفيلا لن تظهر متاحة للحجز حتى تضيف
-                      فترة.
-                    </div>
-                  ) : (
-                    periods.map((period, index) => (
-                      <div
-                        key={period.key}
-                        className="grid items-end gap-3 rounded-lg border p-4 sm:grid-cols-[1fr_1fr_auto]"
-                      >
-                        <div className="space-y-2">
-                          <Label htmlFor={`from-${period.key}`}>
-                            متاح من
-                          </Label>
-                          <Input
-                            id={`from-${period.key}`}
-                            type="date"
-                            value={period.available_from}
-                            onChange={(event) =>
-                              updatePeriod(
-                                period.key,
-                                "available_from",
-                                event.target.value,
-                              )
-                            }
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor={`to-${period.key}`}>متاح إلى</Label>
-                          <Input
-                            id={`to-${period.key}`}
-                            type="date"
-                            min={period.available_from}
-                            value={period.available_to}
-                            onChange={(event) =>
-                              updatePeriod(
-                                period.key,
-                                "available_to",
-                                event.target.value,
-                              )
-                            }
-                          />
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          title={`حذف الفترة ${index + 1}`}
-                          onClick={() => removePeriod(period.key)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    ))
-                  )}
-
-                  <div className="flex justify-end border-t pt-4">
                     <Button
                       onClick={() => void submitAvailability()}
-                      disabled={saving}
+                      disabled={saving || !dirty}
                     >
                       {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
                     </Button>
                   </div>
+                </CardHeader>
+                <CardContent>
+                  <BlockedDatesEditor
+                    blockedDates={blockedDates}
+                    onChange={setBlockedDates}
+                    bookedRanges={selectedVilla.booked_ranges}
+                    disabled={saving}
+                  />
                 </CardContent>
               </Card>
 

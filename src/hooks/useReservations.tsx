@@ -150,7 +150,14 @@ export function useReservations() {
   };
 }
 
-export function useAvailability(propertyId?: string) {
+/** Inclusive [available_from, available_to] ranges stored in villa_availability.
+ *  After the invert, these rows are blocked/unavailable — not open windows. */
+export interface AvailabilityRange {
+  from?: string;
+  to?: string;
+}
+
+export function useAvailability(propertyId?: string, range?: AvailabilityRange) {
   const [periods, setPeriods] = useState<AvailabilityPeriod[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -159,19 +166,24 @@ export function useAvailability(propertyId?: string) {
     if (!propertyId) return;
     setLoading(true);
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('villa_availability')
       .select('*')
-      .eq('property_id', propertyId)
-      .order('available_from', { ascending: true });
+      .eq('property_id', propertyId);
+
+    // Overlap with [from, to]: period_end >= from AND period_start <= to
+    if (range?.from) query = query.gte('available_to', range.from);
+    if (range?.to) query = query.lte('available_from', range.to);
+
+    const { data, error } = await query.order('available_from', { ascending: true });
 
     if (error) {
-      console.error('Error fetching availability:', error);
+      console.error('Error fetching blocked dates:', error);
     } else {
       setPeriods((data as any) || []);
     }
     setLoading(false);
-  }, [propertyId]);
+  }, [propertyId, range?.from, range?.to]);
 
   useEffect(() => {
     fetchAvailability();
@@ -193,13 +205,13 @@ export function useAvailability(propertyId?: string) {
     if (error) {
       toast({
         title: 'خطأ',
-        description: 'فشل إضافة فترة التوفر',
+        description: 'فشل حفظ الأيام المحجوزة',
         variant: 'destructive',
       });
       return false;
     }
 
-    toast({ title: 'تم بنجاح', description: 'تمت إضافة فترة التوفر' });
+    toast({ title: 'تم بنجاح', description: 'تم حجب التواريخ المحددة' });
     await fetchAvailability();
     return true;
   };
@@ -213,13 +225,58 @@ export function useAvailability(propertyId?: string) {
     if (error) {
       toast({
         title: 'خطأ',
-        description: 'فشل حذف فترة التوفر',
+        description: 'فشل حذف الأيام المحجوزة',
         variant: 'destructive',
       });
       return false;
     }
 
-    toast({ title: 'تم بنجاح', description: 'تم حذف فترة التوفر' });
+    toast({ title: 'تم بنجاح', description: 'تم فتح التواريخ مجدداً' });
+    await fetchAvailability();
+    return true;
+  };
+
+  const replaceAvailability = async (
+    next: { available_from: string; available_to: string }[]
+  ) => {
+    if (!propertyId) return false;
+
+    const oldIds = periods.map((p) => p.id);
+    if (oldIds.length > 0) {
+      const { error } = await supabase
+        .from('villa_availability')
+        .delete()
+        .in('id', oldIds);
+      if (error) {
+        toast({
+          title: 'خطأ',
+          description: 'فشل حفظ الأيام المحجوزة',
+          variant: 'destructive',
+        });
+        return false;
+      }
+    }
+
+    if (next.length > 0) {
+      const { error } = await supabase.from('villa_availability').insert(
+        next.map((p) => ({
+          property_id: propertyId,
+          available_from: p.available_from,
+          available_to: p.available_to,
+        }))
+      );
+      if (error) {
+        toast({
+          title: 'خطأ',
+          description: 'فشل حفظ الأيام المحجوزة',
+          variant: 'destructive',
+        });
+        await fetchAvailability();
+        return false;
+      }
+    }
+
+    toast({ title: 'تم بنجاح', description: 'تم حفظ الأيام المحجوزة' });
     await fetchAvailability();
     return true;
   };
@@ -230,6 +287,7 @@ export function useAvailability(propertyId?: string) {
     fetchAvailability,
     addAvailability,
     deleteAvailability,
+    replaceAvailability,
   };
 }
 
