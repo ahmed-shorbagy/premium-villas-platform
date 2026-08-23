@@ -36,32 +36,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    let cancelled = false;
+
+    const applySession = async (session: Session | null) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        await checkAdminRole(session.user.id);
+      } else {
+        setIsAdmin(false);
+      }
+      if (!cancelled) setLoading(false);
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-        setLoading(false);
+      (_event, session) => {
+        // Defer Supabase calls; invoking them inside this callback can deadlock.
+        setTimeout(() => {
+          void applySession(session);
+        }, 0);
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdminRole(session.user.id);
-      }
-      setLoading(false);
+      void applySession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {

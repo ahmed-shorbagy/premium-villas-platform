@@ -552,6 +552,7 @@ export type Database = {
       }
       count_public_page_views: { Args: never; Returns: number }
       count_unique_visitors: { Args: never; Returns: number }
+      get_visit_stats: { Args: { p_timezone?: string }; Returns: Json }
       get_booked_ranges: {
         Args: { p_property_ids: string[]; p_from?: string; p_to?: string }
         Returns: {
