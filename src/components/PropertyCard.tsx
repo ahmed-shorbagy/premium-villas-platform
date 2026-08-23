@@ -45,18 +45,16 @@ function CardMedia({
             loop
             preload="metadata"
           />
+        ) : poster ? (
+          <OptimizedImage
+            src={poster}
+            alt={alt}
+            size="sm"
+            priority={priority}
+            className="h-full w-full object-cover"
+          />
         ) : (
-          poster ? (
-            <OptimizedImage
-              src={poster}
-              alt={alt}
-              size="sm"
-              priority={priority}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="h-full w-full bg-muted" />
-          )
+          <div className="h-full w-full bg-muted" />
         )}
       </div>
     );
@@ -73,21 +71,24 @@ function CardMedia({
   );
 }
 
-function primaryCardMedia(property: Property): { url: string; poster?: string } | null {
-  if (property.card_images?.[0]) {
-    const url = property.card_images[0];
-    const poster = property.card_images.find((item) => !isVideoUrl(item)) || property.image;
-    return { url, poster };
+function buildCardMedia(property: Property): string[] {
+  if (property.card_images && property.card_images.length > 0) {
+    return property.card_images;
   }
-  if (property.image) {
-    return { url: property.image };
+
+  const photos =
+    property.images?.filter((url) => !isVideoUrl(url)) ??
+    (isVideoUrl(property.image) ? [] : [property.image]);
+  const gallery = photos.length > 0 ? photos : [property.image].filter(Boolean);
+  if (property.demoVideo) {
+    return [property.demoVideo, ...gallery.filter((url) => url !== property.demoVideo)];
   }
-  const fromGallery = property.images?.find(Boolean);
-  return fromGallery ? { url: fromGallery } : null;
+  if (property.images?.length) return property.images;
+  return property.image ? [property.image] : [];
 }
 
 const PropertyCard = ({ property, className, priority = false }: PropertyCardProps) => {
-  const media = primaryCardMedia(property);
+  const mediaList = buildCardMedia(property);
 
   return (
     <Link
@@ -95,20 +96,62 @@ const PropertyCard = ({ property, className, priority = false }: PropertyCardPro
       className={cn("group shima-card flex flex-col h-full", className)}
     >
       <div className="relative overflow-hidden w-full aspect-[4/3] bg-muted">
-        {media ? (
-          <div className="h-full w-full">
-            <CardMedia
-              url={media.url}
-              alt={property.title}
-              poster={media.poster}
-              priority={priority}
-            />
-          </div>
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-            لا توجد صورة
-          </div>
-        )}
+        {(() => {
+          const count = Math.min(mediaList.length, 3);
+          const sliced = mediaList.slice(0, 3);
+          const poster = mediaList.find((url) => !isVideoUrl(url)) || property.image;
+          const extraCount = mediaList.length - 3;
+
+          const renderMedia = (url: string, idx: number) => (
+            <div key={idx} className="relative h-full w-full overflow-hidden bg-muted">
+              <CardMedia
+                url={url}
+                alt={`${property.title} - ${idx + 1}`}
+                poster={poster}
+                priority={priority && idx === 0}
+              />
+            </div>
+          );
+
+          if (count === 0) {
+            return (
+              <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                لا توجد صورة
+              </div>
+            );
+          }
+          if (count === 1) {
+            return <div className="h-full w-full">{renderMedia(sliced[0], 0)}</div>;
+          }
+          if (count === 2) {
+            return (
+              <div className="grid grid-cols-2 gap-0.5 h-full w-full bg-white">
+                {renderMedia(sliced[0], 0)}
+                {renderMedia(sliced[1], 1)}
+              </div>
+            );
+          }
+          return (
+            <div className="flex flex-col gap-0.5 h-full w-full bg-white">
+              <div className="h-[60%] w-full overflow-hidden">
+                {renderMedia(sliced[0], 0)}
+              </div>
+              <div className="grid grid-cols-2 gap-0.5 h-[40%] w-full">
+                <div className="h-full w-full overflow-hidden">
+                  {renderMedia(sliced[1], 1)}
+                </div>
+                <div className="relative h-full w-full overflow-hidden">
+                  {renderMedia(sliced[2], 2)}
+                  {extraCount > 0 && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+                      <span className="text-white font-display font-semibold text-lg">+{extraCount}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />
 
