@@ -99,8 +99,6 @@ export function isDateInAvailabilityPeriods(
 }
 
 export const isDateBlocked = isDateInAvailabilityPeriods;
-/** @deprecated Use isDateBlocked — villa_availability is a blocklist, not a whitelist. */
-export const isDateInAvailabilityPeriods = isDateInAvailabilityPeriods;
 
 /** True when every night in [checkIn, checkOut) is free of admin blocks and reservations. */
 export function isStayAvailable(

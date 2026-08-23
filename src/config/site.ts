@@ -26,8 +26,8 @@ export const siteConfig = {
     favicon: "/brand/nuzuul-logo.png",
     ogImage: "/brand/nuzuul-logo.png",
     ambientBg: "/brand/shima-ambient-loop.svg",
-    /** Set after adding public/hero/hero-loop.mp4 (and optional .webm) — ~3s seamless loop */
-    heroVideoMp4: "",
+    heroPoster: "/hero/hero-poster.jpg",
+    heroVideoMp4: "/hero/hero-loop.mp4",
     heroVideoWebm: "",
   },
   animation: {

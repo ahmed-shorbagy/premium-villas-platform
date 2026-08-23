@@ -1,3 +1,4 @@
+import { memo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Star, ArrowUpLeft, Eye, Users, MessageSquareMore } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -8,54 +9,85 @@ import { buildLocalizedPath } from "@/routes";
 import { cn } from "@/lib/utils";
 import OptimizedImage from "@/components/OptimizedImage";
 import { isVideoUrl } from "@/utils/media";
+import { useInViewport } from "@/hooks/useInViewport";
 
 interface PropertyCardProps {
   property: Property;
   className?: string;
+  priority?: boolean;
 }
 
-function MediaRenderer({ url, alt, poster }: { url: string; alt: string; poster?: string }) {
+function CardMedia({
+  url,
+  alt,
+  poster,
+  priority,
+}: {
+  url: string;
+  alt: string;
+  poster?: string;
+  priority?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInViewport(ref, { rootMargin: "120px 0px", once: true });
+
   if (isVideoUrl(url)) {
     return (
-      <video
-        src={url}
-        poster={poster}
-        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        muted
-        playsInline
-        autoPlay
-        loop
-      />
+      <div ref={ref} className="h-full w-full">
+        {inView ? (
+          <video
+            src={url}
+            poster={poster}
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            muted
+            playsInline
+            autoPlay
+            loop
+            preload="metadata"
+          />
+        ) : (
+          poster ? (
+            <OptimizedImage
+              src={poster}
+              alt={alt}
+              size="sm"
+              priority={priority}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-muted" />
+          )
+        )}
+      </div>
     );
   }
+
   return (
     <OptimizedImage
       src={url}
       alt={alt}
       size="sm"
+      priority={priority}
       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
     />
   );
 }
 
-function buildCardMedia(property: Property): string[] {
-  if (property.card_images && property.card_images.length > 0) {
-    return property.card_images;
+function primaryCardMedia(property: Property): { url: string; poster?: string } | null {
+  if (property.card_images?.[0]) {
+    const url = property.card_images[0];
+    const poster = property.card_images.find((item) => !isVideoUrl(item)) || property.image;
+    return { url, poster };
   }
-
-  const photos =
-    property.images?.filter((url) => !isVideoUrl(url)) ??
-    (isVideoUrl(property.image) ? [] : [property.image]);
-  const gallery = photos.length > 0 ? photos : [property.image].filter(Boolean);
-  if (property.demoVideo) {
-    return [property.demoVideo, ...gallery.filter((url) => url !== property.demoVideo)];
+  if (property.image) {
+    return { url: property.image };
   }
-  if (property.images?.length) return property.images;
-  return property.image ? [property.image] : [];
+  const fromGallery = property.images?.find(Boolean);
+  return fromGallery ? { url: fromGallery } : null;
 }
 
-const PropertyCard = ({ property, className }: PropertyCardProps) => {
-  const mediaList = buildCardMedia(property);
+const PropertyCard = ({ property, className, priority = false }: PropertyCardProps) => {
+  const media = primaryCardMedia(property);
 
   return (
     <Link
@@ -63,57 +95,20 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
       className={cn("group shima-card flex flex-col h-full", className)}
     >
       <div className="relative overflow-hidden w-full aspect-[4/3] bg-muted">
-        {(() => {
-          const count = Math.min(mediaList.length, 3);
-          const sliced = mediaList.slice(0, 3);
-          const poster = mediaList.find((url) => !isVideoUrl(url)) || property.image;
-          const extraCount = mediaList.length - 3;
-
-          const renderMedia = (url: string, idx: number) => (
-            <div key={idx} className="relative h-full w-full overflow-hidden bg-muted">
-              <MediaRenderer url={url} alt={`${property.title} - ${idx + 1}`} poster={poster} />
-            </div>
-          );
-
-          if (count === 0) {
-            return (
-              <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                لا توجد صورة
-              </div>
-            );
-          }
-          if (count === 1) {
-            return <div className="h-full w-full">{renderMedia(sliced[0], 0)}</div>;
-          }
-          if (count === 2) {
-            return (
-              <div className="grid grid-cols-2 gap-0.5 h-full w-full bg-white">
-                {renderMedia(sliced[0], 0)}
-                {renderMedia(sliced[1], 1)}
-              </div>
-            );
-          }
-          return (
-            <div className="flex flex-col gap-0.5 h-full w-full bg-white">
-              <div className="h-[60%] w-full overflow-hidden">
-                {renderMedia(sliced[0], 0)}
-              </div>
-              <div className="grid grid-cols-2 gap-0.5 h-[40%] w-full">
-                <div className="h-full w-full overflow-hidden">
-                  {renderMedia(sliced[1], 1)}
-                </div>
-                <div className="relative h-full w-full overflow-hidden">
-                  {renderMedia(sliced[2], 2)}
-                  {extraCount > 0 && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
-                      <span className="text-white font-display font-semibold text-lg">+{extraCount}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })()}
+        {media ? (
+          <div className="h-full w-full">
+            <CardMedia
+              url={media.url}
+              alt={property.title}
+              poster={media.poster}
+              priority={priority}
+            />
+          </div>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+            لا توجد صورة
+          </div>
+        )}
 
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/10 to-transparent opacity-90" />
 
@@ -211,4 +206,4 @@ const PropertyCard = ({ property, className }: PropertyCardProps) => {
   );
 };
 
-export default PropertyCard;
+export default memo(PropertyCard);

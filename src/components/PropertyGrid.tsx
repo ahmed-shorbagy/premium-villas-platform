@@ -53,13 +53,11 @@ const PropertyGrid = ({ properties, loading, emptyMessage }: PropertyGridProps) 
     <div className="space-y-8">
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visible.map((property, index) => (
-          <div
+          <PropertyCard
             key={property.id}
-            className="animate-fade-in-up"
-            style={{ animationDelay: `${(index % 6) * 0.06}s` }}
-          >
-            <PropertyCard property={property} />
-          </div>
+            property={property}
+            priority={index < 3}
+          />
         ))}
       </div>
       {visibleCount < properties.length && (

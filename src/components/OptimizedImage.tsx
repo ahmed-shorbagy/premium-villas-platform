@@ -30,6 +30,7 @@ const OptimizedImage = ({
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
       decoding="async"
+      fetchPriority={priority ? 'high' : 'auto'}
       className={cn(className)}
       onError={() => {
         if (currentSrc !== src) setCurrentSrc(src);

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
@@ -31,50 +31,23 @@ import Autoplay from 'embla-carousel-autoplay';
 import SEO from '@/components/SEO';
 
 import { formatPrice, propertyTypeLabels, featureLabels } from '@/data/properties';
-import { supabase } from '@/integrations/supabase/client';
 import { buildLocalizedPath } from '@/routes';
-import ReservationDialog from '@/components/ReservationDialog';
-import AvailabilityCalendar from '@/components/AvailabilityCalendar';
-import SimilarVillasPanel from '@/components/SimilarVillasPanel';
+import { DeferredMount } from '@/components/DeferredMount';
+import { useProperty } from '@/hooks/useProperty';
 import OptimizedImage from '@/components/OptimizedImage';
-import { firstImageUrl, isVideoUrl, uniqueMediaUrls } from '@/utils/media';
+import { firstImageUrl, isVideoUrl } from '@/utils/media';
 import { bookingPolicies } from '@/config/booking';
 import { groupTypeLabels, type GroupTypeId } from '@/config/filters';
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface PropertyDetailsType {
-  id: string;
-  title: string;
-  type: string;
-  price: number;
-  price_weekend?: number | null;
-  rent_count?: number | null;
-  max_guests?: number | null;
-  location: string;
-  bedrooms: number;
-  bathrooms: number;
-  images: string[];
-  listingType: 'sale' | 'rent';
-  featured: boolean;
-  createdAt: Date;
-  description?: string;
-  features: string[] | null;
-  contact_name?: string;
-  contact_phone?: string;
-  contact_email?: string;
-  contact_location?: string;
-  installments_available?: boolean;
-  installment_period?: string;
-  installment_value?: number;
-  pricing_type?: 'per_night' | 'per_stay';
-  is_negotiable?: boolean;
-  groupType?: GroupTypeId | null;
-}
+const ReservationDialog = lazy(() => import('@/components/ReservationDialog'));
+const AvailabilityCalendar = lazy(() => import('@/components/AvailabilityCalendar'));
+const SimilarVillasPanel = lazy(() => import('@/components/SimilarVillasPanel'));
 
 const PropertyDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const [property, setProperty] = useState<PropertyDetailsType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { property, loading } = useProperty(id);
   const [selectedCheckIn, setSelectedCheckIn] = useState('');
   const [selectedCheckOut, setSelectedCheckOut] = useState('');
   const [unavailableDate, setUnavailableDate] = useState<string | null>(null);
@@ -105,91 +78,9 @@ const PropertyDetails = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    const fetchProperty = async () => {
-      if (!id) {
-        setLoading(false);
-        return;
-      }
-
-      const isUUID =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-          id
-        );
-      const columns =
-        'id, slug, title, type, price, price_weekend, rent_count, max_guests, location, bedrooms, bathrooms, images, card_images, gallery_images, listing_type, featured, created_at, description, features, contact_name, contact_phone, contact_email, contact_location, installments_available, installment_period, installment_value, pricing_type, is_negotiable, group_type, is_hidden';
-      let { data } = await supabase
-        .from('properties')
-        .select(columns)
-        .eq(isUUID ? 'id' : 'slug', id)
-        .maybeSingle();
-
-      if (!data && !isUUID && id && id.includes('-')) {
-        const parts = id.split('-');
-        const possibleShortId = parts[parts.length - 1];
-        if (possibleShortId) {
-          const fallbackRes = await supabase
-            .from('properties')
-            .select(columns)
-            .eq('slug', possibleShortId)
-            .maybeSingle();
-          if (fallbackRes.data) {
-            data = fallbackRes.data;
-          }
-        }
-      }
-
-      if (data && (data as any).is_hidden) {
-        data = null;
-      }
-
-      if (data) {
-        const cleanPath = buildLocalizedPath.propertyDetails(data.slug || data.id);
-        const currentPath = window.location.pathname;
-        if (decodeURIComponent(currentPath) !== decodeURIComponent(cleanPath)) {
-          window.history.replaceState(null, '', cleanPath);
-        }
-        setProperty({
-          id: data.id,
-          title: data.title,
-          type: data.type,
-          price: data.price,
-          price_weekend: data.price_weekend ?? null,
-          rent_count: data.rent_count ?? null,
-          max_guests: data.max_guests ?? null,
-          location: data.location,
-          bedrooms: data.bedrooms,
-          bathrooms: data.bathrooms,
-          images: uniqueMediaUrls(
-            (data as any).card_images,
-            (data as any).gallery_images,
-            data.images
-          ),
-          listingType: (data as any).listing_type as 'sale' | 'rent',
-          featured: data.featured,
-          createdAt: new Date(data.created_at),
-          description: data.description || undefined,
-          features: data.features,
-          contact_name: (data as any).contact_name,
-          contact_phone: (data as any).contact_phone,
-          contact_email: (data as any).contact_email,
-          contact_location: (data as any).contact_location,
-          installments_available: (data as any).installments_available,
-          installment_period: (data as any).installment_period,
-          installment_value: (data as any).installment_value,
-          pricing_type: (data as any).pricing_type || 'per_night',
-          is_negotiable: (data as any).is_negotiable || false,
-          groupType: ((data as any).group_type as GroupTypeId) || null,
-        });
-        setUnavailableDate(null);
-        setSelectedCheckIn('');
-        setSelectedCheckOut('');
-      } else {
-        setProperty(null);
-      }
-      setLoading(false);
-    };
-
-    fetchProperty();
+    setUnavailableDate(null);
+    setSelectedCheckIn('');
+    setSelectedCheckOut('');
   }, [id]);
 
   const isVideo = isVideoUrl;
@@ -330,39 +221,50 @@ const PropertyDetails = () => {
           </span>
         </p>
       )}
-      <ReservationDialog
-        propertyId={property.id}
-        propertyTitle={property.title}
-        propertyPrice={property.price}
-        propertyPriceWeekend={property.price_weekend}
-        propertyLocation={property.location}
-        pricingType={property.pricing_type || 'per_night'}
-        groupType={property.groupType}
-        checkIn={selectedCheckIn}
-        checkOut={selectedCheckOut}
-        onDatesUnavailable={(date) => revealSimilarOnPage(date, false)}
+      <Suspense
+        fallback={
+          <Button variant="gold" size="lg" className="w-full gap-2" disabled>
+            <CalendarDays className="h-5 w-5" />
+            جاري التحميل...
+          </Button>
+        }
       >
-        <Button variant="gold" size="lg" className="w-full gap-2">
-          <CalendarDays className="h-5 w-5" />
-          حجز الفيلا — {formatPrice(property.price)}
-          {property.pricing_type !== 'per_stay' ? ' / ليلة' : ''}
-        </Button>
-      </ReservationDialog>
+        <ReservationDialog
+          propertyId={property.id}
+          propertyTitle={property.title}
+          propertyPrice={property.price}
+          propertyPriceWeekend={property.price_weekend}
+          propertyLocation={property.location}
+          pricingType={property.pricing_type || 'per_night'}
+          groupType={property.groupType}
+          checkIn={selectedCheckIn}
+          checkOut={selectedCheckOut}
+          onDatesUnavailable={(date) => revealSimilarOnPage(date, false)}
+        >
+          <Button variant="gold" size="lg" className="w-full gap-2">
+            <CalendarDays className="h-5 w-5" />
+            حجز الفيلا — {formatPrice(property.price)}
+            {property.pricing_type !== 'per_stay' ? ' / ليلة' : ''}
+          </Button>
+        </ReservationDialog>
+      </Suspense>
     </div>
   );
 
   const calendarBlock = (
-    <AvailabilityCalendar
-      propertyId={property.id}
-      onDateSelect={(ci, co) => {
-        setSelectedCheckIn(ci);
-        setSelectedCheckOut(co);
-        setUnavailableDate(null);
-      }}
-      onUnavailableDateSelect={(date) => {
-        revealSimilarOnPage(date, true);
-      }}
-    />
+    <DeferredMount minHeight="22rem" fallback={<Skeleton className="h-[22rem] w-full rounded-xl" />}>
+      <AvailabilityCalendar
+        propertyId={property.id}
+        onDateSelect={(ci, co) => {
+          setSelectedCheckIn(ci);
+          setSelectedCheckOut(co);
+          setUnavailableDate(null);
+        }}
+        onUnavailableDateSelect={(date) => {
+          revealSimilarOnPage(date, true);
+        }}
+      />
+    </DeferredMount>
   );
 
   return (
@@ -560,15 +462,17 @@ const PropertyDetails = () => {
 
                 {similarCheckIn && (
                   <div ref={similarSectionRef} id="similar-villas" className="mb-8 scroll-mt-24">
-                    <SimilarVillasPanel
-                      variant="page"
-                      propertyId={property.id}
-                      groupType={similarGroupType}
-                      currentPrice={property.price}
-                      checkIn={similarCheckIn}
-                      checkOut={unavailableDate ? null : selectedCheckOut || null}
-                      unavailable={!!unavailableDate}
-                    />
+                    <Suspense fallback={<Skeleton className="h-48 w-full rounded-xl" />}>
+                      <SimilarVillasPanel
+                        variant="page"
+                        propertyId={property.id}
+                        groupType={similarGroupType}
+                        currentPrice={property.price}
+                        checkIn={similarCheckIn}
+                        checkOut={unavailableDate ? null : selectedCheckOut || null}
+                        unavailable={!!unavailableDate}
+                      />
+                    </Suspense>
                   </div>
                 )}
               </div>
@@ -592,23 +496,32 @@ const PropertyDetails = () => {
               ) : null}
             </p>
           </div>
-          <ReservationDialog
-            propertyId={property.id}
-            propertyTitle={property.title}
-            propertyPrice={property.price}
-            propertyPriceWeekend={property.price_weekend}
-            propertyLocation={property.location}
-            pricingType={property.pricing_type || 'per_night'}
-            groupType={property.groupType}
-            checkIn={selectedCheckIn}
-            checkOut={selectedCheckOut}
-            onDatesUnavailable={(date) => revealSimilarOnPage(date, false)}
+          <Suspense
+            fallback={
+              <Button variant="gold" size="lg" className="gap-2 shrink-0" disabled>
+                <CalendarDays className="h-5 w-5" />
+                جاري التحميل...
+              </Button>
+            }
           >
-            <Button variant="gold" size="lg" className="gap-2 shrink-0">
-              <CalendarDays className="h-5 w-5" />
-              حجز الفيلا
-            </Button>
-          </ReservationDialog>
+            <ReservationDialog
+              propertyId={property.id}
+              propertyTitle={property.title}
+              propertyPrice={property.price}
+              propertyPriceWeekend={property.price_weekend}
+              propertyLocation={property.location}
+              pricingType={property.pricing_type || 'per_night'}
+              groupType={property.groupType}
+              checkIn={selectedCheckIn}
+              checkOut={selectedCheckOut}
+              onDatesUnavailable={(date) => revealSimilarOnPage(date, false)}
+            >
+              <Button variant="gold" size="lg" className="gap-2 shrink-0">
+                <CalendarDays className="h-5 w-5" />
+                حجز الفيلا
+              </Button>
+            </ReservationDialog>
+          </Suspense>
         </div>
       </div>
 

@@ -1,35 +1,37 @@
 import { useEffect, useRef, useState } from "react";
-import heroImage from "@/assets/hero-cairo.jpg";
 import { siteConfig } from "@/config";
 
-/**
- * Cinematic hero backdrop: optional short loop video (MP4/WebM in /public/hero/)
- * with Ken Burns + light shimmer on the static image fallback.
- */
 const HeroBackground = () => {
-  const { heroVideoMp4, heroVideoWebm } = siteConfig.assets;
+  const { heroVideoMp4, heroVideoWebm, heroPoster } = siteConfig.assets;
   const hasVideo = Boolean(heroVideoMp4 || heroVideoWebm);
   const [videoReady, setVideoReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [allowVideo, setAllowVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const showVideo = hasVideo && !videoFailed;
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 768px)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedData = window.matchMedia("(prefers-reduced-data: reduce)").matches;
+    setAllowVideo(hasVideo && !mobile && !reducedMotion && !reducedData);
+  }, [hasVideo]);
+
+  const showVideo = allowVideo && !videoFailed;
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !showVideo) return;
 
-    const play = () => {
-      video.play().catch(() => setVideoFailed(true));
-    };
+    const onReady = () => setVideoReady(true);
+    const onError = () => setVideoFailed(true);
 
-    video.addEventListener("canplay", () => setVideoReady(true));
-    video.addEventListener("error", () => setVideoFailed(true));
-    play();
+    video.addEventListener("canplay", onReady);
+    video.addEventListener("error", onError);
+    video.play().catch(onError);
 
     return () => {
-      video.removeEventListener("canplay", () => setVideoReady(true));
-      video.removeEventListener("error", () => setVideoFailed(true));
+      video.removeEventListener("canplay", onReady);
+      video.removeEventListener("error", onError);
     };
   }, [showVideo]);
 
@@ -45,8 +47,8 @@ const HeroBackground = () => {
           loop
           muted
           playsInline
-          preload="auto"
-          poster={heroImage}
+          preload="metadata"
+          poster={heroPoster}
         >
           {heroVideoWebm ? <source src={heroVideoWebm} type="video/webm" /> : null}
           {heroVideoMp4 ? <source src={heroVideoMp4} type="video/mp4" /> : null}
@@ -54,8 +56,10 @@ const HeroBackground = () => {
       ) : null}
 
       <img
-        src={heroImage}
+        src={heroPoster}
         alt=""
+        fetchPriority="high"
+        decoding="async"
         className={`shima-hero-media shima-hero-bg h-full w-full object-cover transition-opacity duration-700 ${
           showVideo && videoReady ? "opacity-0" : "opacity-100"
         }`}

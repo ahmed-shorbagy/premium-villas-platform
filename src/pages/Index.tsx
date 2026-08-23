@@ -1,23 +1,25 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import PropertyFilters from "@/components/PropertyFilters";
 import PropertyGrid from "@/components/PropertyGrid";
 import PropertyHorizontalList from "@/components/PropertyHorizontalList";
-import BannerCarousel from "@/components/BannerCarousel";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { useProperties } from "@/hooks/useProperties";
-import { useBanners } from "@/hooks/useBanners";
+import { usePublicBanners } from "@/hooks/usePublicBanners";
 import { siteConfig, platformScope } from "@/config";
 import type { GroupTypeId } from "@/config";
 import type { HeroSearchFilters } from "@/components/Hero";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const BannerCarousel = lazy(() => import("@/components/BannerCarousel"));
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { properties, loading } = useProperties();
-  const { banners, loading: bannersLoading } = useBanners(true);
+  const { banners, loading: bannersLoading } = usePublicBanners();
   const [sortBy, setSortBy] = useState("newest");
   const [searchFilters, setSearchFilters] = useState<HeroSearchFilters & { features: string[] }>({
     groupType: (searchParams.get("groupType") as GroupTypeId) || "",
@@ -109,7 +111,9 @@ const Index = () => {
           {!bannersLoading && banners && banners.length > 0 && (
             <section className="container px-4">
               <div className="w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-float border border-white/10">
-                <BannerCarousel banners={banners} />
+                <Suspense fallback={<Skeleton className="h-full w-full rounded-[2rem]" />}>
+                  <BannerCarousel banners={banners} />
+                </Suspense>
               </div>
             </section>
           )}

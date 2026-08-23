@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -14,52 +15,33 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const isAdminPath = (pathname: string) =>
+  /\/admin(\/|$)/i.test(pathname) || pathname.includes('لوحة-التحكم');
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const { pathname } = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const checkAdminRole = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .eq('role', 'admin')
-      .maybeSingle();
-    
-    if (!error && data) {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
-  };
-
   useEffect(() => {
     let cancelled = false;
 
-    const applySession = async (session: Session | null) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await checkAdminRole(session.user.id);
-      } else {
-        setIsAdmin(false);
-      }
+    const applySession = (nextSession: Session | null) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
       if (!cancelled) setLoading(false);
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        // Defer Supabase calls; invoking them inside this callback can deadlock.
-        setTimeout(() => {
-          void applySession(session);
-        }, 0);
-      }
+      (_event, nextSession) => {
+        setTimeout(() => applySession(nextSession), 0);
+      },
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      void applySession(session);
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      applySession(initialSession);
     });
 
     return () => {
@@ -67,6 +49,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const syncAdminRole = async () => {
+      if (!session?.user || !isAdminPath(pathname)) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (!cancelled) setIsAdmin(!error && Boolean(data));
+    };
+
+    void syncAdminRole();
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname, session?.user?.id]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -78,7 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: redirectUrl }
+      options: { emailRedirectTo: redirectUrl },
     });
     return { error };
   };

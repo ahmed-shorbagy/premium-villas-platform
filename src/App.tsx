@@ -86,11 +86,11 @@ const legacyAdminOwnersPath = englishRoutes.adminOwners
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HypeControllerProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
             <SiteShell>
               <ActivityTracker />
               <Suspense fallback={<RouteFallback />}>
@@ -138,9 +138,9 @@ const App = () => (
               </Routes>
               </Suspense>
             </SiteShell>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
     </HypeControllerProvider>
   </QueryClientProvider>
 );

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { useHype } from "@/context/HypeController";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,24 @@ const cycle = siteConfig.animation.ambientCycleSeconds;
 export function PremiumAmbientBackground({ intensity = "full" }: PremiumAmbientBackgroundProps) {
   const { isWinter } = useHype();
   const subtle = intensity === "low";
+  const [motionEnabled, setMotionEnabled] = useState(false);
+
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 768px)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (subtle || mobile || reducedMotion) {
+      setMotionEnabled(false);
+      return;
+    }
+
+    const enable = () => setMotionEnabled(true);
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(enable, { timeout: 1500 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const timer = window.setTimeout(enable, 400);
+    return () => window.clearTimeout(timer);
+  }, [subtle]);
 
   return (
     <div
@@ -20,33 +39,34 @@ export function PremiumAmbientBackground({ intensity = "full" }: PremiumAmbientB
       )}
       aria-hidden
     >
-      {/* 3s animated SVG ambient layer */}
-      <img
-        src={siteConfig.assets.ambientBg}
-        alt=""
-        className={cn(
-          "absolute inset-0 h-full w-full object-cover",
-          "animate-shima-ambient-pulse",
-          isWinter && "opacity-50 mix-blend-multiply hue-rotate-[140deg] saturate-75",
-          !isWinter && "opacity-90",
-        )}
-      />
+      {motionEnabled ? (
+        <img
+          src={siteConfig.assets.ambientBg}
+          alt=""
+          className={cn(
+            "absolute inset-0 h-full w-full object-cover",
+            "animate-shima-ambient-pulse",
+            isWinter && "opacity-50 mix-blend-multiply hue-rotate-[140deg] saturate-75",
+            !isWinter && "opacity-90",
+          )}
+        />
+      ) : (
+        <div
+          className={cn(
+            "absolute inset-0 bg-gradient-to-br from-brand/10 via-background to-secondary/40",
+            isWinter && "from-sky-100/40 via-background to-background",
+          )}
+        />
+      )}
 
-      {/* CSS orbs — synced to 3s cycle */}
-      <div
-        className="shima-orb shima-orb-1"
-        style={{ animationDuration: `${cycle}s` }}
-      />
-      <div
-        className="shima-orb shima-orb-2"
-        style={{ animationDuration: `${cycle}s` }}
-      />
-      <div
-        className="shima-orb shima-orb-3"
-        style={{ animationDuration: `${cycle}s` }}
-      />
+      {motionEnabled ? (
+        <>
+          <div className="shima-orb shima-orb-1" style={{ animationDuration: `${cycle}s` }} />
+          <div className="shima-orb shima-orb-2" style={{ animationDuration: `${cycle}s` }} />
+          <div className="shima-orb shima-orb-3" style={{ animationDuration: `${cycle}s` }} />
+        </>
+      ) : null}
 
-      {/* Readability veil */}
       <div
         className={cn(
           "absolute inset-0 bg-gradient-to-b from-background/25 via-background/45 to-background/90",
@@ -54,8 +74,7 @@ export function PremiumAmbientBackground({ intensity = "full" }: PremiumAmbientB
         )}
       />
 
-      {/* Subtle grain */}
-      <div className="shima-grain absolute inset-0 opacity-[0.03]" />
+      {motionEnabled ? <div className="shima-grain absolute inset-0 opacity-[0.03]" /> : null}
     </div>
   );
 }
