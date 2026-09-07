@@ -35,8 +35,13 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, addDays, isBefore } from 'date-fns';
 import { bookingPolicies } from '@/config/booking';
-import { groupTypeLabels, type GroupTypeId } from '@/config/filters';
-import { useBookingRules, useAvailability } from '@/hooks/useReservations';
+import {
+  bookingGroupTypeLabel,
+  bookingGroupTypeOptions,
+  type GroupTypeId,
+} from '@/config/filters';
+import { useBookingRules, useAvailability, usePricePeriods } from '@/hooks/useReservations';
+import { calculateStayPrice } from '@/utils/stayPrice';
 import SimilarVillasPanel from '@/components/SimilarVillasPanel';
 import {
   isDateBookedByRanges,
@@ -44,12 +49,6 @@ import {
   useBookedRanges,
 } from '@/hooks/useBookedRanges';
 import { parseDateOnly } from '@/utils/dateOnly';
-
-const BOOKING_TYPE_OPTIONS: { id: Exclude<GroupTypeId, 'all'>; labelAr: string }[] = [
-  { id: 'family', labelAr: 'عائلة' },
-  { id: 'youth_male', labelAr: 'شباب فقط' },
-  { id: 'women_only', labelAr: 'نساء فقط' },
-];
 
 interface ReservationDialogProps {
   propertyId: string;
@@ -82,6 +81,7 @@ const ReservationDialog = ({
 }: ReservationDialogProps) => {
   const { bookingRules } = useBookingRules();
   const { periods, loading: availabilityLoading } = useAvailability(propertyId);
+  const { periods: pricePeriods } = usePricePeriods(propertyId);
   const { ranges: bookedRanges, loading: bookedLoading } = useBookedRanges(propertyId);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'form' | 'rules'>('form');
@@ -137,47 +137,30 @@ const ReservationDialog = ({
     return d > 0 ? d : 0;
   }, [formData.check_in, formData.check_out]);
 
-  const priceDetails = useMemo(() => {
-    if (!formData.check_in || !formData.check_out || numNights <= 0) {
-      return { total: 0, weekdayNights: 0, weekendNights: 0 };
-    }
-
-    if (pricingType === 'per_stay') {
-      return { total: propertyPrice, weekdayNights: 0, weekendNights: 0 };
-    }
-
-    let total = 0;
-    let weekdayNights = 0;
-    let weekendNights = 0;
-
-    const start = parseDateOnly(formData.check_in);
-    if (!start) return { total: 0, weekdayNights: 0, weekendNights: 0 };
-
-    for (let i = 0; i < numNights; i++) {
-      const currentDate = addDays(start, i);
-      const day = currentDate.getDay();
-      const isWeekend = day === 4 || day === 5;
-
-      if (isWeekend && propertyPriceWeekend !== undefined && propertyPriceWeekend !== null) {
-        total += propertyPriceWeekend;
-        weekendNights++;
-      } else {
-        total += propertyPrice;
-        weekdayNights++;
-      }
-    }
-
-    return { total, weekdayNights, weekendNights };
-  }, [formData.check_in, formData.check_out, numNights, propertyPrice, propertyPriceWeekend, pricingType]);
+  const priceDetails = useMemo(
+    () =>
+      calculateStayPrice({
+        checkIn: formData.check_in,
+        checkOut: formData.check_out,
+        pricingType,
+        weekdayPrice: propertyPrice,
+        weekendPrice: propertyPriceWeekend,
+        periods: pricePeriods,
+      }),
+    [
+      formData.check_in,
+      formData.check_out,
+      propertyPrice,
+      propertyPriceWeekend,
+      pricingType,
+      pricePeriods,
+    ]
+  );
 
   const formatPrice = (p: number) =>
     new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 0 }).format(p) + ' شيكل';
 
-  const displayGroupLabel = (id: string) => {
-    const opt = BOOKING_TYPE_OPTIONS.find((o) => o.id === id);
-    if (opt) return opt.labelAr;
-    return groupTypeLabels[id as GroupTypeId] || id;
-  };
+  const displayGroupLabel = (id: string) => bookingGroupTypeLabel(id);
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -298,6 +281,9 @@ const ReservationDialog = ({
           check_in: formData.check_in,
           check_out: formData.check_out,
           customer_notes: formData.customer_notes,
+          booking_group_type: bookingGroupTypeLabel(formData.booking_group_type),
+          num_guests: formData.num_guests,
+          total_price: priceDetails.total,
         },
       });
     } catch (err) {
@@ -449,7 +435,9 @@ const ReservationDialog = ({
                       {pricingType === 'per_night' && numNights > 0 && (
                         <p className="text-[11px] text-muted-foreground mt-1">
                           {numNights} {numNights === 1 ? 'ليلة' : 'ليالٍ'}
-                          {priceDetails.weekendNights > 0
+                          {priceDetails.customNights > 0
+                            ? ` (منها ${priceDetails.customNights} بسعر مناسبة)`
+                            : priceDetails.weekendNights > 0
                             ? ` (${priceDetails.weekdayNights} وسط أسبوع + ${priceDetails.weekendNights} نهاية أسبوع)`
                             : ''}
                         </p>
@@ -561,7 +549,7 @@ const ReservationDialog = ({
                       <SelectValue placeholder="اختر نوع الحجز" />
                     </SelectTrigger>
                     <SelectContent>
-                      {BOOKING_TYPE_OPTIONS.map((opt) => (
+                      {bookingGroupTypeOptions.map((opt) => (
                         <SelectItem key={opt.id} value={opt.id}>
                           {opt.labelAr}
                         </SelectItem>

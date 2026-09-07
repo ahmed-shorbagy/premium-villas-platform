@@ -28,7 +28,7 @@ export interface Reservation {
     title: string;
     location: string;
     price: number;
-    images: string[] | null;
+    group_type?: string | null;
   };
 }
 
@@ -38,6 +38,17 @@ export interface AvailabilityPeriod {
   available_from: string;
   available_to: string;
   price_override: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PricePeriod {
+  id: string;
+  property_id: string;
+  period_start: string;
+  period_end: string;
+  price_override: number;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -54,7 +65,7 @@ export function useReservations() {
       .from('reservations')
       .select(`
         *,
-        property:properties (title, location, price)
+        property:properties (title, location, price, group_type)
       `)
       .order('created_at', { ascending: false });
 
@@ -288,6 +299,89 @@ export function useAvailability(propertyId?: string, range?: AvailabilityRange) 
     addAvailability,
     deleteAvailability,
     replaceAvailability,
+  };
+}
+
+export function usePricePeriods(propertyId?: string) {
+  const [periods, setPeriods] = useState<PricePeriod[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const fetchPricePeriods = useCallback(async () => {
+    if (!propertyId) return;
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from('villa_price_periods')
+      .select('*')
+      .eq('property_id', propertyId)
+      .order('period_start', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching price periods:', error);
+    } else {
+      setPeriods((data as PricePeriod[]) || []);
+    }
+    setLoading(false);
+  }, [propertyId]);
+
+  useEffect(() => {
+    fetchPricePeriods();
+  }, [fetchPricePeriods]);
+
+  const addPricePeriod = async (period: {
+    period_start: string;
+    period_end: string;
+    price_override: number;
+    notes?: string;
+  }) => {
+    if (!propertyId) return false;
+
+    const { error } = await supabase.from('villa_price_periods').insert({
+      property_id: propertyId,
+      ...period,
+    });
+
+    if (error) {
+      toast({
+        title: 'خطأ',
+        description: 'فشل حفظ السعر المخصص',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    toast({ title: 'تم بنجاح', description: 'تم حفظ السعر المخصص للفترة' });
+    await fetchPricePeriods();
+    return true;
+  };
+
+  const deletePricePeriod = async (id: string) => {
+    const { error } = await supabase
+      .from('villa_price_periods')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: 'خطأ',
+        description: 'فشل حذف السعر المخصص',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    toast({ title: 'تم بنجاح', description: 'تم حذف السعر المخصص' });
+    await fetchPricePeriods();
+    return true;
+  };
+
+  return {
+    periods,
+    loading,
+    fetchPricePeriods,
+    addPricePeriod,
+    deletePricePeriod,
   };
 }
 

@@ -44,6 +44,7 @@ import {
   Users,
 } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { bookingGroupTypeLabel } from '@/config/filters';
 
 const statusLabels: Record<string, string> = {
   pending: 'قيد الانتظار',
@@ -135,6 +136,9 @@ const Reservations = () => {
     }
 
     // CRITICAL: Message does NOT include customer_phone
+    const groupLabel = bookingGroupTypeLabel(
+      reservation.booking_group_type || reservation.property?.group_type
+    );
     const message = `🏡 حجز جديد — نُزُل
 
 الفيلا: ${reservation.property?.title || '—'}
@@ -144,6 +148,7 @@ const Reservations = () => {
 📅 تسجيل الخروج: ${reservation.check_out}
 👤 اسم الضيف: ${reservation.customer_name}
 👥 عدد الضيوف: ${reservation.num_guests}
+🏷 نوع الحجز: ${groupLabel}
 💰 الإجمالي: ${formatPrice(reservation.total_price)}
 
 📝 ملاحظات: ${reservation.customer_notes || 'لا توجد'}
@@ -397,6 +402,15 @@ const Reservations = () => {
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">عدد الضيوف:</span>
                   <span className="font-medium">{selectedReservation.num_guests}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">نوع الحجز:</span>
+                  <span className="font-medium">
+                    {bookingGroupTypeLabel(
+                      selectedReservation.booking_group_type ||
+                        selectedReservation.property?.group_type
+                    )}
+                  </span>
                 </div>
               </div>
 

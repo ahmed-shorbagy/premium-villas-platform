@@ -12,6 +12,7 @@ import { featureLabels } from '@/data/properties';
 import { platformScope } from '@/config/platform';
 import { groupTypes } from '@/config/filters';
 import AvailabilityManager from '@/components/admin/AvailabilityManager';
+import PricePeriodsManager from '@/components/admin/PricePeriodsManager';
 import {
     Select,
     SelectContent,
@@ -707,7 +708,8 @@ const PropertyForm = () => {
 
             {/* Availability Manager — only for existing properties */}
             {id && (
-                <div className="mt-8">
+                <div className="mt-8 space-y-6">
+                    <PricePeriodsManager propertyId={id} />
                     <AvailabilityManager propertyId={id} />
                 </div>
             )}

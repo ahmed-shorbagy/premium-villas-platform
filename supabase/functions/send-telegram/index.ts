@@ -19,7 +19,10 @@ Deno.serve(async (req) => {
       check_in, 
       check_out, 
       customer_phone, 
-      customer_notes 
+      customer_notes,
+      booking_group_type,
+      num_guests,
+      total_price,
     } = await req.json();
 
     const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
@@ -40,6 +43,9 @@ Deno.serve(async (req) => {
 👤 الاسم: ${customer_name}
 📍 المدينة/المكان: ${customer_location || 'غير محدد'}
 📅 تاريخ الحجز: ${datesText}
+👥 عدد الضيوف: ${num_guests || '—'}
+🏷 نوع الحجز: ${booking_group_type || '—'}
+💰 الإجمالي: ${total_price != null ? total_price : '—'}
 📞 رقم العميل: ${customer_phone}
 📝 الملاحظات: ${customer_notes || 'لا يوجد'}`;
 
