@@ -41,7 +41,7 @@ import {
   type GroupTypeId,
 } from '@/config/filters';
 import { useBookingRules, useAvailability, usePricePeriods } from '@/hooks/useReservations';
-import { calculateStayPrice } from '@/utils/stayPrice';
+import { calculateStayPrice, type StayPriceDetails } from '@/utils/stayPrice';
 import SimilarVillasPanel from '@/components/SimilarVillasPanel';
 import {
   isDateBookedByRanges,
@@ -81,7 +81,12 @@ const ReservationDialog = ({
 }: ReservationDialogProps) => {
   const { bookingRules } = useBookingRules();
   const { periods, loading: availabilityLoading } = useAvailability(propertyId);
-  const { periods: pricePeriods } = usePricePeriods(propertyId);
+  const {
+    periods: pricePeriods,
+    loading: pricePeriodsLoading,
+    error: pricePeriodsError,
+    fetchPricePeriods,
+  } = usePricePeriods(propertyId);
   const { ranges: bookedRanges, loading: bookedLoading } = useBookedRanges(propertyId);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'form' | 'rules'>('form');
@@ -90,6 +95,9 @@ const ReservationDialog = ({
   const [acceptedRules, setAcceptedRules] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [datesUnavailable, setDatesUnavailable] = useState(false);
+  const [checkingPrice, setCheckingPrice] = useState(false);
+  const [confirmedPriceDetails, setConfirmedPriceDetails] =
+    useState<StayPriceDetails | null>(null);
 
   const fixedGroupType =
     groupType && groupType !== 'all' ? (groupType as Exclude<GroupTypeId, 'all'>) : null;
@@ -127,7 +135,12 @@ const ReservationDialog = ({
 
   useEffect(() => {
     setDatesUnavailable(false);
+    setConfirmedPriceDetails(null);
   }, [formData.check_in, formData.check_out]);
+
+  useEffect(() => {
+    if (open) void fetchPricePeriods();
+  }, [open, fetchPricePeriods]);
 
   const numNights = useMemo(() => {
     const start = parseDateOnly(formData.check_in);
@@ -156,6 +169,7 @@ const ReservationDialog = ({
       pricePeriods,
     ]
   );
+  const displayedPriceDetails = confirmedPriceDetails || priceDetails;
 
   const formatPrice = (p: number) =>
     new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 0 }).format(p) + ' شيكل';
@@ -217,12 +231,34 @@ const ReservationDialog = ({
     return Object.keys(errs).length === 0;
   };
 
-  const handleContinueToRules = () => {
+  const calculateWithPeriods = (latestPeriods: typeof pricePeriods) =>
+    calculateStayPrice({
+      checkIn: formData.check_in,
+      checkOut: formData.check_out,
+      pricingType,
+      weekdayPrice: propertyPrice,
+      weekendPrice: propertyPriceWeekend,
+      periods: latestPeriods,
+    });
+
+  const handleContinueToRules = async () => {
     if (availabilityLoading || bookedLoading) {
       setErrors({ check_in: 'جاري التحقق من التوفر، حاول مرة أخرى بعد لحظة' });
       return;
     }
     if (!validate()) return;
+
+    setCheckingPrice(true);
+    const latestPeriods = await fetchPricePeriods();
+    setCheckingPrice(false);
+    if (!latestPeriods) {
+      setErrors({
+        pricing: 'تعذر تحميل سعر الفترة المحددة. لم نستخدم السعر العادي—يرجى المحاولة مرة أخرى.',
+      });
+      return;
+    }
+
+    setConfirmedPriceDetails(calculateWithPeriods(latestPeriods));
     setStep('rules');
     setAcceptedRules(false);
   };
@@ -236,6 +272,19 @@ const ReservationDialog = ({
     setIsSubmitting(true);
     setErrors({});
 
+    // Re-read immediately before insert. This prevents a stale browser tab or a
+    // slow first request from submitting the villa's regular price.
+    const latestPeriods = await fetchPricePeriods();
+    if (!latestPeriods) {
+      setIsSubmitting(false);
+      setErrors({
+        submit: 'تعذر التحقق من سعر الفترة. لم يتم إرسال الحجز، حاول مرة أخرى.',
+      });
+      return;
+    }
+    const finalPriceDetails = calculateWithPeriods(latestPeriods);
+    setConfirmedPriceDetails(finalPriceDetails);
+
     const { error } = await supabase.from('reservations').insert({
       property_id: propertyId,
       customer_name: formData.customer_name.trim(),
@@ -248,7 +297,7 @@ const ReservationDialog = ({
       num_guests: parseInt(formData.num_guests) || 1,
       pricing_type: pricingType,
       price_per_night: pricingType === 'per_night' ? propertyPrice : null,
-      total_price: priceDetails.total || null,
+      total_price: finalPriceDetails.total || null,
     } as any);
 
     setIsSubmitting(false);
@@ -283,7 +332,7 @@ const ReservationDialog = ({
           customer_notes: formData.customer_notes,
           booking_group_type: bookingGroupTypeLabel(formData.booking_group_type),
           num_guests: formData.num_guests,
-          total_price: priceDetails.total,
+          total_price: finalPriceDetails.total,
         },
       });
     } catch (err) {
@@ -300,6 +349,8 @@ const ReservationDialog = ({
       setStep('form');
       setAcceptedRules(false);
       setDatesUnavailable(false);
+      setCheckingPrice(false);
+      setConfirmedPriceDetails(null);
       setFormData({
         customer_name: '',
         customer_phone: '',
@@ -359,11 +410,11 @@ const ReservationDialog = ({
                 <p className="text-muted-foreground">{checkInOutNote}</p>
               </div>
 
-              {priceDetails.total > 0 && (
+              {displayedPriceDetails.total > 0 && (
                 <div className="rounded-lg border border-border p-3 text-center">
                   <p className="text-xs text-muted-foreground mb-1">السعر الإجمالي</p>
                   <p className="font-display text-2xl font-bold text-gold">
-                    {formatPrice(priceDetails.total)}
+                    {formatPrice(displayedPriceDetails.total)}
                   </p>
                 </div>
               )}
@@ -395,7 +446,9 @@ const ReservationDialog = ({
                   <CheckCircle2 className="h-4 w-4" />
                 )}
                 تأكيد الحجز
-                {priceDetails.total > 0 ? ` — ${formatPrice(priceDetails.total)}` : ''}
+                {displayedPriceDetails.total > 0
+                  ? ` — ${formatPrice(displayedPriceDetails.total)}`
+                  : ''}
               </Button>
               <Button
                 variant="outline"
@@ -635,16 +688,27 @@ const ReservationDialog = ({
               {errors.submit && (
                 <p className="text-sm text-destructive text-center">{errors.submit}</p>
               )}
+              {(errors.pricing || pricePeriodsError) && (
+                <p className="text-sm text-destructive text-center">
+                  {errors.pricing ||
+                    'تعذر تحميل أسعار المناسبات. أعد المحاولة قبل متابعة الحجز.'}
+                </p>
+              )}
             </div>
 
             <DialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse">
               <Button
                 variant="gold"
-                onClick={handleContinueToRules}
+                onClick={() => void handleContinueToRules()}
+                disabled={checkingPrice || pricePeriodsLoading}
                 className="flex-1 gap-2"
               >
-                <CalendarDays className="h-4 w-4" />
-                متابعة
+                {checkingPrice || pricePeriodsLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CalendarDays className="h-4 w-4" />
+                )}
+                {checkingPrice || pricePeriodsLoading ? 'جاري التحقق من السعر' : 'متابعة'}
                 {priceDetails.total > 0 ? ` — ${formatPrice(priceDetails.total)}` : ''}
               </Button>
             </DialogFooter>

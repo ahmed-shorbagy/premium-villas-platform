@@ -305,11 +305,17 @@ export function useAvailability(propertyId?: string, range?: AvailabilityRange) 
 export function usePricePeriods(propertyId?: string) {
   const [periods, setPeriods] = useState<PricePeriod[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchPricePeriods = useCallback(async () => {
-    if (!propertyId) return;
+    if (!propertyId) {
+      setPeriods([]);
+      setError(null);
+      return null;
+    }
     setLoading(true);
+    setError(null);
 
     const { data, error } = await supabase
       .from('villa_price_periods')
@@ -319,10 +325,16 @@ export function usePricePeriods(propertyId?: string) {
 
     if (error) {
       console.error('Error fetching price periods:', error);
+      setError(error.message);
+      setPeriods([]);
+      setLoading(false);
+      return null;
     } else {
-      setPeriods((data as PricePeriod[]) || []);
+      const nextPeriods = (data as PricePeriod[]) || [];
+      setPeriods(nextPeriods);
+      setLoading(false);
+      return nextPeriods;
     }
-    setLoading(false);
   }, [propertyId]);
 
   useEffect(() => {
@@ -379,6 +391,7 @@ export function usePricePeriods(propertyId?: string) {
   return {
     periods,
     loading,
+    error,
     fetchPricePeriods,
     addPricePeriod,
     deletePricePeriod,
