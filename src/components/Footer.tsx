@@ -76,6 +76,17 @@ const Footer = () => {
         <div className="shima-divider my-12" />
 
         <p className="text-center text-sm text-white/35">{getCopyrightLine()}</p>
+        <p className="mt-2 text-center text-xs text-white/35">
+          تصميم وتطوير{" "}
+          <a
+            href="https://www.devo-eg.com/"
+            target="_blank"
+            rel="noopener"
+            className="text-white/55 underline-offset-4 transition-colors duration-300 hover:text-brand hover:underline"
+          >
+            ديڤو
+          </a>
+        </p>
       </div>
     </footer>
   );
